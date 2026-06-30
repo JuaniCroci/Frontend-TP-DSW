@@ -19,7 +19,7 @@ Frontend del proyecto **Entreno2.0**, plataforma de e-commerce de suplementos y 
 
 ## Requisitos
 
-- Node >= 20
+- Node >= 20 (el repo tiene `.nvmrc`, ejecutar `nvm use` si usás nvm)
 - pnpm (o npm)
 
 ## Instalación
@@ -27,8 +27,10 @@ Frontend del proyecto **Entreno2.0**, plataforma de e-commerce de suplementos y 
 ```bash
 git clone <repo-url>
 cd Frontend-TP-DSW
+nvm use              # opcional, usa la versión de Node del .nvmrc
 pnpm install
-cp .env.example .env   # editar VITE_API_URL con la URL del backend
+cp .env.example .env  # editar VITE_API_URL con la URL del backend
+pnpm dev             # arranca el dev server
 ```
 
 ## Scripts
