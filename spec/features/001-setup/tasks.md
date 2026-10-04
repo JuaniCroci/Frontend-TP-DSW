@@ -38,5 +38,5 @@
 
 ## Cierre
 
-- [x] Validar contra los criterios de aceptación de `spec.md` (el de CI queda pendiente del primer push)
+- [x] Validar contra los criterios de aceptación de `spec.md` (los 16 cumplidos, incluido CI: run #1 verde)
 - [x] Mover la feature a "Hecho" en `../../constitution/roadmap.md`

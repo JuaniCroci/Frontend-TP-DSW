@@ -7,7 +7,7 @@ La columna **Back** indica qué feature del backend necesita esa UI:
 
 ## Hecho ✅
 
-1. **[001 · Setup y puente con la API](../features/001-setup/)** — constitución SDD + skills del back, tooling (ESLint, Prettier, Vitest, CI) y puente HTTP (`apiClient` + interceptores + 15 tests). Smoke: `GET /api/health` → 200. **⚠ CI pendiente de primer push verde** (único criterio abierto).
+1. **[001 · Setup y puente con la API](../features/001-setup/)** — constitución SDD + skills del back, tooling (ESLint, Prettier, Vitest, CI) y puente HTTP (`apiClient` + interceptores + 15 tests). Smoke: `GET /api/health` → 200. CI: run #1 verde.
 
 ## En orden (regularidad)
 

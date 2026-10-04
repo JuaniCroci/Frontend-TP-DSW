@@ -1,6 +1,6 @@
 # 001 · Setup y puente con la API
 
-**Estado:** implementada (único criterio abierto: CI, validable recién en el primer push)
+**Estado:** implementada — todos los criterios cumplidos (CI: run #1 verde)
 
 ## Qué hace
 
@@ -25,7 +25,7 @@ Es la base sobre la que se apoyan las 7 features siguientes: sin tooling no exis
 - [x] `pnpm test` pasa **sin backend corriendo** (los tests de red usan un adapter en memoria; corrieron con el back apagado).
 - [x] Hay al menos: 1 test unit del normalizador de errores, 1 test del `apiClient` (baseURL + header de auth) y 1 test de feature que resuelva `GET /api/health` mockeado. _(8 + 4 + 3 = 15 tests)_
 - [x] Smoke manual: con el backend arriba y `.env` apuntando a `http://localhost:3000`, `GET /api/health` responde `200`. _(`{"status":"ok","database":"up"}`)_
-- [ ] CI en `.github/workflows/` corre `lint → typecheck → test → build` en push/PR a `main`. **Pendiente: se valida con el primer push.**
+- [x] CI en `.github/workflows/` corre `lint → typecheck → test → build` en push/PR a `main`. _(run #1, commit `0fa39b3`: success)_
 - [x] `README.md` actualizado: scripts nuevos, flujo `spec/` y sección de conexión back ↔ front.
 
 ## Fuera de alcance

@@ -63,7 +63,7 @@ Scaffolding completo en dos bloques paralelos: (a) **metodología** — `spec/`,
 
 - **Test de `apiClient`: `toBeNull()` → `toBeUndefined()`**: axios devuelve `undefined` (no `null`) para un header ausente. Corregida la expectativa, no la implementación. Impacto: ninguno.
 - **`AxiosHeaderValue` en el tipado del test**: `config.headers.get()` devuelve `AxiosHeaderValue` (unión con `null`), no `string | undefined`. Lo atrapó el gate `typecheck`; se tipó la interface con el tipo real de axios. Impacto: ninguno.
-- **CI crea el `.env` (`cp .env.example .env`)**: los tests leen `import.meta.env.VITE_API_URL`; con el `.env` faltante el aserto de baseURL **fallaría** (se agregó además `toBeTruthy()` + `requireBaseUrl()` para que nunca pase vacío). Impacto: el criterio de CI se valida recién en el primer push.
+- **CI crea el `.env` (`cp .env.example .env`)**: los tests leen `import.meta.env.VITE_API_URL`; con el `.env` faltante el aserto de baseURL **fallaría** (se agregó además `toBeTruthy()` + `requireBaseUrl()` para que nunca pase vacío). Impacto: validado — run #1 de CI en `main` → `success`.
 - **devDeps fuera de la lista del plan**: `@types/node@^24` (necesario para `node:url`/`URL` en `vite.config.ts`, cuyo proyecto usa `lib: ES2023` sin DOM) y `@testing-library/dom` (peer de `@testing-library/react` 16). Impacto: ninguno.
 - **`eslint@9.39.5` deprecado**: el registry marca EOL la línea 9 (ya está `eslint@10`). Se mantuvo la versión 9 por **paridad con el backend** (`eslint ^9.37`, misma base de config). Impacto: warnings en instalación; revisar la subida a eslint 10 en ambos repos de forma pareja.
 - **`pnpm format` corrido una vez al cierre**: el repo tenía archivos sin formatear (sin `;`, estilo previo al Prettier). Impacto: diff de formato en `src/App.tsx`, `src/main.tsx` y archivos nuevos; sin cambio de comportamiento.
@@ -73,7 +73,7 @@ Scaffolding completo en dos bloques paralelos: (a) **metodología** — `spec/`,
 Veredicto del revisor fresco: **Request changes** → corregido antes de dar por terminada la feature:
 
 - **(Required) `baseURL` podía pasar vacío** → `requireBaseUrl()` falla con mensaje claro si falta `VITE_API_URL` + aserto `toBeTruthy()` en el test (RED → GREEN).
-- **(Required) "Hecho" prematuro** → estado y roadmap ahora marcan explícitamente _"CI pendiente de primer push"_.
+- **(Required) "Hecho" prematuro** → estado y roadmap marcaron _"CI pendiente de primer push"_, cerrado tras el run #1 verde.
 - **(Optional) Adapter del singleton sin restaurar** → `afterEach` restaura el adapter original en ambos archivos de test.
 - **(Optional) Casos prometidos sin test** → agregados 409 y body no-JSON (HTML de proxy).
 - **(Optional) jsdom global al pedo** → `environment: 'node'` por defecto + docblock `@vitest-environment jsdom` solo en los archivos de feature (performance).
