@@ -1,5 +1,12 @@
+import { AuthProvider } from './app/core/auth/AuthProvider.tsx';
+import LoginPage from './app/features/auth/pages/LoginPage.tsx';
+
 function App() {
-  return <h1 className="text-3xl font-bold underline">Entreno2.0</h1>;
+  return (
+    <AuthProvider>
+      <LoginPage />
+    </AuthProvider>
+  );
 }
 
 export default App;
