@@ -57,3 +57,4 @@ Gates al cerrar la feature completa: `pnpm lint`, `pnpm build`, `pnpm test` y re
 - Las rutas de alta/edición se manejan dentro de cada listado para evitar duplicar pantallas de formulario. El detalle usa el endpoint `GET /:id`.
 - Smoke manual de lectura con el ADMIN local: `/admin/marcas` mostró Star Nutrition y `/admin/tipos-producto` mostró los tres tipos ya cargados; las operaciones de escritura se cubren con adaptadores mockeados.
 - El contenido del contrato API del backend coincide con el snapshot frontend; la única diferencia detectada es la nota de snapshot en el encabezado del frontend, por lo que no hubo que sincronizar endpoints adicionales.
+- El bloque de clientes usa `GET /api/clientes` con filtros `q` y `activo`, y las rutas dedicadas de activar/desactivar. El cambio de contraseña requiere una acción explícita; el formulario nunca consume ni conserva una contraseña devuelta por el servidor.

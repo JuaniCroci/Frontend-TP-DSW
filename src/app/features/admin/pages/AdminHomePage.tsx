@@ -2,6 +2,11 @@ import { Link } from 'react-router-dom';
 
 const sections = [
   {
+    to: '/admin/clientes',
+    title: 'Clientes',
+    description: 'Consultá las cuentas y administrá su estado.',
+  },
+  {
     to: '/admin/marcas',
     title: 'Marcas',
     description: 'Administrá las marcas disponibles para el catálogo.',
@@ -28,7 +33,7 @@ export default function AdminHomePage() {
       <p className="mt-3 max-w-2xl text-slate-600">
         Desde acá podés gestionar los datos principales de la tienda.
       </p>
-      <div className="mt-9 grid gap-5 md:grid-cols-3">
+      <div className="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
         {sections.map((section) => (
           <Link
             key={section.to}

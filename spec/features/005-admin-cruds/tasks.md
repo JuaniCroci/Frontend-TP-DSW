@@ -19,10 +19,10 @@
 
 ## C. Clientes
 
-- [ ] Implementar listado filtrado por `q` y `activo`, alta y detalle/edición.
-- [ ] Implementar acciones explícitas activar/desactivar.
-- [ ] No mostrar ni persistir password/hash en respuestas o estado visible; cambiar password solo cuando el admin lo solicita.
-- [ ] Cubrir requests, errores y permisos con tests.
+- [x] Implementar listado filtrado por `q` y `activo`, alta y detalle/edición.
+- [x] Implementar acciones explícitas activar/desactivar.
+- [x] No mostrar ni persistir password/hash en respuestas o estado visible; cambiar password solo cuando el admin lo solicita.
+- [x] Cubrir requests, errores y permisos con tests.
 
 ## D. Productos
 

@@ -79,14 +79,14 @@ Dependencias: producto requiere los maestros activos de tipo y marca; proveedor 
 
 - [x] Existe navegación administrativa visible únicamente para `ADMIN` y una sección de administración para marcas, tipos y proveedores.
 - [x] Rutas administrativas bloquean tanto usuarios anónimos como usuarios `CLIENTE`; las llamadas también dependen de autorización del backend.
-- [ ] Los siete módulos cubiertos ofrecen listado, alta y las operaciones de edición/detalle/activación/baja que define su API, con formularios basados en DTOs reales.
+- [ ] Los siete módulos cubiertos ofrecen listado, alta y las operaciones de edición/detalle/activación/baja que define su API, con formularios basados en DTOs reales. (Acceso, maestros y clientes implementados; productos, descuentos e ingresos pendientes.)
 - [ ] Los campos de relación usan opciones cargadas de la API; se impide ofrecer maestros inactivos para nuevas asignaciones.
 - [ ] Cada pantalla presenta estados de carga, error, resultado vacío y confirmación visible de operación exitosa.
 - [ ] Errores de validación, duplicados y autorización se comunican sin descartarlos ni simular éxito.
 - [x] Se invalidan/refrescan las queries relacionadas después de una mutación de marcas, tipos o proveedores, manteniendo la UI sincronizada con el servidor.
 - [ ] El stock solo cambia como efecto de alta/anulación de ingreso en backend; nunca mediante formularios de producto ni cálculos locales.
 - [ ] El frontend no incluye permisos codificados como sustituto de las comprobaciones del servidor, ni registra secretos/tokens.
-- [ ] Hay pruebas para autorización de rutas, formularios/requests, respuesta exitosa y errores de cada bloque.
+- [ ] Hay pruebas para autorización de rutas, formularios/requests, respuesta exitosa y errores de cada bloque. (Acceso, maestros y clientes cubiertos.)
 
 ## Fuera de alcance
 
