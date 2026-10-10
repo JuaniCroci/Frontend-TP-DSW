@@ -1,8 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { apiClient } from '../api/api.client';
+import { apiClient, TOKEN_KEY } from '../api/api.client';
 import { AuthContext, type AuthUser } from './AuthContext';
 
-const TOKEN_KEY = 'entreno_token';
 const USER_KEY = 'entreno_user';
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -37,16 +36,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
-const value = useMemo(
-  () => ({
-    user,
-    token,
-    isAuthenticated: Boolean(token && user),
-    login,
-    logout,
-  }),
-  [user, token, login, logout],
-);
+  const value = useMemo(
+    () => ({
+      user,
+      token,
+      isAuthenticated: Boolean(token && user),
+      login,
+      logout,
+    }),
+    [user, token, login, logout],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

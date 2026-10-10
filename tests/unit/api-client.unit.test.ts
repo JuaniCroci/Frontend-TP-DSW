@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import type { AxiosHeaderValue } from 'axios';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { apiClient, requireBaseUrl } from '@/core/api/api.client';
+import { apiClient, requireBaseUrl, TOKEN_KEY } from '@/core/api/api.client';
 
 interface LlamadaCapturada {
   baseURL: string | undefined;
@@ -42,7 +42,7 @@ describe('apiClient', () => {
   });
 
   it('adjunta Authorization: Bearer cuando hay token guardado', async () => {
-    localStorage.setItem('token', 'jwt-de-prueba');
+    localStorage.setItem(TOKEN_KEY, 'jwt-de-prueba');
     const llamadas = capturarLlamadas();
 
     await apiClient.get('/api/health');

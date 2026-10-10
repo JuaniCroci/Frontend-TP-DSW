@@ -7,7 +7,7 @@ export type AuthUser = {
   rol: 'ADMIN' | 'CLIENTE';
 };
 
-type AuthContextValue = {
+export type AuthContextValue = {
   user: AuthUser | null;
   token: string | null;
   isAuthenticated: boolean;

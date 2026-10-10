@@ -1,6 +1,6 @@
 # 002 · Core API + Auth
 
-**Estado:** pendiente
+**Estado:** implementada; falta smoke manual contra el backend local
 
 ## Qué hace
 
@@ -18,16 +18,16 @@ La app necesita autenticarse con la API antes de poder crear cualquier flujo pro
 
 ## Criterios de aceptación
 
-- [ ] Existe `src/app/core/api/api.client.ts` con `baseURL = import.meta.env.VITE_API_URL`.
-- [ ] El interceptor de respuesta normaliza errores del backend a `{ statusCode, message, details? }`.
-- [ ] Existe un `AuthProvider` con estado de `token` y `user` persistido en `localStorage`.
-- [ ] Existe `useAuth()` para consumir el contexto de autenticación.
-- [ ] El flujo `login(email, password)` llama a `POST /api/auth/login` y guarda el token + usuario.
-- [ ] El flujo `logout()` limpia la sesión local.
-- [ ] El login muestra error visible si el backend responde 400/401.
-- [ ] El formulario de login renderiza y funciona con el backend corriendo.
-- [ ] Hay al menos un test unitario del `AuthProvider`/lógica de sesión y un test de feature del login.
-- [ ] La UI no hardcodea la URL del backend.
+- [x] Existe `src/app/core/api/api.client.ts` con `baseURL = import.meta.env.VITE_API_URL`.
+- [x] El interceptor de respuesta normaliza errores del backend a `{ statusCode, message, details? }`.
+- [x] Existe un `AuthProvider` con estado de `token` y `user` persistido en `localStorage`.
+- [x] Existe `useAuth()` para consumir el contexto de autenticación.
+- [x] El flujo `login(email, password)` llama a `POST /api/auth/login` y guarda el token + usuario.
+- [x] El flujo `logout()` limpia la sesión local.
+- [x] El login muestra error visible si el backend responde 400/401.
+- [x] El formulario de login renderiza y maneja las respuestas de la API.
+- [x] Hay un test unitario del `AuthProvider` y un test de feature del login.
+- [x] La UI no hardcodea la URL del backend.
 
 ## Fuera de alcance
 

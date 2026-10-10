@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { toApiError } from './apiError';
 
-export const TOKEN_KEY = 'token';
+export const TOKEN_KEY = 'entreno_token';
 
 export function requireBaseUrl(value: string | undefined): string {
   if (!value) {

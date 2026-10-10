@@ -1,31 +1,41 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../core/auth/AuthContext';
 
 export default function LoginPage() {
   const { login } = useAuth();
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
+    setIsSubmitting(true);
 
     try {
       await login(email, password);
+      navigate('/');
     } catch (err) {
-      const apiError = err as { message?: string };
-      setError(apiError.message ?? 'No se pudo iniciar sesión');
+      setError(err instanceof Error ? err.message : 'No se pudo iniciar sesión');
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-100">
+    <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-slate-100 px-4">
+      <h1 className="text-3xl font-bold text-slate-900">Entreno 2.0</h1>
       <form onSubmit={handleSubmit} className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
-        <h1 className="mb-6 text-2xl font-bold text-slate-800">Iniciar sesión</h1>
+        <h2 className="mb-6 text-2xl font-bold text-slate-800">Iniciar sesión</h2>
 
         {error && (
-          <div className="mb-4 rounded border border-red-200 bg-red-50 p-2 text-sm text-red-700">
+          <div
+            role="alert"
+            className="mb-4 rounded border border-red-200 bg-red-50 p-2 text-sm text-red-700"
+          >
             {error}
           </div>
         )}
@@ -54,11 +64,15 @@ export default function LoginPage() {
 
         <button
           type="submit"
+          disabled={isSubmitting}
           className="w-full rounded bg-slate-900 px-4 py-2 font-medium text-white"
         >
-          Entrar
+          {isSubmitting ? 'Ingresando...' : 'Entrar'}
         </button>
       </form>
+      <Link to="/" className="text-sm font-medium text-slate-700 underline underline-offset-4">
+        Volver al inicio
+      </Link>
     </main>
   );
 }
