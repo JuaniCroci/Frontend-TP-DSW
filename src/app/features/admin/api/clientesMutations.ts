@@ -3,8 +3,8 @@ import { apiClient } from '../../../core/api/api.client';
 import type { AdminCliente, DatosCliente } from '../../../models/AdminCliente';
 import { adminClientesKeys } from './clientesQueries';
 
-interface GuardarCliente {
-  id?: number;
+interface ActualizarCliente {
+  id: number;
   data: DatosCliente;
 }
 
@@ -13,14 +13,12 @@ interface CambiarEstadoCliente {
   activo: boolean;
 }
 
-export function useGuardarCliente() {
+export function useActualizarCliente() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, data }: GuardarCliente) => {
-      const response = id
-        ? await apiClient.put<AdminCliente>(`/api/clientes/${id}`, data)
-        : await apiClient.post<AdminCliente>('/api/clientes', data);
+    mutationFn: async ({ id, data }: ActualizarCliente) => {
+      const response = await apiClient.put<AdminCliente>(`/api/clientes/${id}`, data);
       return response.data;
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: adminClientesKeys.all }),

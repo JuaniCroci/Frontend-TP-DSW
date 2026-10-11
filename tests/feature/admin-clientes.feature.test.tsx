@@ -102,37 +102,20 @@ describe('administración de clientes', () => {
     );
   });
 
-  it('crea un cliente con los datos DTO y no agrega campos administrativos', async () => {
-    let createBody: unknown;
+  it('no ofrece el alta de clientes desde administración', async () => {
+    const methods: string[] = [];
     apiClient.defaults.adapter = async (config) => {
+      methods.push(config.method ?? '');
       if (config.url === '/api/clientes' && config.method === 'get') {
         return response(config, { data: [], total: 0 });
-      }
-      if (config.url === '/api/clientes' && config.method === 'post') {
-        createBody = requestBody(config.data);
-        return response(config, { ...cliente, ...(createBody as object) }, 201);
       }
       throw new Error(`Request inesperado: ${config.method} ${config.url}`);
     };
 
     renderClientesPage();
     await screen.findByText('No hay clientes para estos filtros.');
-    fireEvent.click(screen.getByRole('button', { name: 'Crear cliente' }));
-    fireEvent.change(screen.getByLabelText('Nombre'), { target: { value: 'Ana Cliente' } });
-    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'ana@example.test' } });
-    fireEvent.change(screen.getByLabelText(/Contraseña/), { target: { value: 'password-seguro' } });
-    fireEvent.change(screen.getByLabelText('Teléfono'), { target: { value: '1122334455' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Crear' }));
-
-    expect(await screen.findByText('Cliente creado correctamente.')).toBeInTheDocument();
-    expect(createBody).toEqual({
-      nombre: 'Ana Cliente',
-      email: 'ana@example.test',
-      password: 'password-seguro',
-      telefono: '1122334455',
-    });
-    expect(JSON.stringify(createBody)).not.toContain('rol');
-    expect(JSON.stringify(createBody)).not.toContain('passwordHash');
+    expect(screen.queryByRole('button', { name: /crear cliente/i })).not.toBeInTheDocument();
+    expect(methods).toEqual(['get']);
   });
 
   it('muestra detalle y edita sin enviar una contraseña salvo que se solicite', async () => {
@@ -209,34 +192,37 @@ describe('administración de clientes', () => {
     expect(window.confirm).toHaveBeenCalledTimes(2);
   });
 
-  it('muestra errores de duplicado de email devueltos por el backend', async () => {
+  it('muestra errores de duplicado de email al editar un cliente', async () => {
     apiClient.defaults.adapter = async (config) => {
       if (config.url === '/api/clientes' && config.method === 'get') {
-        return response(config, { data: [], total: 0 });
+        return response(config, { data: [cliente], total: 1 });
       }
-      return Promise.reject({
-        isAxiosError: true,
-        config,
-        response: {
-          data: { statusCode: 409, message: 'Ya existe un usuario con ese email' },
-          status: 409,
-          statusText: 'Conflict',
-          headers: {},
-        },
-      });
+      if (config.url === '/api/clientes/12' && config.method === 'put') {
+        return Promise.reject({
+          isAxiosError: true,
+          config,
+          response: {
+            data: { statusCode: 409, message: 'Ya existe un usuario con ese email' },
+            status: 409,
+            statusText: 'Conflict',
+            headers: {},
+          },
+        });
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
     };
 
     renderClientesPage();
-    await screen.findByText('No hay clientes para estos filtros.');
-    fireEvent.click(screen.getByRole('button', { name: 'Crear cliente' }));
-    fireEvent.change(screen.getByLabelText('Nombre'), { target: { value: 'Ana Cliente' } });
-    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'ana@example.test' } });
-    fireEvent.change(screen.getByLabelText(/Contraseña/), { target: { value: 'password-seguro' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Crear' }));
+    expect(await screen.findByText('ana@example.test')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }));
+    fireEvent.change(screen.getByLabelText('Email'), {
+      target: { value: 'duplicado@example.test' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Ya existe un usuario con ese email',
     );
-    expect(screen.queryByText('Cliente creado correctamente.')).not.toBeInTheDocument();
+    expect(screen.queryByText('Cliente actualizado correctamente.')).not.toBeInTheDocument();
   });
 });

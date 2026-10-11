@@ -47,11 +47,19 @@ Crear `src/app/features/auth/pages/LoginPage.tsx` con:
 - manejo de error
 - submit real contra `/api/auth/login`
 
-### 5. Wiring de app
+### 5. Registro público
+
+- Exponer `/registro` y enlazarlo desde el login y la navegación pública.
+- Enviar nombre, email, contraseña y datos de contacto opcionales a `POST /api/auth/register`.
+- Tras una respuesta exitosa, dirigir al login; el endpoint no crea una sesión.
+- Presentar errores de validación y duplicado devueltos por el backend.
+- Mantener el panel administrativo limitado a consultar/editar/activar/desactivar clientes existentes.
+
+### 6. Wiring de app
 
 Actualizar `src/App.tsx` para envolver la app con `AuthProvider` y renderizar `LoginPage` momentáneamente mientras se prueba la feature.
 
-### 6. Validación
+### 7. Validación
 
 - `pnpm lint`
 - `pnpm typecheck`

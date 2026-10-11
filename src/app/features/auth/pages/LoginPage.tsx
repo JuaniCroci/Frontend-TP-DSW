@@ -1,10 +1,13 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../core/auth/AuthContext';
 
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const registrationSuccess =
+    (location.state as { registrationSuccess?: boolean } | null)?.registrationSuccess ?? false;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -30,6 +33,15 @@ export default function LoginPage() {
       <h1 className="text-3xl font-bold text-slate-900">Entreno 2.0</h1>
       <form onSubmit={handleSubmit} className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
         <h2 className="mb-6 text-2xl font-bold text-slate-800">Iniciar sesión</h2>
+
+        {registrationSuccess && (
+          <p
+            role="status"
+            className="mb-4 rounded border border-green-200 bg-green-50 p-2 text-sm text-green-800"
+          >
+            Cuenta creada correctamente. Ahora podés iniciar sesión.
+          </p>
+        )}
 
         {error && (
           <div
@@ -73,6 +85,12 @@ export default function LoginPage() {
       <Link to="/" className="text-sm font-medium text-slate-700 underline underline-offset-4">
         Volver al inicio
       </Link>
+      <p className="text-sm text-slate-700">
+        ¿Todavía no tenés cuenta?{' '}
+        <Link to="/registro" className="font-medium underline underline-offset-4">
+          Crear cuenta
+        </Link>
+      </p>
     </main>
   );
 }

@@ -29,19 +29,27 @@
 - [x] Manejar loading del submit
 - [x] Mostrar la marca Entreno 2.0 en la pantalla de login
 
-## 5. Wiring en la app
+## 5. Registro público
+
+- [x] Crear formulario público conectado a `POST /api/auth/register`.
+- [x] Enlazar el registro desde login y la navegación pública.
+- [x] Dirigir al login con confirmación después del alta.
+- [x] Cubrir éxito, validación y errores del backend.
+- [x] Reservar la administración de clientes para consulta, edición y estado.
+
+## 6. Wiring en la app
 
 - [x] Envolver `App` con `AuthProvider`
 - [x] Mostrar `LoginPage` en `App.tsx` como base para validación
 
-## 6. Verificación
+## 7. Verificación
 
 - [x] Ejecutar `pnpm lint`
 - [x] Ejecutar `pnpm typecheck`
 - [x] Ejecutar `pnpm test`
 - [ ] Validar login real con backend levantado
 
-## 7. Cierre
+## 8. Cierre
 
 - [x] Revisar criterios de aceptación de `spec.md`
 - [x] Mostrar el estado final en `roadmap.md` si corresponde

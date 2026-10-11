@@ -4,7 +4,7 @@
 
 ## Qué hace
 
-Deja preparado el núcleo de autenticación del frontend: cliente HTTP centralizado, manejo de errores normalizado y `AuthProvider` para persistir sesión con JWT y datos del usuario. También cubre el primer flujo real con el backend: login y salida segura de la sesión.
+Deja preparado el núcleo de autenticación del frontend: cliente HTTP centralizado, manejo de errores normalizado y `AuthProvider` para persistir sesión con JWT y datos del usuario. Incluye login, salida segura de la sesión y registro público de clientes.
 
 ## Por qué
 
@@ -26,6 +26,9 @@ La app necesita autenticarse con la API antes de poder crear cualquier flujo pro
 - [x] El flujo `logout()` limpia la sesión local.
 - [x] El login muestra error visible si el backend responde 400/401.
 - [x] El formulario de login renderiza y maneja las respuestas de la API.
+- [x] Una persona puede crear una cuenta `CLIENTE` desde la ruta pública `/registro`; al finalizar se la dirige al login.
+- [x] Los errores y validaciones del endpoint de registro se muestran sin perder el formulario.
+- [x] La administración no es responsable del alta de cuentas nuevas.
 - [x] Hay un test unitario del `AuthProvider` y un test de feature del login.
 - [x] La UI no hardcodea la URL del backend.
 
@@ -35,3 +38,4 @@ La app necesita autenticarse con la API antes de poder crear cualquier flujo pro
 - Rutas protegidas y guards completos (se dejarán como parte del mismo feature, pero sin personalizar aún el dashboard).
 - CRUDs de clientes / marca / producto.
 - Persistencia de sesión en cookies HTTP-only; por defecto usaremos `localStorage` en esta feature.
+- Verificación de email y recuperación de contraseña.

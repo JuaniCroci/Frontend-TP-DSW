@@ -41,12 +41,17 @@ export function Header() {
               </button>
             </>
           ) : (
-            <Link
-              to="/login"
-              className="rounded-full bg-slate-950 px-4 py-2 text-white transition hover:bg-lime-700"
-            >
-              Iniciar sesión
-            </Link>
+            <>
+              <Link to="/registro" className="transition hover:text-lime-700">
+                Crear cuenta
+              </Link>
+              <Link
+                to="/login"
+                className="rounded-full bg-slate-950 px-4 py-2 text-white transition hover:bg-lime-700"
+              >
+                Iniciar sesión
+              </Link>
+            </>
           )}
         </nav>
       </div>

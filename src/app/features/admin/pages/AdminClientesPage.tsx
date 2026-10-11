@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ApiError } from '../../../core/api/apiError';
 import type { AdminCliente, DatosCliente } from '../../../models/AdminCliente';
-import { useCambiarEstadoCliente, useGuardarCliente } from '../api/clientesMutations';
+import { useActualizarCliente, useCambiarEstadoCliente } from '../api/clientesMutations';
 import {
   useAdminClienteDetalle,
   useAdminClientes,
@@ -13,21 +13,13 @@ interface FormularioCliente extends DatosCliente {
   cambiarPassword: boolean;
 }
 
-type ModoFormulario = 'crear' | 'editar' | null;
-
 function getApiMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Ocurrió un error inesperado.';
-}
-
-function optionalValue(value: string): string | undefined {
-  const trimmed = value.trim();
-  return trimmed || undefined;
 }
 
 export default function AdminClientesPage() {
   const [q, setQ] = useState('');
   const [estado, setEstado] = useState<EstadoClienteFiltro>('todos');
-  const [modo, setModo] = useState<ModoFormulario>(null);
   const [editing, setEditing] = useState<AdminCliente | null>(null);
   const [detailId, setDetailId] = useState<number | null>(null);
   const [notice, setNotice] = useState('');
@@ -35,7 +27,7 @@ export default function AdminClientesPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const clientes = useAdminClientes(q, estado);
   const detalle = useAdminClienteDetalle(detailId);
-  const guardar = useGuardarCliente();
+  const actualizar = useActualizarCliente();
   const cambiarEstado = useCambiarEstadoCliente();
   const {
     register,
@@ -47,24 +39,7 @@ export default function AdminClientesPage() {
 
   const changePassword = watch('cambiarPassword', false);
 
-  function openCreate() {
-    setModo('crear');
-    setEditing(null);
-    setNotice('');
-    setFormError('');
-    setFieldErrors({});
-    reset({
-      nombre: '',
-      email: '',
-      password: '',
-      telefono: '',
-      direccion: '',
-      cambiarPassword: false,
-    });
-  }
-
   function openEdit(cliente: AdminCliente) {
-    setModo('editar');
     setEditing(cliente);
     setNotice('');
     setFormError('');
@@ -80,7 +55,6 @@ export default function AdminClientesPage() {
   }
 
   function closeForm() {
-    setModo(null);
     setEditing(null);
     setFormError('');
     setFieldErrors({});
@@ -93,25 +67,18 @@ export default function AdminClientesPage() {
       email: form.email.trim(),
     };
 
-    if (modo === 'crear') {
-      data.password = form.password;
-      data.telefono = optionalValue(form.telefono ?? '');
-      data.direccion = optionalValue(form.direccion ?? '');
-    } else {
-      data.telefono = form.telefono ?? '';
-      data.direccion = form.direccion ?? '';
-      if (form.cambiarPassword) data.password = form.password;
-    }
+    data.telefono = form.telefono ?? '';
+    data.direccion = form.direccion ?? '';
+    if (form.cambiarPassword) data.password = form.password;
 
     setFormError('');
     setFieldErrors({});
     setNotice('');
 
     try {
-      await guardar.mutateAsync({ id: editing?.id, data });
-      setNotice(
-        modo === 'editar' ? 'Cliente actualizado correctamente.' : 'Cliente creado correctamente.',
-      );
+      if (!editing) throw new Error('No hay un cliente seleccionado para editar.');
+      await actualizar.mutateAsync({ id: editing.id, data });
+      setNotice('Cliente actualizado correctamente.');
       closeForm();
     } catch (error) {
       setFormError(getApiMessage(error));
@@ -141,7 +108,7 @@ export default function AdminClientesPage() {
     return String(errors[field]?.message ?? fieldErrors[field] ?? '') || undefined;
   }
 
-  const passwordRequired = modo === 'crear' || changePassword;
+  const passwordRequired = changePassword;
 
   return (
     <section className="mx-auto w-full max-w-6xl px-5 py-10">
@@ -151,17 +118,10 @@ export default function AdminClientesPage() {
             Administración
           </p>
           <h1 className="mt-2 text-3xl font-black text-slate-950">Clientes</h1>
-          <p className="mt-2 text-slate-600">Consultá y administrá las cuentas de clientes.</p>
+          <p className="mt-2 text-slate-600">
+            Consultá, editá y administrá el estado de las cuentas registradas.
+          </p>
         </div>
-        {modo === null && (
-          <button
-            type="button"
-            onClick={openCreate}
-            className="rounded-full bg-slate-950 px-5 py-2.5 font-bold text-white hover:bg-lime-700"
-          >
-            Crear cliente
-          </button>
-        )}
       </div>
 
       {notice && (
@@ -181,14 +141,12 @@ export default function AdminClientesPage() {
         </p>
       )}
 
-      {modo !== null && (
+      {editing !== null && (
         <form
           onSubmit={handleSubmit(submit)}
           className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
         >
-          <h2 className="mb-5 text-xl font-bold text-slate-900">
-            {modo === 'crear' ? 'Nuevo cliente' : `Editar ${editing?.nombre ?? 'cliente'}`}
-          </h2>
+          <h2 className="mb-5 text-xl font-bold text-slate-900">{`Editar ${editing.nombre}`}</h2>
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="text-sm font-semibold text-slate-700">
               Nombre
@@ -217,15 +175,15 @@ export default function AdminClientesPage() {
                 </span>
               )}
             </label>
-            {modo === 'editar' && (
+            {editing !== null && (
               <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 sm:col-span-2">
                 <input type="checkbox" {...register('cambiarPassword')} />
                 Cambiar contraseña
               </label>
             )}
-            {(modo === 'crear' || changePassword) && (
+            {changePassword && (
               <label className="text-sm font-semibold text-slate-700">
-                Contraseña {modo === 'crear' ? '' : 'nueva'}
+                Contraseña nueva
                 <input
                   type="password"
                   autoComplete="new-password"
@@ -276,10 +234,10 @@ export default function AdminClientesPage() {
           <div className="mt-6 flex flex-wrap gap-3">
             <button
               type="submit"
-              disabled={guardar.isPending}
+              disabled={actualizar.isPending}
               className="rounded-full bg-lime-300 px-5 py-2.5 font-bold text-slate-950 enabled:hover:bg-lime-400 disabled:opacity-60"
             >
-              {guardar.isPending ? 'Guardando...' : modo === 'editar' ? 'Guardar cambios' : 'Crear'}
+              {actualizar.isPending ? 'Guardando...' : 'Guardar cambios'}
             </button>
             <button
               type="button"

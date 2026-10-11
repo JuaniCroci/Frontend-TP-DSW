@@ -2,6 +2,7 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './app/core/auth/AuthProvider.tsx';
 import LoginPage from './app/features/auth/pages/LoginPage.tsx';
+import RegisterPage from './app/features/auth/pages/RegisterPage.tsx';
 import HomePage from './app/features/home/pages/HomePage.tsx';
 import CatalogoPage from './app/features/products/pages/CatalogoPage.tsx';
 import ProductoDetallePage from './app/features/products/pages/ProductoDetallePage.tsx';
@@ -46,6 +47,7 @@ function App() {
               </Route>
             </Route>
             <Route path="/login" element={<LoginPage />} />
+            <Route path="/registro" element={<RegisterPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
