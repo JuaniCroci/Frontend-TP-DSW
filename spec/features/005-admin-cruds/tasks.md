@@ -1,6 +1,6 @@
 # 005 · Administración de datos — Tareas
 
-> Feature implementada por bloques. El bloque de acceso y maestros está completo; los bloques posteriores siguen pendientes.
+> Feature implementada por bloques. Acceso, maestros, clientes y productos están completos; descuentos e ingresos siguen pendientes.
 
 ## A. Contrato y acceso
 
@@ -19,17 +19,18 @@
 
 ## C. Clientes
 
-- [x] Implementar listado filtrado por `q` y `activo`, alta y detalle/edición.
+- [x] Implementar listado filtrado por `q` y `activo`, detalle/edición de clientes existentes.
 - [x] Implementar acciones explícitas activar/desactivar.
+- [x] Mantener el alta fuera de administración; crear cuentas desde el flujo público de autenticación.
 - [x] No mostrar ni persistir password/hash en respuestas o estado visible; cambiar password solo cuando el admin lo solicita.
 - [x] Cubrir requests, errores y permisos con tests.
 
 ## D. Productos
 
-- [ ] Implementar listado administrativo, detalle y filtros soportados por backend.
-- [ ] Implementar alta con `stockInicial` y relaciones a tipo/marca, proveedor opcional.
-- [ ] Implementar edición sin campo de stock y baja lógica confirmada.
-- [ ] Cubrir validación de dependencias, errores y forma de las mutaciones con tests.
+- [x] Implementar listado administrativo, detalle y filtros soportados por backend.
+- [x] Implementar alta con `stockInicial` y relaciones a tipo/marca, proveedor opcional.
+- [x] Implementar edición sin campo de stock y baja lógica confirmada.
+- [x] Cubrir validación de dependencias, errores y forma de las mutaciones con tests.
 
 ## E. Descuentos
 

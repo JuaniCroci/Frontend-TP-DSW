@@ -7,6 +7,11 @@ const sections = [
     description: 'Consultá las cuentas y administrá su estado.',
   },
   {
+    to: '/admin/productos',
+    title: 'Productos',
+    description: 'Administrá productos, precios, relaciones y stock inicial.',
+  },
+  {
     to: '/admin/marcas',
     title: 'Marcas',
     description: 'Administrá las marcas disponibles para el catálogo.',
@@ -33,7 +38,7 @@ export default function AdminHomePage() {
       <p className="mt-3 max-w-2xl text-slate-600">
         Desde acá podés gestionar los datos principales de la tienda.
       </p>
-      <div className="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-9 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         {sections.map((section) => (
           <Link
             key={section.to}

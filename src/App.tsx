@@ -8,6 +8,7 @@ import CatalogoPage from './app/features/products/pages/CatalogoPage.tsx';
 import ProductoDetallePage from './app/features/products/pages/ProductoDetallePage.tsx';
 import AdminHomePage from './app/features/admin/pages/AdminHomePage.tsx';
 import AdminClientesPage from './app/features/admin/pages/AdminClientesPage.tsx';
+import AdminProductosPage from './app/features/admin/pages/AdminProductosPage.tsx';
 import {
   MarcasAdminPage,
   ProveedoresAdminPage,
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/admin" element={<AdminLayout />}>
                   <Route index element={<AdminHomePage />} />
                   <Route path="clientes" element={<AdminClientesPage />} />
+                  <Route path="productos" element={<AdminProductosPage />} />
                   <Route path="marcas" element={<MarcasAdminPage />} />
                   <Route path="tipos-producto" element={<TiposProductoAdminPage />} />
                   <Route path="proveedores" element={<ProveedoresAdminPage />} />
