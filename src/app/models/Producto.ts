@@ -7,6 +7,7 @@ export interface ProductoListado {
   };
   precioUnitario: string;
   disponible: boolean;
+  imagenPrincipal: ImagenPrincipalProducto | null;
 }
 
 export interface ProductoDetalle extends ProductoListado {
@@ -25,6 +26,12 @@ export interface ProductoDetalle extends ProductoListado {
   createdAt: string;
   updatedAt: string;
   descuentosVigentes: DescuentoVigente[];
+}
+
+export interface ImagenPrincipalProducto {
+  id: string;
+  url: string;
+  altText: string;
 }
 
 export interface DescuentoVigente {

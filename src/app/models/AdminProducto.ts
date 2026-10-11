@@ -8,8 +8,29 @@ export interface AdminProducto {
   tipoProducto: { id: number; nombre: string };
   marca: { id: number; nombre: string };
   proveedor: { id: number; razonSocial: string; activo: boolean } | null;
+  imagenPrincipal: ImagenPrincipalProducto | null;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface ImagenPrincipalProducto {
+  id: string;
+  url: string;
+  altText: string;
+}
+
+export interface FotoProductoAdmin extends ImagenPrincipalProducto {
+  fuente: string;
+  licencia: string;
+  atribucion: string | null;
+  mimeType: string;
+  sizeBytes: number;
+  esPrincipal: boolean;
+  createdAt: string;
+}
+
+export interface RespuestaFotosProducto {
+  data: FotoProductoAdmin[];
 }
 
 export interface AdminProductoFilters {

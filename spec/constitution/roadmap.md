@@ -11,6 +11,7 @@ La columna **Back** indica qué feature del backend necesita esa UI:
 2. **[002 · Core API + Auth](../features/002-core-api-auth/)** — sesión persistida, cliente HTTP autenticado, login/logout y pruebas unitarias/de interfaz. Smoke manual con backend pendiente.
 3. **[003 · Layout shell](../features/003-layout-shell/)** — portada adaptable, navegación, estado de sesión y rutas de inicio/login.
 4. **[004 · Catálogo](../features/004-catalogo-productos/)** — listado público filtrable y paginado, detalle de producto y estados vacíos/error. El catálogo de desarrollo aún no tiene datos.
+5. **[013 · Imágenes de productos](../features/013-imagenes-productos/)** — registro UUID, carga administrativa, metadatos y visualización en catálogo y detalle (front ✅, back ✅).
 
 ## En orden (regularidad)
 

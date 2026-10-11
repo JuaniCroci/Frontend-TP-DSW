@@ -16,6 +16,11 @@ const productoLista = {
   marca: { id: 2, nombre: 'Entreno Nutrition' },
   precioUnitario: '12500.00',
   disponible: true,
+  imagenPrincipal: {
+    id: '2d4fcba2-a86c-4ca1-a127-28bd24bf0a58',
+    url: '/api/productos/imagenes/2d4fcba2-a86c-4ca1-a127-28bd24bf0a58',
+    altText: 'Envase de proteína',
+  },
 };
 
 const productoDetalle = {
@@ -96,6 +101,13 @@ describe('catálogo de productos', () => {
     expect(await screen.findByRole('heading', { name: 'Proteína de suero' })).toBeInTheDocument();
     expect(screen.getByText('Entreno Nutrition')).toBeInTheDocument();
     expect(screen.getByText((content) => content.includes('12.500,00'))).toBeInTheDocument();
+    const productImage = screen.getByRole('img', { name: 'Envase de proteína' });
+    expect(productImage).toHaveAttribute(
+      'src',
+      'http://localhost:3000/api/productos/imagenes/2d4fcba2-a86c-4ca1-a127-28bd24bf0a58',
+    );
+    fireEvent.error(productImage);
+    expect(await screen.findByText('E.')).toBeInTheDocument();
     expect(productRequests[0].params).toMatchObject({
       idMarca: 2,
       precioMin: 1000,

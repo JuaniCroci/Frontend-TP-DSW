@@ -1,5 +1,6 @@
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useProductoDetalle } from '../api/queries';
+import ProductoImagen from '../components/ProductoImagen';
 
 function formatPrice(value: string): string {
   return new Intl.NumberFormat('es-AR', {
@@ -36,11 +37,11 @@ export default function ProductoDetallePage() {
         </div>
       ) : (
         <article className="mt-8 grid gap-10 lg:grid-cols-2">
-          <div className="flex min-h-80 items-center justify-center rounded-3xl bg-slate-100">
-            <span aria-hidden="true" className="text-8xl font-black tracking-tight text-slate-300">
-              E.
-            </span>
-          </div>
+          <ProductoImagen
+            imagen={producto.data.imagenPrincipal}
+            className="flex min-h-80 items-center justify-center rounded-3xl bg-slate-100"
+            imageClassName="max-h-[32rem] w-full rounded-3xl object-contain"
+          />
           <div className="py-2">
             <p className="text-sm font-bold uppercase tracking-[0.18em] text-lime-700">
               {producto.data.tipoProducto.nombre} · {producto.data.marca.nombre}

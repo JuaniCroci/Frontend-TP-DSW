@@ -3,6 +3,7 @@ import { apiClient } from '../../../core/api/api.client';
 import type {
   AdminProducto,
   AdminProductoFilters,
+  RespuestaFotosProducto,
   RespuestaAdminProductos,
 } from '../../../models/AdminProducto';
 import type { Proveedor, RespuestaLista } from '../../../models/AdminCatalogo';
@@ -11,6 +12,7 @@ export const adminProductosKeys = {
   all: ['admin', 'productos'] as const,
   list: (filters: AdminProductoFilters) => ['admin', 'productos', 'list', filters] as const,
   detail: (id: number) => ['admin', 'productos', 'detail', id] as const,
+  images: (id: number) => ['admin', 'productos', 'images', id] as const,
   proveedores: ['admin', 'productos', 'proveedores-activos'] as const,
 };
 
@@ -34,6 +36,20 @@ export function useAdminProductos(filters: AdminProductoFilters) {
       });
       return data;
     },
+  });
+}
+
+export function useImagenesProductoAdmin(id: number | null) {
+  return useQuery({
+    queryKey: adminProductosKeys.images(id ?? 0),
+    queryFn: async () => {
+      if (id === null) throw new Error('No hay un producto seleccionado');
+      const { data } = await apiClient.get<RespuestaFotosProducto>(
+        `/api/productos/admin/${id}/imagenes`,
+      );
+      return data.data;
+    },
+    enabled: id !== null,
   });
 }
 

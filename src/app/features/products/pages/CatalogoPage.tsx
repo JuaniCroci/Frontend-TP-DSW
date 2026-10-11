@@ -1,6 +1,7 @@
 import { useSearchParams, Link } from 'react-router-dom';
 import { useMarcasCatalogo, useProductos, useTiposProductoCatalogo } from '../api/queries';
 import type { FiltrosProducto } from '../../../models/Producto';
+import ProductoImagen from '../components/ProductoImagen';
 
 const PAGE_SIZE = 12;
 
@@ -247,14 +248,10 @@ export default function CatalogoPage() {
                 to={`/productos/${producto.id}?${searchParams.toString()}`}
                 className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className="flex h-40 items-center justify-center bg-slate-100">
-                  <span
-                    aria-hidden="true"
-                    className="text-5xl font-black tracking-tight text-slate-300 transition group-hover:text-lime-600"
-                  >
-                    E.
-                  </span>
-                </div>
+                <ProductoImagen
+                  imagen={producto.imagenPrincipal}
+                  className="flex h-40 items-center justify-center bg-slate-100"
+                />
                 <div className="p-5">
                   <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
                     {producto.marca.nombre}

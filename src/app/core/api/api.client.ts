@@ -16,6 +16,10 @@ export const apiClient = axios.create({
   baseURL: requireBaseUrl(import.meta.env.VITE_API_URL),
 });
 
+export function apiAssetUrl(path: string): string {
+  return new URL(path, apiClient.defaults.baseURL).toString();
+}
+
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem(TOKEN_KEY);
   if (token) config.headers.Authorization = `Bearer ${token}`;

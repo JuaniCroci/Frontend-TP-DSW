@@ -19,6 +19,7 @@ const producto = {
   tipoProducto: { id: 3, nombre: 'Suplemento' },
   marca: { id: 2, nombre: 'Star Nutrition' },
   proveedor: { id: 4, razonSocial: 'Distribuidora Norte', activo: true },
+  imagenPrincipal: null,
   createdAt: '2026-10-01T12:00:00.000Z',
   updatedAt: '2026-10-02T12:00:00.000Z',
 };
@@ -106,6 +107,7 @@ describe('administración de productos', () => {
     localStorage.clear();
     apiClient.defaults.adapter = adapterOriginal;
     vi.restoreAllMocks();
+    vi.unstubAllGlobals();
   });
 
   it('envía filtros administrativos y paginación soportados por el backend', async () => {
@@ -330,6 +332,70 @@ describe('administración de productos', () => {
     expect(window.confirm).toHaveBeenCalledWith(
       '¿Desactivar "Proteína de suero"? Esta acción no se puede deshacer desde aquí.',
     );
+  });
+
+  it('carga y registra una imagen con metadatos desde la gestión del producto', async () => {
+    saveAdminSession();
+    let sentFormData: FormData | undefined;
+    apiClient.defaults.adapter = async (config) => {
+      const masterResponse = masterDataResponse(config);
+      if (masterResponse) return masterResponse;
+      if (config.url === '/api/productos/admin' && config.method === 'get') {
+        return response(config, { data: [producto], total: 1, page: 1, size: 20 });
+      }
+      if (config.url === '/api/productos/admin/21/imagenes' && config.method === 'get') {
+        return response(config, { data: [] });
+      }
+      if (config.url === '/api/productos/admin/21/imagenes' && config.method === 'post') {
+        sentFormData = config.data as FormData;
+        return response(
+          config,
+          {
+            id: '2d4fcba2-a86c-4ca1-a127-28bd24bf0a58',
+            url: '/api/productos/imagenes/2d4fcba2-a86c-4ca1-a127-28bd24bf0a58',
+            altText: 'Creatina Star Nutrition',
+            fuente: 'Fotografía propia',
+            licencia: 'Uso académico; permiso de marca pendiente',
+            atribucion: null,
+            mimeType: 'image/png',
+            sizeBytes: 100,
+            esPrincipal: true,
+            createdAt: '2026-10-11T19:00:00.000Z',
+          },
+          201,
+        );
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    renderProductosPage();
+    await screen.findByText('Proteína de suero');
+    fireEvent.click(screen.getByRole('button', { name: 'Imágenes' }));
+    await screen.findByText('Todavía no hay imágenes registradas.');
+    vi.stubGlobal(
+      'fetch',
+      vi.fn().mockResolvedValue({
+        ok: true,
+        blob: async () => new Blob(['image'], { type: 'image/png' }),
+      }),
+    );
+    fireEvent.click(screen.getByRole('button', { name: 'Usar foto de referencia de creatina' }));
+    await screen.findByText('creatina-star-reference.png');
+    fireEvent.change(screen.getByLabelText('Texto alternativo'), {
+      target: { value: 'Creatina Star Nutrition' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Cargar imagen' }));
+
+    expect(
+      await screen.findByText('Imagen cargada y establecida como principal.'),
+    ).toBeInTheDocument();
+    expect(sentFormData?.get('imagen')).toBeInstanceOf(File);
+    expect(sentFormData?.get('altText')).toBe('Creatina Star Nutrition');
+    expect(sentFormData?.get('fuente')).toBe('Fotografía propia');
+    expect(sentFormData?.get('licencia')).toBe(
+      'Fotografía propia para uso académico; autorización de marca pendiente.',
+    );
+    expect(fetch).toHaveBeenCalledWith('/references/creatina-star-reference.png');
   });
 
   it('muestra los errores de dependencia que devuelve el servidor al crear', async () => {

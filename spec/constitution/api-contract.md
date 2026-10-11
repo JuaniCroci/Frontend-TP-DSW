@@ -166,9 +166,23 @@ POST /api/marcas con body inválido → 400 Bad Request
 | `403`  | Token válido pero rol insuficiente                                            |
 | `404`  | Recurso no encontrado (activo)                                                |
 | `409`  | Conflicto: duplicado único, transición de estado inválida, stock insuficiente |
+| `413`  | Archivo de imagen supera el máximo permitido                                  |
 | `500`  | Error interno no manejado (solo en desarrollo; producción no expone detalles) |
 
 ---
+
+## Imágenes de productos
+
+- `POST /api/productos/admin/:id/imagenes` (ADMIN) recibe multipart con `imagen`, `altText`,
+  `fuente`, `licencia` y `atribucion` opcional; acepta PNG/JPEG/WebP de hasta 5 MiB y responde
+  `201` con el registro creado.
+- `GET /api/productos/admin/:id/imagenes` (ADMIN) devuelve `{ "data": [...] }` con los metadatos
+  del historial. `esPrincipal` identifica la imagen activa; las anteriores no se eliminan.
+- `GET /api/productos/imagenes/:uid` es publico y entrega los bytes de la imagen registrada.
+- Los listados y detalles publicos, asi como las respuestas administrativas de producto, incluyen
+  `imagenPrincipal: null | { id, url, altText }`.
+- El archivo se almacena en `PRODUCT_IMAGES_DIR` con nombre UUID; MySQL guarda solo la ruta
+  relativa, MIME, tamano, texto alternativo, fuente, licencia, atribucion, fecha y estado.
 
 ## Campos de respuesta a excluir siempre
 

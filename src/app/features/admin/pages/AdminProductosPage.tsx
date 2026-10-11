@@ -19,6 +19,7 @@ import {
   useProveedoresActivosProducto,
 } from '../api/productosQueries';
 import { useMarcasCatalogo, useTiposProductoCatalogo } from '../../products/api/queries';
+import ProductoImagenesPanel from '../components/ProductoImagenesPanel';
 
 const PAGE_SIZE = 20;
 
@@ -371,6 +372,7 @@ export default function AdminProductosPage() {
   const [modo, setModo] = useState<ModoFormulario>(null);
   const [editing, setEditing] = useState<AdminProducto | null>(null);
   const [detailId, setDetailId] = useState<number | null>(null);
+  const [imageProduct, setImageProduct] = useState<AdminProducto | null>(null);
   const [notice, setNotice] = useState('');
   const [actionError, setActionError] = useState('');
   const productos = useAdminProductos({
@@ -713,6 +715,13 @@ export default function AdminProductosPage() {
                         >
                           Editar
                         </button>
+                        <button
+                          type="button"
+                          onClick={() => setImageProduct(producto)}
+                          className="rounded-lg border border-slate-200 px-3 py-1.5 font-semibold text-slate-700"
+                        >
+                          Imágenes
+                        </button>
                         {producto.activo && (
                           <button
                             type="button"
@@ -853,6 +862,10 @@ export default function AdminProductosPage() {
             ) : null}
           </section>
         </div>
+      )}
+
+      {imageProduct && (
+        <ProductoImagenesPanel producto={imageProduct} onClose={() => setImageProduct(null)} />
       )}
     </section>
   );

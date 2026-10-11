@@ -59,3 +59,22 @@ export function useDarDeBajaProductoAdmin() {
       ]),
   });
 }
+
+export function useSubirImagenProductoAdmin() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, formData }: { id: number; formData: FormData }) => {
+      const { data } = await apiClient.post(`/api/productos/admin/${id}/imagenes`, formData);
+      return data;
+    },
+    onSuccess: (_image, variables) =>
+      Promise.all([
+        queryClient.invalidateQueries({ queryKey: adminProductosKeys.images(variables.id) }),
+        queryClient.invalidateQueries({ queryKey: adminProductosKeys.all }),
+        queryClient.invalidateQueries({ queryKey: adminProductosKeys.detail(variables.id) }),
+        queryClient.invalidateQueries({ queryKey: productosQueryKeys.all }),
+        queryClient.invalidateQueries({ queryKey: productosQueryKeys.detail(variables.id) }),
+      ]),
+  });
+}
