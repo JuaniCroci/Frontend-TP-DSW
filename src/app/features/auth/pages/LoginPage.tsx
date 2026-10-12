@@ -4,25 +4,30 @@ import { friendlyErrorMessage } from '../../../core/api/friendlyError';
 import { toApiError } from '../../../core/api/apiError';
 import { useAuth } from '../../../core/auth/AuthContext';
 
+interface LoginState {
+  from?: string;
+  registrationSuccess?: boolean;
+}
+
 export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const registrationSuccess =
-    (location.state as { registrationSuccess?: boolean } | null)?.registrationSuccess ?? false;
+  const state = location.state as LoginState | null;
+  const registrationSuccess = state?.registrationSuccess ?? false;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+  async function handleLogin(event: React.FormEvent) {
+    event.preventDefault();
     setError('');
     setIsSubmitting(true);
 
     try {
       await login(email, password);
-      const from = (location.state as { from?: unknown } | null)?.from;
+      const from = state?.from;
       navigate(
         typeof from === 'string' && from.startsWith('/') && !from.startsWith('//') ? from : '/',
         { replace: true },
@@ -37,7 +42,7 @@ export default function LoginPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-slate-100 px-4">
       <h1 className="text-3xl font-bold text-slate-900">Entreno 2.0</h1>
-      <form onSubmit={handleSubmit} className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
+      <form onSubmit={handleLogin} className="w-full max-w-md rounded-lg bg-white p-6 shadow-md">
         <h2 className="mb-6 text-2xl font-bold text-slate-800">Iniciar sesión</h2>
 
         {registrationSuccess && (

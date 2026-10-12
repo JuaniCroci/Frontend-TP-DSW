@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { cn } from '../utils/cn';
 
 const sections = [
   { to: '/admin', label: 'Resumen', end: true },
@@ -21,11 +22,12 @@ export function AdminLayout() {
               to={section.to}
               end={section.end}
               className={({ isActive }) =>
-                `rounded-full px-4 py-2 text-sm font-semibold transition ${
+                cn(
+                  'rounded-full px-4 py-2 text-sm font-semibold transition',
                   isActive
                     ? 'bg-slate-950 text-white'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950'
-                }`
+                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950',
+                )
               }
             >
               {section.label}

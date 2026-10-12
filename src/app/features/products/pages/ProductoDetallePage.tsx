@@ -1,9 +1,10 @@
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../../core/auth/AuthContext';
+import { cn } from '../../../shared/utils/cn';
 import { useAgregarAlCarrito } from '../../cart/api/mutations';
 import { useProductoDetalle } from '../api/queries';
-import ProductoImagen from '../components/ProductoImagen';
+import { ProductoImagen } from '../components/ProductoImagen';
 
 function formatPrice(value: string): string {
   return new Intl.NumberFormat('es-AR', {
@@ -32,7 +33,7 @@ export default function ProductoDetallePage() {
   const backToCatalog = `/productos${location.search}`;
   const loginReturn = `${location.pathname}${location.search}`;
 
-  async function addToCart() {
+  async function handleAddToCart() {
     if (!producto.data) return;
     setCartError('');
     setCartNotice('');
@@ -80,9 +81,10 @@ export default function ProductoDetallePage() {
               {formatPrice(producto.data.precioUnitario)}
             </p>
             <p
-              className={`mt-3 font-semibold ${
-                producto.data.disponible ? 'text-green-700' : 'text-slate-500'
-              }`}
+              className={cn(
+                'mt-3 font-semibold',
+                producto.data.disponible ? 'text-green-700' : 'text-slate-500',
+              )}
             >
               {producto.data.disponible
                 ? `${producto.data.stock} unidades disponibles`
@@ -106,7 +108,7 @@ export default function ProductoDetallePage() {
                 </label>
                 <button
                   type="button"
-                  onClick={() => void addToCart()}
+                  onClick={() => void handleAddToCart()}
                   disabled={
                     !producto.data.disponible ||
                     agregar.isPending ||

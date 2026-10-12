@@ -1,33 +1,6 @@
 import { AdminMasterPage } from '../components/AdminMasterPage';
 
-export function MarcasAdminPage() {
-  return (
-    <AdminMasterPage
-      resource="marcas"
-      title="Marcas"
-      description="Creá y mantené las marcas asociadas a los productos."
-      nameField="nombre"
-      fields={[{ name: 'nombre', label: 'Nombre', required: true, minLength: 2, maxLength: 80 }]}
-    />
-  );
-}
-
-export function TiposProductoAdminPage() {
-  return (
-    <AdminMasterPage
-      resource="tipos-producto"
-      title="Tipos de producto"
-      description="Definí las categorías que organizan el catálogo."
-      nameField="nombre"
-      fields={[
-        { name: 'nombre', label: 'Nombre', required: true, minLength: 2, maxLength: 80 },
-        { name: 'descripcion', label: 'Descripción', maxLength: 500 },
-      ]}
-    />
-  );
-}
-
-export function ProveedoresAdminPage() {
+export default function ProveedoresAdminPage() {
   return (
     <AdminMasterPage
       resource="proveedores"

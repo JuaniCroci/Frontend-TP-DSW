@@ -8,7 +8,7 @@ import type {
 
 export const adminDescuentosKeys = {
   all: ['admin', 'descuentos'] as const,
-  detail: (id: number) => ['admin', 'descuentos', 'detail', id] as const,
+  detail: (id: number) => ['admin', 'descuentos', 'detalle', id] as const,
   productos: ['admin', 'descuentos', 'productos-activos'] as const,
 };
 

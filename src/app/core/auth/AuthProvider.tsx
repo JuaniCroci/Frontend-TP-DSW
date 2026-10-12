@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { apiClient } from '../api/api.client';
+import type { AuthResponse } from '../../models/Auth';
 import { AuthContext, type AuthUser } from './AuthContext';
 import { clearSession, getToken, setToken as persistToken } from './session';
 
@@ -54,13 +55,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [user]);
 
   const login = useCallback(async (email: string, password: string) => {
-    const response = await apiClient.post('/api/auth/login', { email, password });
+    const { data } = await apiClient.post<AuthResponse>('/api/auth/login', { email, password });
 
-    const nextToken = response.data.token as string;
-    const nextUser = response.data.usuario as AuthUser;
+    if (typeof data.token !== 'string' || !esAuthUser(data.usuario)) {
+      throw new Error('La respuesta del servidor no tiene la forma de una sesión válida.');
+    }
 
-    setToken(nextToken);
-    setUser(nextUser);
+    setToken(data.token);
+    setUser(data.usuario);
   }, []);
 
   const logout = useCallback(() => {

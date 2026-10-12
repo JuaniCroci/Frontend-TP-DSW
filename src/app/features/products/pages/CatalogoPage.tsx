@@ -1,7 +1,8 @@
 import { useSearchParams, Link } from 'react-router-dom';
 import { useMarcasCatalogo, useProductos, useTiposProductoCatalogo } from '../api/queries';
 import type { FiltrosProducto } from '../../../models/Producto';
-import ProductoImagen from '../components/ProductoImagen';
+import { cn } from '../../../shared/utils/cn';
+import { ProductoImagen } from '../components/ProductoImagen';
 
 const PAGE_SIZE = 12;
 
@@ -54,7 +55,7 @@ export default function CatalogoPage() {
   const marcas = useMarcasCatalogo();
   const tipos = useTiposProductoCatalogo();
 
-  function applyFilters(event: React.FormEvent<HTMLFormElement>) {
+  function handleApplyFilters(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const nextParams = new URLSearchParams();
@@ -71,7 +72,7 @@ export default function CatalogoPage() {
     setSearchParams(nextParams);
   }
 
-  function changePage(page: number) {
+  function handleChangePage(page: number) {
     const nextParams = new URLSearchParams(searchParams);
     if (page === 1) nextParams.delete('page');
     else nextParams.set('page', String(page));
@@ -95,7 +96,7 @@ export default function CatalogoPage() {
 
       <form
         key={searchParams.toString()}
-        onSubmit={applyFilters}
+        onSubmit={handleApplyFilters}
         className="mb-8 grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:grid-cols-2 lg:grid-cols-6"
       >
         <label className="text-sm font-semibold text-slate-700">
@@ -251,14 +252,14 @@ export default function CatalogoPage() {
               </p>
               <button
                 type="button"
-                onClick={() => changePage(1)}
+                onClick={() => handleChangePage(1)}
                 className="mt-4 rounded-full bg-slate-950 px-5 py-2.5 font-bold text-white transition hover:bg-lime-700"
               >
                 Ir a la página 1
               </button>
             </div>
           ) : (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {productos.data?.data.map((producto) => (
                 <Link
                   key={producto.id}
@@ -280,9 +281,10 @@ export default function CatalogoPage() {
                       {formatPrice(producto.precioUnitario)}
                     </p>
                     <p
-                      className={`mt-2 text-sm font-semibold ${
-                        producto.disponible ? 'text-green-700' : 'text-slate-500'
-                      }`}
+                      className={cn(
+                        'mt-2 text-sm font-semibold',
+                        producto.disponible ? 'text-green-700' : 'text-slate-500',
+                      )}
                     >
                       {producto.disponible ? 'Disponible' : 'Sin stock'}
                     </p>
@@ -294,7 +296,7 @@ export default function CatalogoPage() {
           <nav aria-label="Paginación del catálogo" className="mt-10 flex justify-center gap-3">
             <button
               type="button"
-              onClick={() => changePage(currentPage > totalPages ? totalPages : currentPage - 1)}
+              onClick={() => handleChangePage(currentPage > totalPages ? totalPages : currentPage - 1)}
               disabled={currentPage <= 1}
               className="rounded-full border border-slate-300 px-5 py-2 font-semibold text-slate-700 enabled:hover:border-slate-950 disabled:opacity-40"
             >
@@ -302,7 +304,7 @@ export default function CatalogoPage() {
             </button>
             <button
               type="button"
-              onClick={() => changePage(currentPage + 1)}
+              onClick={() => handleChangePage(currentPage + 1)}
               disabled={currentPage >= totalPages}
               className="rounded-full border border-slate-300 px-5 py-2 font-semibold text-slate-700 enabled:hover:border-slate-950 disabled:opacity-40"
             >

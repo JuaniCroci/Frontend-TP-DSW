@@ -10,8 +10,8 @@ import type { Proveedor, RespuestaLista } from '../../../models/AdminCatalogo';
 
 export const adminProductosKeys = {
   all: ['admin', 'productos'] as const,
-  list: (filters: AdminProductoFilters) => ['admin', 'productos', 'list', filters] as const,
-  detail: (id: number) => ['admin', 'productos', 'detail', id] as const,
+  list: (filters: AdminProductoFilters) => ['admin', 'productos', 'listado', filters] as const,
+  detail: (id: number) => ['admin', 'productos', 'detalle', id] as const,
   images: (id: number) => ['admin', 'productos', 'images', id] as const,
   proveedores: ['admin', 'productos', 'proveedores-activos'] as const,
 };

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ApiError } from '../../../core/api/apiError';
+import { cn } from '../../../shared/utils/cn';
 import type {
   DatosMaestro,
   PayloadMaestro,
@@ -62,7 +63,7 @@ export function AdminMasterPage({
     formState: { errors },
   } = useForm<DatosMaestro>();
 
-  function startCreate() {
+  function handleStartCreate() {
     setEditing(null);
     setCreating(true);
     setFieldErrors({});
@@ -71,7 +72,7 @@ export function AdminMasterPage({
     reset(Object.fromEntries(fields.map((field) => [field.name, ''])));
   }
 
-  function startEdit(record: RegistroCatalogo) {
+  function handleStartEdit(record: RegistroCatalogo) {
     setEditing(record);
     setCreating(false);
     setFieldErrors({});
@@ -93,7 +94,7 @@ export function AdminMasterPage({
     return payload;
   }
 
-  async function submit(data: DatosMaestro) {
+  async function handleFormSubmit(data: DatosMaestro) {
     const cleanedData = buildPayload(data);
     setFormError('');
     setFieldErrors({});
@@ -119,7 +120,7 @@ export function AdminMasterPage({
     }
   }
 
-  async function deactivate(record: RegistroCatalogo) {
+  async function handleDeactivate(record: RegistroCatalogo) {
     const name = valueFor(record, nameField);
     if (!window.confirm(`¿Desactivar "${name}"? Esta acción no se puede deshacer desde aquí.`)) {
       return;
@@ -148,7 +149,7 @@ export function AdminMasterPage({
         {!editing && (
           <button
             type="button"
-            onClick={startCreate}
+            onClick={handleStartCreate}
             className="rounded-full bg-slate-950 px-5 py-2.5 font-bold text-white hover:bg-lime-700"
           >
             Crear {title.toLocaleLowerCase('es')}
@@ -175,7 +176,7 @@ export function AdminMasterPage({
 
       {(editing || creating) && (
         <form
-          onSubmit={handleSubmit(submit)}
+          onSubmit={handleSubmit(handleFormSubmit)}
           className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
         >
           <h2 className="mb-5 text-xl font-bold text-slate-900">
@@ -288,9 +289,10 @@ export function AdminMasterPage({
                   ))}
                   <td className="px-5 py-4">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-bold ${
-                        record.activo ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-500'
-                      }`}
+                      className={cn(
+                        'rounded-full px-3 py-1 text-xs font-bold',
+                        record.activo ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-500',
+                      )}
                     >
                       {record.activo ? 'Activo' : 'Inactivo'}
                     </span>
@@ -306,7 +308,7 @@ export function AdminMasterPage({
                       </button>
                       <button
                         type="button"
-                        onClick={() => startEdit(record)}
+                        onClick={() => handleStartEdit(record)}
                         className="rounded-lg border border-slate-200 px-3 py-1.5 font-semibold text-slate-700 hover:border-slate-400"
                       >
                         Editar
@@ -314,7 +316,7 @@ export function AdminMasterPage({
                       {record.activo && (
                         <button
                           type="button"
-                          onClick={() => void deactivate(record)}
+                          onClick={() => void handleDeactivate(record)}
                           disabled={darDeBaja.isPending}
                           className="rounded-lg border border-red-200 px-3 py-1.5 font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
                         >

@@ -91,10 +91,10 @@ Mismo sistema que el backend: **spec → plan → tasks → código**, con gates
 ```
 src/
 └── app/
-    ├── core/api/         → api.client.ts (axios instance) + apiError.ts
+    ├── core/api/         → api.client.ts (axios instance) + apiError.ts + friendlyError.ts
     │                       interceptores (Authorization, normalización de errores)
-    ├── core/auth/        → AuthContext, AuthProvider, useAuth          (feature 002)
-    ├── core/guards/      → ProtectedRoute, AdminRoute                  (feature 002)
+    ├── core/auth/        → AuthContext (useAuth), AuthProvider, session (feature 002)
+    ├── core/guards/      → ClientRoute, AdminRoute                      (feature 002)
     ├── models/           → archivos .ts con interfaces del dominio
     ├── features/<name>/
     │   ├── pages/        → componentes que son rutas (PascalCase)
@@ -102,9 +102,10 @@ src/
     │   ├── hooks/        → hooks específicos (use<Nombre>)
     │   └── api/          → queries.ts + mutations.ts (TanStack Query)
     └── shared/
-        ├── components/   → Button, Card, Modal, Input, Spinner...
-        ├── hooks/        → useMediaQuery, useDebounce...
-        └── layout/       → MainLayout, Header, Footer, Sidebar
+        ├── components/   → componentes reutilizables (vacío hoy)
+        ├── hooks/        → useDebounce
+        ├── utils/        → cn, fieldErrors
+        └── layout/       → MainLayout, AdminLayout, Header, Footer
 tests/
 ├── unit/                 → hooks, utils, normalizadores
 └── feature/              → páginas con apiClient mockeado

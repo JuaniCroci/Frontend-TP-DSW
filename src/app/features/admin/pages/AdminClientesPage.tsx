@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ApiError } from '../../../core/api/apiError';
+import { cn } from '../../../shared/utils/cn';
 import type { AdminCliente, DatosCliente } from '../../../models/AdminCliente';
 import { useDebounce } from '../../../shared/hooks/useDebounce';
 import { useActualizarCliente, useCambiarEstadoCliente } from '../api/clientesMutations';
@@ -41,7 +42,7 @@ export default function AdminClientesPage() {
 
   const changePassword = watch('cambiarPassword', false);
 
-  function openEdit(cliente: AdminCliente) {
+  function handleOpenEdit(cliente: AdminCliente) {
     setEditing(cliente);
     setNotice('');
     setFormError('');
@@ -56,14 +57,14 @@ export default function AdminClientesPage() {
     });
   }
 
-  function closeForm() {
+  function handleCloseForm() {
     setEditing(null);
     setFormError('');
     setFieldErrors({});
     reset();
   }
 
-  async function submit(form: FormularioCliente) {
+  async function handleFormSubmit(form: FormularioCliente) {
     const data: DatosCliente = {
       nombre: form.nombre.trim(),
       email: form.email.trim(),
@@ -81,7 +82,7 @@ export default function AdminClientesPage() {
       if (!editing) throw new Error('No hay un cliente seleccionado para editar.');
       await actualizar.mutateAsync({ id: editing.id, data });
       setNotice('Cliente actualizado correctamente.');
-      closeForm();
+      handleCloseForm();
     } catch (error) {
       setFormError(getApiMessage(error));
       if (error instanceof ApiError && error.details) {
@@ -92,7 +93,7 @@ export default function AdminClientesPage() {
     }
   }
 
-  async function toggleActive(cliente: AdminCliente) {
+  async function handleToggleActive(cliente: AdminCliente) {
     const action = cliente.activo ? 'desactivar' : 'activar';
     if (!window.confirm(`¿Querés ${action} a "${cliente.nombre}"?`)) return;
 
@@ -145,7 +146,7 @@ export default function AdminClientesPage() {
 
       {editing !== null && (
         <form
-          onSubmit={handleSubmit(submit)}
+          onSubmit={handleSubmit(handleFormSubmit)}
           className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
         >
           <h2 className="mb-5 text-xl font-bold text-slate-900">{`Editar ${editing.nombre}`}</h2>
@@ -243,7 +244,7 @@ export default function AdminClientesPage() {
             </button>
             <button
               type="button"
-              onClick={closeForm}
+              onClick={handleCloseForm}
               className="rounded-full border border-slate-300 px-5 py-2.5 font-bold text-slate-700"
             >
               Cancelar
@@ -315,7 +316,12 @@ export default function AdminClientesPage() {
                   <td className="px-5 py-4 text-slate-700">{cliente.telefono || '—'}</td>
                   <td className="px-5 py-4">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-bold ${cliente.activo ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-500'}`}
+                      className={cn(
+                        'rounded-full px-3 py-1 text-xs font-bold',
+                        cliente.activo
+                          ? 'bg-green-50 text-green-700'
+                          : 'bg-slate-100 text-slate-500',
+                      )}
                     >
                       {cliente.activo ? 'Activo' : 'Inactivo'}
                     </span>
@@ -331,14 +337,14 @@ export default function AdminClientesPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => openEdit(cliente)}
+                        onClick={() => handleOpenEdit(cliente)}
                         className="rounded-lg border border-slate-200 px-3 py-1.5 font-semibold text-slate-700 hover:border-slate-400"
                       >
                         Editar
                       </button>
                       <button
                         type="button"
-                        onClick={() => void toggleActive(cliente)}
+                        onClick={() => void handleToggleActive(cliente)}
                         disabled={cambiarEstado.isPending}
                         className="rounded-lg border border-slate-200 px-3 py-1.5 font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-60"
                       >

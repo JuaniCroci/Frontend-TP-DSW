@@ -4,6 +4,7 @@ import type {
   AdminDescuento,
   CrearDescuentoAdmin,
 } from '../../../models/AdminDescuento';
+import { cn } from '../../../shared/utils/cn';
 import {
   useActualizarDescuentoAdmin,
   useCrearAplicacionDescuentoAdmin,
@@ -56,7 +57,7 @@ export default function AdminDescuentosPage() {
   const crearAplicacion = useCrearAplicacionDescuentoAdmin();
   const eliminarAplicacion = useEliminarAplicacionDescuentoAdmin();
 
-  function startCreate() {
+  function handleStartCreate() {
     setEditing(null);
     setCreating(true);
     setForm(formularioVacio);
@@ -64,7 +65,7 @@ export default function AdminDescuentosPage() {
     setFormError('');
   }
 
-  function startEdit(descuento: AdminDescuento) {
+  function handleStartEdit(descuento: AdminDescuento) {
     setEditing(descuento);
     setCreating(false);
     setForm({
@@ -77,7 +78,7 @@ export default function AdminDescuentosPage() {
     setFormError('');
   }
 
-  async function saveDescuento(event: React.FormEvent<HTMLFormElement>) {
+  async function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError('');
     setNotice('');
@@ -106,7 +107,7 @@ export default function AdminDescuentosPage() {
     }
   }
 
-  async function deactivate(descuento: AdminDescuento) {
+  async function handleDeactivate(descuento: AdminDescuento) {
     if (!window.confirm(`¿Desactivar el descuento "${descuento.descripcion}"?`)) return;
     setFormError('');
     setNotice('');
@@ -119,7 +120,7 @@ export default function AdminDescuentosPage() {
     }
   }
 
-  async function toggleActive(descuento: AdminDescuento) {
+  async function handleToggleActive(descuento: AdminDescuento) {
     setFormError('');
     setNotice('');
     try {
@@ -142,7 +143,7 @@ export default function AdminDescuentosPage() {
     }
   }
 
-  async function addApplication(event: React.FormEvent<HTMLFormElement>) {
+  async function handleAddApplication(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (selectedId === null) return;
     const formElement = event.currentTarget;
@@ -171,7 +172,7 @@ export default function AdminDescuentosPage() {
     }
   }
 
-  async function removeApplication(aplicacionId: number, nombreProducto: string) {
+  async function handleRemoveApplication(aplicacionId: number, nombreProducto: string) {
     if (selectedId === null) return;
     if (!window.confirm(`¿Quitar este descuento de "${nombreProducto}"?`)) return;
     setApplicationError('');
@@ -202,7 +203,7 @@ export default function AdminDescuentosPage() {
         {!editing && !creating && (
           <button
             type="button"
-            onClick={startCreate}
+            onClick={handleStartCreate}
             className="rounded-full bg-slate-950 px-5 py-2.5 font-bold text-white hover:bg-lime-700"
           >
             Crear descuento
@@ -229,7 +230,7 @@ export default function AdminDescuentosPage() {
 
       {(creating || editing) && (
         <form
-          onSubmit={(event) => void saveDescuento(event)}
+          onSubmit={(event) => void handleFormSubmit(event)}
           className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
         >
           <h2 className="mb-5 text-xl font-bold text-slate-900">
@@ -346,11 +347,12 @@ export default function AdminDescuentosPage() {
                   <td className="px-5 py-4 text-slate-700">{descuento.porcentaje}%</td>
                   <td className="px-5 py-4">
                     <span
-                      className={`rounded-full px-3 py-1 text-xs font-bold ${
+                      className={cn(
+                        'rounded-full px-3 py-1 text-xs font-bold',
                         descuento.activo
                           ? 'bg-green-50 text-green-700'
-                          : 'bg-slate-100 text-slate-500'
-                      }`}
+                          : 'bg-slate-100 text-slate-500',
+                      )}
                     >
                       {descuento.activo ? 'Activo' : 'Inactivo'}
                     </span>
@@ -369,7 +371,7 @@ export default function AdminDescuentosPage() {
                       </button>
                       <button
                         type="button"
-                        onClick={() => startEdit(descuento)}
+                        onClick={() => handleStartEdit(descuento)}
                         className="rounded-lg border border-slate-200 px-3 py-1.5 font-semibold text-slate-700 hover:border-slate-400"
                       >
                         Editar
@@ -377,7 +379,7 @@ export default function AdminDescuentosPage() {
                       {descuento.activo ? (
                         <button
                           type="button"
-                          onClick={() => void deactivate(descuento)}
+                          onClick={() => void handleDeactivate(descuento)}
                           disabled={desactivar.isPending}
                           className="rounded-lg border border-red-200 px-3 py-1.5 font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
                         >
@@ -386,7 +388,7 @@ export default function AdminDescuentosPage() {
                       ) : (
                         <button
                           type="button"
-                          onClick={() => void toggleActive(descuento)}
+                          onClick={() => void handleToggleActive(descuento)}
                           disabled={actualizar.isPending}
                           className="rounded-lg border border-green-200 px-3 py-1.5 font-semibold text-green-700 hover:bg-green-50 disabled:opacity-60"
                         >
@@ -483,7 +485,7 @@ export default function AdminDescuentosPage() {
                               <button
                                 type="button"
                                 onClick={() =>
-                                  void removeApplication(aplicacion.id, aplicacion.producto.nombre)
+                                  void handleRemoveApplication(aplicacion.id, aplicacion.producto.nombre)
                                 }
                                 disabled={eliminarAplicacion.isPending}
                                 className="rounded-lg border border-red-200 px-3 py-1.5 font-semibold text-red-700 hover:bg-red-50 disabled:opacity-60"
@@ -500,7 +502,7 @@ export default function AdminDescuentosPage() {
 
                 {detalle.data.activo && (
                   <form
-                    onSubmit={(event) => void addApplication(event)}
+                    onSubmit={(event) => void handleAddApplication(event)}
                     className="mt-6 rounded-xl bg-slate-50 p-5"
                   >
                     <h3 className="font-bold text-slate-900">Aplicar a un producto</h3>

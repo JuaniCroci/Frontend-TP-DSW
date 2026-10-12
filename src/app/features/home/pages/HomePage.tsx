@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { cn } from '../../../shared/utils/cn';
 
 const categories = [
   {
@@ -99,7 +100,10 @@ export default function HomePage() {
               className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg"
             >
               <div
-                className={`mb-10 flex h-12 w-12 items-center justify-center rounded-xl ${category.accent} font-black text-slate-950`}
+                className={cn(
+                  'mb-10 flex h-12 w-12 items-center justify-center rounded-xl font-black text-slate-950',
+                  category.accent,
+                )}
               >
                 {category.number}
               </div>

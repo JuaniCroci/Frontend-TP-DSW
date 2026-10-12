@@ -8,9 +8,9 @@ import type {
 
 export const adminCatalogoKeys = {
   all: ['admin', 'catalogo'] as const,
-  list: (resource: RecursoCatalogo) => ['admin', 'catalogo', resource, 'list'] as const,
+  list: (resource: RecursoCatalogo) => ['admin', 'catalogo', resource, 'listado'] as const,
   detail: (resource: RecursoCatalogo, id: number) =>
-    ['admin', 'catalogo', resource, 'detail', id] as const,
+    ['admin', 'catalogo', resource, 'detalle', id] as const,
 };
 
 export function useAdminCatalogo(resource: RecursoCatalogo) {

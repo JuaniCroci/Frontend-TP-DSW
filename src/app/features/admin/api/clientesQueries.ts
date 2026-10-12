@@ -7,8 +7,8 @@ export type EstadoClienteFiltro = 'todos' | 'activos' | 'inactivos';
 export const adminClientesKeys = {
   all: ['admin', 'clientes'] as const,
   list: (q: string, estado: EstadoClienteFiltro) =>
-    ['admin', 'clientes', 'list', q, estado] as const,
-  detail: (id: number) => ['admin', 'clientes', 'detail', id] as const,
+    ['admin', 'clientes', 'listado', q, estado] as const,
+  detail: (id: number) => ['admin', 'clientes', 'detalle', id] as const,
 };
 
 export function useAdminClientes(q: string, estado: EstadoClienteFiltro) {

@@ -29,12 +29,17 @@ function mockApiResponse(status: number, data: unknown): void {
 }
 
 function renderLoginPage(): void {
+  renderLoginPageWithState(null);
+}
+
+function renderLoginPageWithState(state: unknown): void {
   render(
-    <MemoryRouter initialEntries={['/login']}>
+    <MemoryRouter initialEntries={[{ pathname: '/login', state }]}>
       <AuthProvider>
         <Routes>
           <Route path="/" element={<div data-testid="home-marker" />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin/productos" element={<div data-testid="admin-marker" />} />
         </Routes>
       </AuthProvider>
     </MemoryRouter>,
@@ -112,5 +117,34 @@ describe('LoginPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Demasiados intentos. Esperá unos minutos y volvé a intentar.',
     );
+  });
+
+  it('respeta un from interno como destino tras iniciar sesión', async () => {
+    mockApiResponse(200, {
+      token: 'jwt-login',
+      refreshToken: 'refresh-login',
+      usuario: userFixture,
+    });
+    renderLoginPageWithState({ from: '/admin/productos' });
+    fillCredentials();
+
+    submitLoginForm();
+
+    expect(await screen.findByTestId('admin-marker')).toBeInTheDocument();
+  });
+
+  it('ignora un from inseguro (open redirect) y navega al home', async () => {
+    mockApiResponse(200, {
+      token: 'jwt-login',
+      refreshToken: 'refresh-login',
+      usuario: userFixture,
+    });
+    renderLoginPageWithState({ from: '//evil.com' });
+    fillCredentials();
+
+    submitLoginForm();
+
+    expect(await screen.findByTestId('home-marker')).toBeInTheDocument();
+    expect(screen.queryByTestId('admin-marker')).not.toBeInTheDocument();
   });
 });

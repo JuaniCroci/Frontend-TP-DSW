@@ -6,11 +6,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { apiClient } from '@/core/api/api.client';
 import App from '../../src/App';
-import {
-  MarcasAdminPage,
-  ProveedoresAdminPage,
-  TiposProductoAdminPage,
-} from '@/features/admin/pages/AdminCatalogoPages';
+import MarcasAdminPage from '@/features/admin/pages/MarcasAdminPage';
+import ProveedoresAdminPage from '@/features/admin/pages/ProveedoresAdminPage';
+import TiposProductoAdminPage from '@/features/admin/pages/TiposProductoAdminPage';
 
 const adapterOriginal = apiClient.defaults.adapter;
 

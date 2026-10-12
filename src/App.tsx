@@ -11,11 +11,9 @@ import AdminClientesPage from './app/features/admin/pages/AdminClientesPage.tsx'
 import AdminProductosPage from './app/features/admin/pages/AdminProductosPage.tsx';
 import AdminDescuentosPage from './app/features/admin/pages/AdminDescuentosPage.tsx';
 import CarritoPage from './app/features/cart/pages/CarritoPage.tsx';
-import {
-  MarcasAdminPage,
-  ProveedoresAdminPage,
-  TiposProductoAdminPage,
-} from './app/features/admin/pages/AdminCatalogoPages.tsx';
+import MarcasAdminPage from './app/features/admin/pages/MarcasAdminPage.tsx';
+import TiposProductoAdminPage from './app/features/admin/pages/TiposProductoAdminPage.tsx';
+import ProveedoresAdminPage from './app/features/admin/pages/ProveedoresAdminPage.tsx';
 import { AdminRoute } from './app/core/guards/AdminRoute.tsx';
 import { ClientRoute } from './app/core/guards/ClientRoute.tsx';
 import { AdminLayout } from './app/shared/layout/AdminLayout.tsx';

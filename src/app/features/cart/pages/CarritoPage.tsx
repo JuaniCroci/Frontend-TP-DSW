@@ -33,7 +33,7 @@ export default function CarritoPage() {
   const [pedido, setPedido] = useState<PedidoConfirmado | null>(null);
   const [actionError, setActionError] = useState('');
 
-  async function updateQuantity(event: React.FormEvent<HTMLFormElement>, id: number) {
+  async function handleUpdateQuantity(event: React.FormEvent<HTMLFormElement>, id: number) {
     event.preventDefault();
     setActionError('');
     const formData = new FormData(event.currentTarget);
@@ -50,7 +50,7 @@ export default function CarritoPage() {
     }
   }
 
-  async function removeItem(id: number, name: string) {
+  async function handleRemoveItem(id: number, name: string) {
     if (!window.confirm(`¿Quitar "${name}" del carrito?`)) return;
     setActionError('');
     try {
@@ -60,7 +60,7 @@ export default function CarritoPage() {
     }
   }
 
-  async function confirmOrder() {
+  async function handleConfirmOrder() {
     if (!window.confirm('Se confirmará el pedido. El pago no se procesa en esta etapa.')) return;
     setActionError('');
     try {
@@ -189,7 +189,7 @@ export default function CarritoPage() {
                         <td className="px-5 py-4">
                           <form
                             className="flex items-center gap-2"
-                            onSubmit={(event) => void updateQuantity(event, item.id)}
+                            onSubmit={(event) => void handleUpdateQuantity(event, item.id)}
                           >
                             <label className="sr-only" htmlFor={`cantidad-${item.id}`}>
                               Cantidad de {item.producto.nombre}
@@ -219,7 +219,7 @@ export default function CarritoPage() {
                         <td className="px-5 py-4 text-right">
                           <button
                             type="button"
-                            onClick={() => void removeItem(item.id, item.producto.nombre)}
+                            onClick={() => void handleRemoveItem(item.id, item.producto.nombre)}
                             disabled={quitar.isPending}
                             className="rounded-lg border border-red-200 px-3 py-1.5 font-semibold text-red-700 hover:bg-red-50 disabled:opacity-50"
                           >
@@ -242,7 +242,7 @@ export default function CarritoPage() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => void confirmOrder()}
+                  onClick={() => void handleConfirmOrder()}
                   disabled={confirmar.isPending || carrito.data.items.length === 0}
                   className="rounded-full bg-lime-300 px-6 py-3 font-bold text-slate-950 hover:bg-lime-400 disabled:opacity-50"
                 >

@@ -26,7 +26,7 @@ function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Ocurrió un error inesperado.';
 }
 
-export default function ProductoImagenesPanel({ producto, onClose }: ProductoImagenesPanelProps) {
+export function ProductoImagenesPanel({ producto, onClose }: ProductoImagenesPanelProps) {
   const [file, setFile] = useState<File | null>(null);
   const [altText, setAltText] = useState(
     producto.imagenPrincipal?.altText ?? `Imagen de ${producto.nombre}`,
@@ -42,7 +42,7 @@ export default function ProductoImagenesPanel({ producto, onClose }: ProductoIma
   const imagenes = useImagenesProductoAdmin(producto.id);
   const subirImagen = useSubirImagenProductoAdmin();
 
-  async function submit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleFormSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFormError('');
     setNotice('');
@@ -133,7 +133,7 @@ export default function ProductoImagenesPanel({ producto, onClose }: ProductoIma
           </div>
         )}
 
-        <form onSubmit={submit} className="mt-6 grid gap-4 sm:grid-cols-2">
+        <form onSubmit={handleFormSubmit} className="mt-6 grid gap-4 sm:grid-cols-2">
           <label className="text-sm font-semibold text-slate-700 sm:col-span-2">
             Archivo de imagen
             <input

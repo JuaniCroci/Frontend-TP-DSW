@@ -26,3 +26,5 @@ Agregar navegación con React Router y una portada pública estática, sin adela
 ## Desvíos de implementación
 
 Se mantiene la portada sin imágenes externas ni catálogo de ejemplo para no introducir contenido o dependencias ajenas al contrato actual.
+
+**2026-10-12 (lote T2 del backlog):** decisión de paleta — el acento visual del proyecto es `lime-*` (Tailwind), no los tokens `brand-*` (naranja) que había declarados en `@theme`. Se borraron esos tokens y el CSS muerto (`.label-campo`, `.input-campo`, `.mensaje-error`) de `src/index.css`. Si en el futuro se redefine la marca, se agregan los tokens `@theme` y se migran las clases de una sola vez.

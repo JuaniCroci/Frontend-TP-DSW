@@ -3,7 +3,9 @@ import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
 import { friendlyErrorMessage } from '../../../core/api/friendlyError';
 import { toApiError } from '../../../core/api/apiError';
-import { apiClient } from '../../../core/api/api.client';
+import type { RegisterInput } from '../../../models/Auth';
+import { detailsToFieldErrors } from '../../../shared/utils/fieldErrors';
+import { useRegister } from '../api/mutations';
 
 interface FormularioRegistro {
   nombre: string;
@@ -13,14 +15,6 @@ interface FormularioRegistro {
   direccion: string;
 }
 
-interface DatosRegistro {
-  nombre: string;
-  email: string;
-  password: string;
-  telefono?: string;
-  direccion?: string;
-}
-
 function optionalValue(value: string): string | undefined {
   const trimmed = value.trim();
   return trimmed || undefined;
@@ -28,6 +22,7 @@ function optionalValue(value: string): string | undefined {
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const registrar = useRegister();
   const [apiError, setApiError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const {
@@ -36,10 +31,10 @@ export default function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm<FormularioRegistro>();
 
-  async function submit(form: FormularioRegistro) {
+  async function handleFormSubmit(form: FormularioRegistro) {
     setApiError('');
     setFieldErrors({});
-    const data: DatosRegistro = {
+    const data: RegisterInput = {
       nombre: form.nombre.trim(),
       email: form.email.trim(),
       password: form.password,
@@ -48,14 +43,12 @@ export default function RegisterPage() {
     data.direccion = optionalValue(form.direccion);
 
     try {
-      await apiClient.post('/api/auth/register', data);
+      await registrar.mutateAsync(data);
       navigate('/login', { replace: true, state: { registrationSuccess: true } });
     } catch (error) {
       const apiError = toApiError(error);
       setApiError(friendlyErrorMessage(apiError));
-      if (apiError.details) {
-        setFieldErrors(Object.fromEntries(apiError.details.map((d) => [d.field, d.message])));
-      }
+      if (apiError.details) setFieldErrors(detailsToFieldErrors(apiError.details));
     }
   }
 
@@ -67,7 +60,7 @@ export default function RegisterPage() {
     <main className="flex min-h-screen flex-col items-center justify-center gap-6 bg-slate-100 px-4 py-10">
       <h1 className="text-3xl font-bold text-slate-900">Entreno 2.0</h1>
       <form
-        onSubmit={handleSubmit(submit)}
+        onSubmit={handleSubmit(handleFormSubmit)}
         className="w-full max-w-md rounded-lg bg-white p-6 shadow-md"
       >
         <h2 className="mb-2 text-2xl font-bold text-slate-800">Crear cuenta</h2>

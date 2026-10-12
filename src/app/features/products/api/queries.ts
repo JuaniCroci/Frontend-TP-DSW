@@ -11,8 +11,8 @@ import type {
 
 export const productosQueryKeys = {
   all: ['productos'] as const,
-  list: (filters: FiltrosProducto) => ['productos', 'list', filters] as const,
-  detail: (id: number) => ['productos', 'detail', id] as const,
+  list: (filters: FiltrosProducto) => ['productos', 'listado', filters] as const,
+  detail: (id: number) => ['productos', 'detalle', id] as const,
   marcas: ['marcas', 'catalogo'] as const,
   tipos: ['tipos-producto', 'catalogo'] as const,
 };

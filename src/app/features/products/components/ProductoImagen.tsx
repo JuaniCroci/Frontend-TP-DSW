@@ -8,7 +8,7 @@ interface ProductoImagenProps {
   imageClassName?: string;
 }
 
-export default function ProductoImagen({
+export function ProductoImagen({
   imagen,
   className,
   imageClassName = 'h-full w-full object-contain',

@@ -1,6 +1,7 @@
 /** @vitest-environment jsdom */
 import type { AxiosAdapter } from 'axios';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { apiClient, TOKEN_KEY } from '@/core/api/api.client';
@@ -34,13 +35,19 @@ function mockApiResponse(status: number, data: unknown): AxiosAdapter {
 }
 
 function renderRegisterPage(): void {
+  const queryClient = new QueryClient({
+    defaultOptions: { mutations: { retry: false }, queries: { retry: false } },
+  });
+
   render(
-    <MemoryRouter initialEntries={['/registro']}>
-      <Routes>
-        <Route path="/registro" element={<RegisterPage />} />
-        <Route path="/login" element={<div data-testid="login-marker" />} />
-      </Routes>
-    </MemoryRouter>,
+    <QueryClientProvider client={queryClient}>
+      <MemoryRouter initialEntries={['/registro']}>
+        <Routes>
+          <Route path="/registro" element={<RegisterPage />} />
+          <Route path="/login" element={<div data-testid="login-marker" />} />
+        </Routes>
+      </MemoryRouter>
+    </QueryClientProvider>,
   );
 }
 

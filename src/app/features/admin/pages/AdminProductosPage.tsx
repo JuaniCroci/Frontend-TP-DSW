@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ApiError } from '../../../core/api/apiError';
+import { cn } from '../../../shared/utils/cn';
 import type { Marca, TipoProducto } from '../../../models/Producto';
 import type {
   ActualizarProductoAdmin,
@@ -19,7 +20,7 @@ import {
   useProveedoresActivosProducto,
 } from '../api/productosQueries';
 import { useMarcasCatalogo, useTiposProductoCatalogo } from '../../products/api/queries';
-import ProductoImagenesPanel from '../components/ProductoImagenesPanel';
+import { ProductoImagenesPanel } from '../components/ProductoImagenesPanel';
 
 const PAGE_SIZE = 20;
 
@@ -86,7 +87,7 @@ function ProductoForm({
     },
   });
 
-  async function submit(form: FormularioProducto) {
+  async function handleFormSubmit(form: FormularioProducto) {
     setFormError('');
     setFieldErrors({});
 
@@ -151,7 +152,7 @@ function ProductoForm({
 
   return (
     <form
-      onSubmit={handleSubmit(submit)}
+      onSubmit={handleSubmit(handleFormSubmit)}
       className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
     >
       <h2 className="mb-5 text-xl font-bold text-slate-900">
@@ -404,7 +405,7 @@ export default function AdminProductosPage() {
     !proveedoresQuery.isError;
   const totalPages = Math.max(1, Math.ceil((productos.data?.total ?? 0) / PAGE_SIZE));
 
-  function applyFilters(event: React.FormEvent<HTMLFormElement>) {
+  function handleApplyFilters(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setFilters({
       nombre: searchName.trim(),
@@ -416,27 +417,27 @@ export default function AdminProductosPage() {
     });
   }
 
-  function startCreate() {
+  function handleStartCreate() {
     setModo('crear');
     setEditing(null);
     setNotice('');
     setActionError('');
   }
 
-  function startEdit(producto: AdminProducto) {
+  function handleStartEdit(producto: AdminProducto) {
     setModo('editar');
     setEditing(producto);
     setNotice('');
     setActionError('');
   }
 
-  function closeForm() {
+  function handleCloseForm() {
     setModo(null);
     setEditing(null);
     setActionError('');
   }
 
-  async function saveProduct(data: CrearProductoAdmin | ActualizarProductoAdmin) {
+  async function handleSaveProduct(data: CrearProductoAdmin | ActualizarProductoAdmin) {
     if ('stockInicial' in data) {
       await crear.mutateAsync(data);
       setNotice('Producto creado correctamente.');
@@ -446,10 +447,10 @@ export default function AdminProductosPage() {
     } else {
       throw new Error('No se pudo determinar la operación para guardar el producto.');
     }
-    closeForm();
+    handleCloseForm();
   }
 
-  async function deactivate(producto: AdminProducto) {
+  async function handleDeactivate(producto: AdminProducto) {
     if (
       !window.confirm(
         `¿Desactivar "${producto.nombre}"? Esta acción no se puede deshacer desde aquí.`,
@@ -467,11 +468,11 @@ export default function AdminProductosPage() {
     }
   }
 
-  function changePage(page: number) {
+  function handleChangePage(page: number) {
     setFilters((current) => ({ ...current, page }));
   }
 
-  function closeDetails() {
+  function handleCloseDetails() {
     setDetailId(null);
   }
 
@@ -490,7 +491,7 @@ export default function AdminProductosPage() {
         {modo === null && (
           <button
             type="button"
-            onClick={startCreate}
+            onClick={handleStartCreate}
             className="rounded-full bg-slate-950 px-5 py-2.5 font-bold text-white hover:bg-lime-700"
           >
             Crear producto
@@ -523,8 +524,8 @@ export default function AdminProductosPage() {
           tipos={tipos}
           proveedores={proveedores}
           mastersReady={mastersReady}
-          onCancel={closeForm}
-          onSave={saveProduct}
+          onCancel={handleCloseForm}
+          onSave={handleSaveProduct}
         />
       )}
 
@@ -545,7 +546,7 @@ export default function AdminProductosPage() {
       )}
 
       <form
-        onSubmit={applyFilters}
+        onSubmit={handleApplyFilters}
         className="mb-5 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-6"
       >
         <label className="text-sm font-semibold text-slate-700 lg:col-span-2">
@@ -694,7 +695,12 @@ export default function AdminProductosPage() {
                     <td className="px-5 py-4 text-slate-700">{producto.stock}</td>
                     <td className="px-5 py-4">
                       <span
-                        className={`rounded-full px-3 py-1 text-xs font-bold ${producto.activo ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-500'}`}
+                        className={cn(
+                          'rounded-full px-3 py-1 text-xs font-bold',
+                          producto.activo
+                            ? 'bg-green-50 text-green-700'
+                            : 'bg-slate-100 text-slate-500',
+                        )}
                       >
                         {producto.activo ? 'Activo' : 'Inactivo'}
                       </span>
@@ -710,7 +716,7 @@ export default function AdminProductosPage() {
                         </button>
                         <button
                           type="button"
-                          onClick={() => startEdit(producto)}
+                          onClick={() => handleStartEdit(producto)}
                           className="rounded-lg border border-slate-200 px-3 py-1.5 font-semibold text-slate-700"
                         >
                           Editar
@@ -725,7 +731,7 @@ export default function AdminProductosPage() {
                         {producto.activo && (
                           <button
                             type="button"
-                            onClick={() => void deactivate(producto)}
+                            onClick={() => void handleDeactivate(producto)}
                             disabled={darDeBaja.isPending}
                             className="rounded-lg border border-red-200 px-3 py-1.5 font-semibold text-red-700 disabled:opacity-60"
                           >
@@ -746,7 +752,7 @@ export default function AdminProductosPage() {
           <nav aria-label="Paginación de productos" className="mt-6 flex justify-center gap-3">
             <button
               type="button"
-              onClick={() => changePage(filters.page - 1)}
+              onClick={() => handleChangePage(filters.page - 1)}
               disabled={filters.page <= 1}
               className="rounded-full border border-slate-300 px-5 py-2 font-semibold text-slate-700 disabled:opacity-40"
             >
@@ -757,7 +763,7 @@ export default function AdminProductosPage() {
             </span>
             <button
               type="button"
-              onClick={() => changePage(filters.page + 1)}
+              onClick={() => handleChangePage(filters.page + 1)}
               disabled={filters.page >= totalPages}
               className="rounded-full border border-slate-300 px-5 py-2 font-semibold text-slate-700 disabled:opacity-40"
             >
@@ -772,7 +778,7 @@ export default function AdminProductosPage() {
           className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
           role="presentation"
           onMouseDown={(event) => {
-            if (event.target === event.currentTarget) closeDetails();
+            if (event.target === event.currentTarget) handleCloseDetails();
           }}
         >
           <section
@@ -787,7 +793,7 @@ export default function AdminProductosPage() {
               </h2>
               <button
                 type="button"
-                onClick={closeDetails}
+                onClick={handleCloseDetails}
                 aria-label="Cerrar detalle"
                 className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100"
               >

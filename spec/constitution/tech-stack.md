@@ -21,8 +21,8 @@ src/
 └── app/
     ├── core/
     │   ├── api/          → api.client.ts (instancia axios), normalizador de errores API
-    │   ├── auth/         → AuthContext, AuthProvider, useAuth
-    │   └── guards/       → ProtectedRoute, AdminRoute
+    │   ├── auth/         → AuthContext (useAuth), AuthProvider, session
+    │   └── guards/       → ClientRoute, AdminRoute
     ├── models/           → interfaces del dominio (derivadas de api-contract.md)
     ├── features/<name>/
     │   ├── pages/        → componentes que son rutas (PascalCase)
@@ -30,10 +30,10 @@ src/
     │   ├── hooks/        → hooks específicos (use<Nombre>)
     │   └── api/          → queries.ts + mutations.ts (TanStack Query)
     └── shared/
-        ├── components/   → Button, Card, Modal, Input, Spinner...
-        ├── hooks/        → useDebounce, useMediaQuery...
-        ├── utils/        → cn() (clsx + tailwind-merge), formatMoney, formatDate...
-        └── layout/       → MainLayout, Header, Footer, Sidebar
+        ├── components/   → componentes reutilizables (vacío hoy)
+        ├── hooks/        → useDebounce
+        ├── utils/        → cn() (clsx + tailwind-merge), fieldErrors
+        └── layout/       → MainLayout, AdminLayout, Header, Footer
 tests/
 ├── unit/                 → hooks, utils, normalizadores (sin UI)
 └── feature/              → páginas/componentes con apiClient mockeado

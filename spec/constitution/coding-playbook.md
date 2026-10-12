@@ -202,8 +202,8 @@ export class ApiError extends Error {
 
 ## 9. Auth y guardias
 
-- `AuthProvider` (Context) expone `user`, `token`, `login()`, `logout()` y envuelve la app en `main.tsx`.
-- `ProtectedRoute` redirige a `/login` si no hay sesión; `AdminRoute` redirige a `/` si el rol no es `ADMIN`.
+- `AuthProvider` (Context) expone `user`, `token`, `isAuthenticated`, `login()`, `logout()` y envuelve la app en `App.tsx`.
+- `ClientRoute` redirige a `/login` si no hay sesión (con `state.from`); `AdminRoute` hace lo propio y redirige a `/` si el rol no es `ADMIN`.
 - El token se guarda en `localStorage` y lo adjunta el interceptor de request; **nunca** se lee de `localStorage` fuera de `core/auth` / `core/api`.
 - Los modelos de usuario **nunca** incluyen `passwordHash` (el back lo excluye; si aparece, es bug del back, reportar).
 
