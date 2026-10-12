@@ -18,7 +18,7 @@ export const apiClient = axios.create({
 });
 
 export function apiAssetUrl(path: string): string {
-  return new URL(path, apiClient.defaults.baseURL).toString();
+  return apiClient.getUri({ url: path });
 }
 
 apiClient.interceptors.request.use((config) => {

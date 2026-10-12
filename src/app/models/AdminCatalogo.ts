@@ -37,3 +37,5 @@ export interface RespuestaLista<T> {
 export type RecursoCatalogo = 'marcas' | 'tipos-producto' | 'proveedores';
 
 export type DatosMaestro = Record<string, string>;
+
+export type PayloadMaestro = Record<string, string | null>;

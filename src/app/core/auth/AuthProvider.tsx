@@ -5,12 +5,34 @@ import { clearSession, getToken, setToken as persistToken } from './session';
 
 const USER_KEY = 'entreno_user';
 
+function esAuthUser(value: unknown): value is AuthUser {
+  if (typeof value !== 'object' || value === null) return false;
+  const candidate = value as Record<string, unknown>;
+  return (
+    typeof candidate.id === 'number' &&
+    typeof candidate.nombre === 'string' &&
+    typeof candidate.email === 'string' &&
+    (candidate.rol === 'ADMIN' || candidate.rol === 'CLIENTE')
+  );
+}
+
+function readStoredUser(): AuthUser | null {
+  const raw = localStorage.getItem(USER_KEY);
+  if (!raw) return null;
+  let parsed: unknown = null;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    parsed = null;
+  }
+  if (esAuthUser(parsed)) return parsed;
+  localStorage.removeItem(USER_KEY);
+  return null;
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [token, setToken] = useState<string | null>(() => getToken());
-  const [user, setUser] = useState<AuthUser | null>(() => {
-    const raw = localStorage.getItem(USER_KEY);
-    return raw ? (JSON.parse(raw) as AuthUser) : null;
-  });
+  const [user, setUser] = useState<AuthUser | null>(() => readStoredUser());
 
   useEffect(() => {
     if (token) persistToken(token);

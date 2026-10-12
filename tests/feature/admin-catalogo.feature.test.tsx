@@ -359,4 +359,34 @@ describe('administración de marcas, tipos y proveedores', () => {
       email: 'ventas@example.test',
     });
   });
+
+  it('permite limpiar un campo opcional en edición enviándolo en null', async () => {
+    let updateBody: unknown;
+    apiClient.defaults.adapter = async (config) => {
+      if (config.url === '/api/proveedores' && config.method === 'get') {
+        return response(config, { data: [proveedor], total: 1 });
+      }
+      if (config.url === '/api/proveedores/3' && config.method === 'put') {
+        updateBody = requestBody(config.data);
+        return response(config, { ...proveedor, telefono: null });
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    renderMasterPage('proveedores');
+    expect(await screen.findByText('Distribuidora Norte')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }));
+    fireEvent.change(screen.getByLabelText('Teléfono'), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
+
+    expect(await screen.findByText('Cambios guardados correctamente.')).toBeInTheDocument();
+    expect(updateBody).toEqual({
+      razonSocial: 'Distribuidora Norte',
+      cuit: '20301234567',
+      telefono: null,
+      email: 'ventas@example.test',
+      domicilio: 'Calle 123',
+    });
+  });
 });

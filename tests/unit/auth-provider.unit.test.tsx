@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { apiClient, TOKEN_KEY } from '@/core/api/api.client';
 import { AuthProvider } from '@/core/auth/AuthProvider';
@@ -25,6 +25,7 @@ describe('AuthProvider', () => {
   });
 
   afterEach(() => {
+    cleanup();
     apiClient.defaults.adapter = adapterOriginal;
   });
 
@@ -66,5 +67,49 @@ describe('AuthProvider', () => {
     });
     expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
     expect(localStorage.getItem('entreno_user')).toBeNull();
+  });
+
+  it('no revienta la app cuando el usuario guardado no es JSON válido', () => {
+    localStorage.setItem(TOKEN_KEY, 'jwt-vigente');
+    localStorage.setItem('entreno_user', '{no-es-json');
+
+    render(
+      <AuthProvider>
+        <SessionProbe />
+      </AuthProvider>,
+    );
+
+    expect(screen.getByText('Sin sesión')).toBeInTheDocument();
+    expect(localStorage.getItem('entreno_user')).toBeNull();
+  });
+
+  it('descarta el usuario guardado si no tiene la forma de un AuthUser', () => {
+    localStorage.setItem(TOKEN_KEY, 'jwt-vigente');
+    localStorage.setItem('entreno_user', JSON.stringify({ foo: 'bar' }));
+
+    render(
+      <AuthProvider>
+        <SessionProbe />
+      </AuthProvider>,
+    );
+
+    expect(screen.getByText('Sin sesión')).toBeInTheDocument();
+    expect(localStorage.getItem('entreno_user')).toBeNull();
+  });
+
+  it('conserva el usuario guardado cuando tiene la forma válida', () => {
+    localStorage.setItem(TOKEN_KEY, 'jwt-vigente');
+    localStorage.setItem(
+      'entreno_user',
+      JSON.stringify({ id: 3, nombre: 'Ana', email: 'ana@entreno.test', rol: 'CLIENTE' }),
+    );
+
+    render(
+      <AuthProvider>
+        <SessionProbe />
+      </AuthProvider>,
+    );
+
+    expect(screen.getByText('Sesión: ana@entreno.test')).toBeInTheDocument();
   });
 });

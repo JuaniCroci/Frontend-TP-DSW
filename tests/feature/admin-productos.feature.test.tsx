@@ -372,15 +372,9 @@ describe('administración de productos', () => {
     await screen.findByText('Proteína de suero');
     fireEvent.click(screen.getByRole('button', { name: 'Imágenes' }));
     await screen.findByText('Todavía no hay imágenes registradas.');
-    vi.stubGlobal(
-      'fetch',
-      vi.fn().mockResolvedValue({
-        ok: true,
-        blob: async () => new Blob(['image'], { type: 'image/png' }),
-      }),
-    );
-    fireEvent.click(screen.getByRole('button', { name: 'Usar foto de referencia de creatina' }));
-    await screen.findByText('creatina-star-reference.png');
+    fireEvent.change(screen.getByLabelText(/^Archivo de imagen/), {
+      target: { files: [new File(['image'], 'creatina.png', { type: 'image/png' })] },
+    });
     fireEvent.change(screen.getByLabelText('Texto alternativo'), {
       target: { value: 'Creatina Star Nutrition' },
     });
@@ -390,12 +384,12 @@ describe('administración de productos', () => {
       await screen.findByText('Imagen cargada y establecida como principal.'),
     ).toBeInTheDocument();
     expect(sentFormData?.get('imagen')).toBeInstanceOf(File);
+    expect((sentFormData?.get('imagen') as File).name).toBe('creatina.png');
     expect(sentFormData?.get('altText')).toBe('Creatina Star Nutrition');
     expect(sentFormData?.get('fuente')).toBe('Fotografía propia');
     expect(sentFormData?.get('licencia')).toBe(
       'Fotografía propia para uso académico; autorización de marca pendiente.',
     );
-    expect(fetch).toHaveBeenCalledWith('/references/creatina-star-reference.png');
   });
 
   it('muestra los errores de dependencia que devuelve el servidor al crear', async () => {

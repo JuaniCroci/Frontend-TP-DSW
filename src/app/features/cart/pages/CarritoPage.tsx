@@ -102,7 +102,7 @@ export default function CarritoPage() {
               <li key={item.id} className="flex flex-wrap justify-between gap-2 p-4 text-sm">
                 <span>
                   <strong>{item.producto.nombre}</strong> · {item.cantidad} unidades
-                  {item.descuentoAplicado && (
+                  {Number(item.descuentoAplicado ?? 0) > 0 && (
                     <span className="ml-2 text-lime-800">
                       ({item.descuentoAplicado}% de descuento)
                     </span>

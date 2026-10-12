@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -74,6 +74,7 @@ describe('administración de clientes', () => {
   afterEach(() => {
     cleanup();
     apiClient.defaults.adapter = adapterOriginal;
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -100,6 +101,41 @@ describe('administración de clientes', () => {
         params: { q: 'ana', activo: false },
       }),
     );
+  });
+
+  it('escribe la búsqueda sin disparar un request por tecla', async () => {
+    vi.useFakeTimers();
+    const listRequests: unknown[] = [];
+    apiClient.defaults.adapter = async (config) => {
+      if (config.url === '/api/clientes' && config.method === 'get') {
+        listRequests.push(config.params);
+        return response(config, { data: [], total: 0 });
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    renderClientesPage();
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(listRequests).toHaveLength(1);
+    expect(listRequests[0]).toEqual({});
+
+    const searchbox = screen.getByRole('searchbox', { name: 'Buscar por nombre o email' });
+    fireEvent.change(searchbox, { target: { value: 'a' } });
+    fireEvent.change(searchbox, { target: { value: 'an' } });
+    fireEvent.change(searchbox, { target: { value: 'ana' } });
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(299);
+    });
+    expect(listRequests).toHaveLength(1);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
+    });
+    expect(listRequests).toHaveLength(2);
+    expect(listRequests[1]).toEqual({ q: 'ana' });
   });
 
   it('no ofrece el alta de clientes desde administración', async () => {

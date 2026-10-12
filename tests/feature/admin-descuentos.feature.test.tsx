@@ -153,6 +153,35 @@ describe('administración de descuentos', () => {
     expect(window.confirm).toHaveBeenCalledOnce();
   });
 
+  it('reactiva un descuento enviando el payload completo, no solo activo', async () => {
+    let current = { ...descuento, activo: false };
+    let updateBody: unknown;
+    apiClient.defaults.adapter = async (config) => {
+      if (config.url === '/api/descuentos' && config.method === 'get') {
+        return response(config, { data: [current], total: 1 });
+      }
+      if (config.url === '/api/descuentos/8' && config.method === 'put') {
+        updateBody = requestBody(config.data);
+        current = { ...current, ...(updateBody as Partial<typeof current>) };
+        return response(config, current);
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    renderDescuentosPage();
+    expect(await screen.findByText('10% llevando 2')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Activar' }));
+
+    expect(await screen.findByText('Descuento activado correctamente.')).toBeInTheDocument();
+    expect(updateBody).toEqual({
+      descripcion: '10% llevando 2',
+      cantidadMinima: 2,
+      porcentaje: 10,
+      activo: true,
+    });
+  });
+
   it('asocia y quita un producto con su ventana de vigencia', async () => {
     let aplicaciones: Array<{
       id: number;

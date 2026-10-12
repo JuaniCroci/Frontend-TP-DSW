@@ -202,6 +202,38 @@ describe('carrito de compras', () => {
     );
   });
 
+  it('no presenta descuento cuando el backend informa 0.00 o null', async () => {
+    const orderSinDescuento = {
+      ...confirmedOrder,
+      importeTotal: '60000.00',
+      items: [
+        { ...confirmedOrder.items[0], subtotal: '60000.00', descuentoAplicado: '0.00' },
+        {
+          ...confirmedOrder.items[0],
+          id: 34,
+          producto: { id: 22, nombre: 'Proteína' },
+          descuentoAplicado: null,
+        },
+      ],
+    };
+    apiClient.defaults.adapter = async (config) => {
+      if (config.url === '/api/carrito' && config.method === 'get') {
+        return response(config, activeCart);
+      }
+      if (config.url === '/api/carrito/confirmar' && config.method === 'post') {
+        return response(config, orderSinDescuento);
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    renderCart();
+    await screen.findByText('Creatina');
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+
+    expect(await screen.findByRole('heading', { name: 'Pedido confirmado' })).toBeInTheDocument();
+    expect(screen.queryByText(/de descuento/)).not.toBeInTheDocument();
+  });
+
   it('presenta un carrito inexistente como estado vacío y no oculta otros errores', async () => {
     apiClient.defaults.adapter = async (config) =>
       Promise.reject({

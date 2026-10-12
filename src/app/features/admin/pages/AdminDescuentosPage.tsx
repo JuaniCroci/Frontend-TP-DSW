@@ -123,7 +123,15 @@ export default function AdminDescuentosPage() {
     setFormError('');
     setNotice('');
     try {
-      await actualizar.mutateAsync({ id: descuento.id, data: { activo: !descuento.activo } });
+      await actualizar.mutateAsync({
+        id: descuento.id,
+        data: {
+          descripcion: descuento.descripcion,
+          cantidadMinima: descuento.cantidadMinima,
+          porcentaje: descuento.porcentaje,
+          activo: !descuento.activo,
+        },
+      });
       setNotice(
         descuento.activo
           ? 'Descuento desactivado correctamente.'

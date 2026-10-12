@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { afterEach, describe, expect, it } from 'vitest';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
 import { apiClient } from '@/core/api/api.client';
 import { AuthContext } from '@/core/auth/AuthContext';
 import CatalogoPage from '@/features/products/pages/CatalogoPage';
@@ -54,6 +54,11 @@ function ok(config: InternalAxiosRequestConfig, data: unknown): AxiosResponse {
     headers: new AxiosHeaders(),
     config,
   };
+}
+
+function IrAlProducto8() {
+  const navigate = useNavigate();
+  return <button onClick={() => navigate('/productos/8')}>Ir al producto 8</button>;
 }
 
 function renderRoutes(path: string) {
@@ -189,6 +194,45 @@ describe('catálogo de productos', () => {
     );
   });
 
+  it('fuera de rango: ofrece volver a la página 1 sin esconder la paginación', async () => {
+    apiClient.defaults.adapter = async (config) => {
+      if (config.url === '/api/productos') {
+        const page = Number(config.params?.page ?? 1);
+        return ok(
+          config,
+          page === 1
+            ? { data: [productoLista], total: 30, page: 1, size: 12 }
+            : { data: [], total: 30, page: 99, size: 12 },
+        );
+      }
+      return ok(config, { data: [], total: 0 });
+    };
+
+    renderRoutes('/productos?page=99');
+
+    expect(await screen.findByRole('heading', { name: 'Página fuera de rango' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Todavía no hay productos disponibles' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Anterior' })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ir a la página 1' }));
+
+    expect(await screen.findByRole('heading', { name: 'Proteína de suero' })).toBeInTheDocument();
+  });
+
+  it('muestra la página devuelta por el wrapper cuando el back clampa el rango', async () => {
+    apiClient.defaults.adapter = async (config) => {
+      if (config.url === '/api/productos')
+        return ok(config, { data: [productoLista], total: 30, page: 2, size: 12 });
+      return ok(config, { data: [], total: 0 });
+    };
+
+    renderRoutes('/productos?page=99');
+
+    expect(await screen.findByRole('heading', { name: 'Proteína de suero' })).toBeInTheDocument();
+    expect(screen.getByText('Página 2 de 3')).toBeInTheDocument();
+    expect(screen.queryByText('Página 99 de 3')).toBeNull();
+  });
+
   it('informa errores de la API del catálogo', async () => {
     apiClient.defaults.adapter = async (config) => {
       if (config.url === '/api/productos') {
@@ -229,5 +273,48 @@ describe('catálogo de productos', () => {
       'href',
       '/productos?idMarca=2&precioMin=1000',
     );
+  });
+
+  it('resetea cantidad y avisos al navegar de un detalle a otro', async () => {
+    apiClient.defaults.adapter = async (config) => {
+      if (config.url === '/api/productos/7') return ok(config, productoDetalle);
+      if (config.url === '/api/productos/8')
+        return ok(config, { ...productoDetalle, id: 8, nombre: 'Creatina micronizada' });
+      if (config.url === '/api/carrito/items' && config.method === 'post') return ok(config, {});
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
+    render(
+      <QueryClientProvider client={queryClient}>
+        <AuthContext.Provider
+          value={{
+            user: { id: 1, nombre: 'Cliente', email: 'cliente@entreno.test', rol: 'CLIENTE' },
+            token: 'token-de-prueba',
+            isAuthenticated: true,
+            login: async () => {},
+            logout: () => {},
+          }}
+        >
+          <MemoryRouter initialEntries={['/productos/7']}>
+            <Routes>
+              <Route path="/productos/:id" element={<ProductoDetallePage />} />
+            </Routes>
+            <IrAlProducto8 />
+          </MemoryRouter>
+        </AuthContext.Provider>
+      </QueryClientProvider>,
+    );
+
+    expect(await screen.findByRole('heading', { name: 'Proteína de suero' })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '3' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Agregar al carrito' }));
+    expect(await screen.findByText('Producto agregado al carrito.')).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Ir al producto 8' }));
+
+    expect(await screen.findByRole('heading', { name: 'Creatina micronizada' })).toBeInTheDocument();
+    expect(screen.getByLabelText('Cantidad')).toHaveValue(1);
+    expect(screen.queryByText('Producto agregado al carrito.')).not.toBeInTheDocument();
   });
 });

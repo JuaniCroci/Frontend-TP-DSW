@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 import { act, cleanup, render, screen } from '@testing-library/react';
-import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { apiClient, TOKEN_KEY } from '@/core/api/api.client';
 import { AuthProvider } from '@/core/auth/AuthProvider';
@@ -8,6 +8,16 @@ import { AdminRoute } from '@/core/guards/AdminRoute';
 import { ClientRoute } from '@/core/guards/ClientRoute';
 
 const adapterOriginal = apiClient.defaults.adapter;
+
+function LoginDestination() {
+  const location = useLocation();
+  const from = (location.state as { from?: string } | null)?.from ?? 'sin-from';
+  return (
+    <div data-testid="login-destination">
+      <span data-testid="login-from">{from}</span>
+    </div>
+  );
+}
 
 function saveSession(rol: 'ADMIN' | 'CLIENTE'): void {
   localStorage.setItem(TOKEN_KEY, 'token-de-prueba');
@@ -27,7 +37,7 @@ function renderRutaProtegida(ruta: string, guard: React.ReactElement) {
     <MemoryRouter initialEntries={[ruta]}>
       <AuthProvider>
         <Routes>
-          <Route path="/login" element={<div data-testid="login-destination" />} />
+          <Route path="/login" element={<LoginDestination />} />
           <Route path="/" element={<div data-testid="home-destination" />} />
           <Route path={ruta} element={guard}>
             <Route index element={<div data-testid="guard-content">Contenido protegido</div>} />
@@ -59,6 +69,13 @@ describe('guards de ruta', () => {
     renderRutaProtegida('/carrito', <ClientRoute />);
 
     expect(await screen.findByTestId('login-destination')).toBeInTheDocument();
+  });
+
+  it('sin sesión: AdminRoute conserva la ruta original como state.from', async () => {
+    renderRutaProtegida('/admin', <AdminRoute />);
+
+    expect(await screen.findByTestId('login-destination')).toBeInTheDocument();
+    expect(screen.getByTestId('login-from')).toHaveTextContent('/admin');
   });
 
   it('sesión CLIENTE: AdminRoute redirige a /', async () => {

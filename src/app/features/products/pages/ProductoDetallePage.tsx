@@ -1,5 +1,5 @@
 import { Link, useLocation, useParams } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../../core/auth/AuthContext';
 import { useAgregarAlCarrito } from '../../cart/api/mutations';
 import { useProductoDetalle } from '../api/queries';
@@ -23,6 +23,12 @@ export default function ProductoDetallePage() {
   const [cantidad, setCantidad] = useState(1);
   const [cartNotice, setCartNotice] = useState('');
   const [cartError, setCartError] = useState('');
+
+  useEffect(() => {
+    setCantidad(1);
+    setCartNotice('');
+    setCartError('');
+  }, [productoId]);
   const backToCatalog = `/productos${location.search}`;
   const loginReturn = `${location.pathname}${location.search}`;
 

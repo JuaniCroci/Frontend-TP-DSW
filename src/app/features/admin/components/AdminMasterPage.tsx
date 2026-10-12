@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { ApiError } from '../../../core/api/apiError';
 import type {
   DatosMaestro,
+  PayloadMaestro,
   RegistroCatalogo,
   RecursoCatalogo,
 } from '../../../models/AdminCatalogo';
@@ -79,10 +80,21 @@ export function AdminMasterPage({
     reset(Object.fromEntries(fields.map((field) => [field.name, valueFor(record, field.name)])));
   }
 
+  function buildPayload(data: DatosMaestro): PayloadMaestro {
+    const payload: PayloadMaestro = {};
+    for (const field of fields) {
+      const value = String(data[field.name] ?? '').trim();
+      if (value === '') {
+        if (editing && valueFor(editing, field.name) !== '') payload[field.name] = null;
+        continue;
+      }
+      payload[field.name] = value;
+    }
+    return payload;
+  }
+
   async function submit(data: DatosMaestro) {
-    const cleanedData = Object.fromEntries(
-      Object.entries(data).filter(([, value]) => value.trim() !== ''),
-    );
+    const cleanedData = buildPayload(data);
     setFormError('');
     setFieldErrors({});
     setNotice('');

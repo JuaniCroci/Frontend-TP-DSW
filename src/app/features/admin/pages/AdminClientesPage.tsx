@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ApiError } from '../../../core/api/apiError';
 import type { AdminCliente, DatosCliente } from '../../../models/AdminCliente';
+import { useDebounce } from '../../../shared/hooks/useDebounce';
 import { useActualizarCliente, useCambiarEstadoCliente } from '../api/clientesMutations';
 import {
   useAdminClienteDetalle,
@@ -25,7 +26,8 @@ export default function AdminClientesPage() {
   const [notice, setNotice] = useState('');
   const [formError, setFormError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const clientes = useAdminClientes(q, estado);
+  const qDebounced = useDebounce(q, 300);
+  const clientes = useAdminClientes(qDebounced, estado);
   const detalle = useAdminClienteDetalle(detailId);
   const actualizar = useActualizarCliente();
   const cambiarEstado = useCambiarEstadoCliente();

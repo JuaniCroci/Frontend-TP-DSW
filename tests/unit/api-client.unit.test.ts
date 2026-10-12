@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import type { AxiosHeaderValue } from 'axios';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { apiClient, requireBaseUrl, TOKEN_KEY } from '@/core/api/api.client';
+import { apiAssetUrl, apiClient, requireBaseUrl, TOKEN_KEY } from '@/core/api/api.client';
 
 interface LlamadaCapturada {
   baseURL: string | undefined;
@@ -56,5 +56,32 @@ describe('apiClient', () => {
     await apiClient.get('/api/health');
 
     expect(llamadas[0].authorization).toBeUndefined();
+  });
+});
+
+describe('apiAssetUrl', () => {
+  const baseURLOriginal = apiClient.defaults.baseURL;
+
+  afterEach(() => {
+    apiClient.defaults.baseURL = baseURLOriginal;
+  });
+
+  it('resuelve rutas relativas contra la baseURL sin prefijo', () => {
+    apiClient.defaults.baseURL = 'http://localhost:3000';
+
+    expect(apiAssetUrl('uploads/ab.png')).toBe('http://localhost:3000/uploads/ab.png');
+  });
+
+  it('conserva el path de la baseURL cuando la API vive bajo un prefijo', () => {
+    apiClient.defaults.baseURL = 'http://localhost:3000/api';
+
+    expect(apiAssetUrl('uploads/ab.png')).toBe('http://localhost:3000/api/uploads/ab.png');
+    expect(apiAssetUrl('/uploads/ab.png')).toBe('http://localhost:3000/api/uploads/ab.png');
+  });
+
+  it('devuelve tal cual las rutas absolutas', () => {
+    apiClient.defaults.baseURL = 'http://localhost:3000/api';
+
+    expect(apiAssetUrl('http://cdn.test/ab.png')).toBe('http://cdn.test/ab.png');
   });
 });

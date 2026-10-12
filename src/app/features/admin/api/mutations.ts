@@ -2,14 +2,14 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiClient } from '../../../core/api/api.client';
 import { adminCatalogoKeys } from './queries';
 import type {
-  DatosMaestro,
+  PayloadMaestro,
   RegistroCatalogo,
   RecursoCatalogo,
 } from '../../../models/AdminCatalogo';
 
 interface GuardarMaestro {
   resource: RecursoCatalogo;
-  data: DatosMaestro;
+  data: PayloadMaestro;
   id?: number;
 }
 

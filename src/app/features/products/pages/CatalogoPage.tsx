@@ -78,7 +78,9 @@ export default function CatalogoPage() {
     setSearchParams(nextParams);
   }
 
-  const totalPages = Math.max(1, Math.ceil((productos.data?.total ?? 0) / PAGE_SIZE));
+  const total = productos.data?.total ?? 0;
+  const currentPage = productos.data?.page ?? filters.page;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-12 sm:py-16">
@@ -224,7 +226,7 @@ export default function CatalogoPage() {
             Reintentar
           </button>
         </div>
-      ) : productos.data?.data.length === 0 ? (
+      ) : total === 0 ? (
         <div className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-16 text-center">
           <h2 className="text-xl font-bold text-slate-900">Todavía no hay productos disponibles</h2>
           <p className="mt-2 text-slate-600">
@@ -235,57 +237,73 @@ export default function CatalogoPage() {
         <>
           <div className="mb-5 flex items-center justify-between text-sm text-slate-600">
             <p>
-              {productos.data?.total} {productos.data?.total === 1 ? 'producto' : 'productos'}
+              {total} {total === 1 ? 'producto' : 'productos'}
             </p>
             <p>
-              Página {filters.page} de {totalPages}
+              Página {currentPage} de {totalPages}
             </p>
           </div>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {productos.data?.data.map((producto) => (
-              <Link
-                key={producto.id}
-                to={`/productos/${producto.id}?${searchParams.toString()}`}
-                className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-lg"
+          {productos.data?.data.length === 0 ? (
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-6 py-16 text-center">
+              <h2 className="text-xl font-bold text-slate-900">Página fuera de rango</h2>
+              <p className="mt-2 text-slate-600">
+                La página pedida no existe. Volvé al inicio del catálogo.
+              </p>
+              <button
+                type="button"
+                onClick={() => changePage(1)}
+                className="mt-4 rounded-full bg-slate-950 px-5 py-2.5 font-bold text-white transition hover:bg-lime-700"
               >
-                <ProductoImagen
-                  imagen={producto.imagenPrincipal}
-                  className="flex h-40 items-center justify-center bg-slate-100"
-                />
-                <div className="p-5">
-                  <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                    {producto.marca.nombre}
-                  </p>
-                  <h2 className="mt-2 line-clamp-2 min-h-12 font-bold text-slate-950">
-                    {producto.nombre}
-                  </h2>
-                  <p className="mt-3 text-lg font-black text-slate-950">
-                    {formatPrice(producto.precioUnitario)}
-                  </p>
-                  <p
-                    className={`mt-2 text-sm font-semibold ${
-                      producto.disponible ? 'text-green-700' : 'text-slate-500'
-                    }`}
-                  >
-                    {producto.disponible ? 'Disponible' : 'Sin stock'}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
+                Ir a la página 1
+              </button>
+            </div>
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {productos.data?.data.map((producto) => (
+                <Link
+                  key={producto.id}
+                  to={`/productos/${producto.id}?${searchParams.toString()}`}
+                  className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <ProductoImagen
+                    imagen={producto.imagenPrincipal}
+                    className="flex h-40 items-center justify-center bg-slate-100"
+                  />
+                  <div className="p-5">
+                    <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+                      {producto.marca.nombre}
+                    </p>
+                    <h2 className="mt-2 line-clamp-2 min-h-12 font-bold text-slate-950">
+                      {producto.nombre}
+                    </h2>
+                    <p className="mt-3 text-lg font-black text-slate-950">
+                      {formatPrice(producto.precioUnitario)}
+                    </p>
+                    <p
+                      className={`mt-2 text-sm font-semibold ${
+                        producto.disponible ? 'text-green-700' : 'text-slate-500'
+                      }`}
+                    >
+                      {producto.disponible ? 'Disponible' : 'Sin stock'}
+                    </p>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
           <nav aria-label="Paginación del catálogo" className="mt-10 flex justify-center gap-3">
             <button
               type="button"
-              onClick={() => changePage(filters.page - 1)}
-              disabled={filters.page <= 1}
+              onClick={() => changePage(currentPage > totalPages ? totalPages : currentPage - 1)}
+              disabled={currentPage <= 1}
               className="rounded-full border border-slate-300 px-5 py-2 font-semibold text-slate-700 enabled:hover:border-slate-950 disabled:opacity-40"
             >
               Anterior
             </button>
             <button
               type="button"
-              onClick={() => changePage(filters.page + 1)}
-              disabled={filters.page >= totalPages}
+              onClick={() => changePage(currentPage + 1)}
+              disabled={currentPage >= totalPages}
               className="rounded-full border border-slate-300 px-5 py-2 font-semibold text-slate-700 enabled:hover:border-slate-950 disabled:opacity-40"
             >
               Siguiente

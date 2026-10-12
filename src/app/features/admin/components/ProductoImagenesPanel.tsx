@@ -81,18 +81,6 @@ export default function ProductoImagenesPanel({ producto, onClose }: ProductoIma
     }
   }
 
-  async function selectReferencePhoto() {
-    setFormError('');
-    try {
-      const response = await fetch('/references/creatina-star-reference.png');
-      if (!response.ok) throw new Error('No se pudo cargar la foto de referencia.');
-      const image = await response.blob();
-      setFile(new File([image], 'creatina-star-reference.png', { type: image.type }));
-    } catch (error) {
-      setFormError(getErrorMessage(error));
-    }
-  }
-
   const currentImage =
     imagenes.data?.find((imagen) => imagen.esPrincipal) ?? producto.imagenPrincipal;
 
@@ -157,13 +145,6 @@ export default function ProductoImagenesPanel({ producto, onClose }: ProductoIma
               className="mt-2 block w-full rounded-lg border border-slate-300 p-2 font-normal"
               aria-describedby="producto-imagen-help"
             />
-            <button
-              type="button"
-              onClick={() => void selectReferencePhoto()}
-              className="mt-2 rounded-lg border border-slate-300 px-3 py-2 text-xs font-bold text-slate-700"
-            >
-              Usar foto de referencia de creatina
-            </button>
             {file && <span className="ml-2 text-xs font-normal text-slate-600">{file.name}</span>}
             <span id="producto-imagen-help" className="mt-1 block font-normal text-slate-500">
               PNG, JPEG o WebP; máximo 5 MiB. El nombre se reemplaza por un UUID.
