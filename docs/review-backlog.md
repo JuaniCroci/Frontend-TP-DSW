@@ -11,28 +11,28 @@
 
 ## Estado
 
-| Lote   | Alcance                                  | Prioridad | Estado       |
-| ------ | ---------------------------------------- | --------- | ------------ |
-| **T1** | Bugs de correctividad + fuera de alcance | P0        | ⬜ pendiente |
-| **T2** | Reglas de la cátedra (playbook)          | P1        | ⬜ pendiente |
-| **T3** | Refactors y duplicación                  | P2        | ⬜ pendiente |
-| **T4** | Cobertura y salud de tests               | P2        | ⬜ pendiente |
+| Lote   | Alcance                                  | Prioridad | Estado                             |
+| ------ | ---------------------------------------- | --------- | ---------------------------------- |
+| **T1** | Bugs de correctividad + fuera de alcance | P0        | ✅ cerrado (2026-10-12, `5173e73`) |
+| **T2** | Reglas de la cátedra (playbook)          | P1        | ⬜ pendiente                       |
+| **T3** | Refactors y duplicación                  | P2        | ⬜ pendiente                       |
+| **T4** | Cobertura y salud de tests               | P2        | ⬜ pendiente                       |
 
 ---
 
 ## Lote T1 · Bugs de correctividad [P0]
 
-- [ ] **1.** `src/app/features/products/pages/CatalogoPage.tsx:227-233` — Página fuera de rango (`?page=99` o `total` que se achica): muestra "Todavía no hay productos" (mensaje falso) y **esconde la paginación** (sin "Anterior" el usuario queda pátinado). Bifurcar `total === 0` (vacío real + CTA "Limpiar filtros") vs `total > 0 && data.length === 0` (fuera de rango + "Ir a la página 1"); renderizar el `<nav>` siempre que `total > 0`.
-- [ ] **2.** `src/app/features/products/pages/CatalogoPage.tsx:241` — "Página X de Y" usa el `page` pedido, no el del wrapper `{data,total,page,size}` → muestra "Página 99 de 2" si el back clampa. Usar `productos.data?.page ?? filters.page`.
-- [ ] **3.** `src/app/core/api/api.client.ts:20-22` — `apiAssetUrl` con `new URL(path, baseURL)` **no concatena como axios**: con `VITE_API_URL` con path (`/api`) pierde el path en silencio → imágenes rotas. Cambiar a `apiClient.getUri({ url: path })` + tests unitarios en `tests/unit/api-client.unit.test.ts` (base con/sin path, ruta relativa/absoluta).
-- [ ] **4.** `src/app/core/auth/AuthProvider.tsx:10-13` — `JSON.parse(entreno_user)` sin `try/catch` ni validación de shape → storage corrupto = **pantalla blanca en el mount**. Extraer `readStoredUser()` con guard (`id: number`, `nombre/email: string`, `rol` válido); si falla → `removeItem` + `null`. Test de storage corrupto.
-- [ ] **5.** `src/app/features/admin/components/AdminMasterPage.tsx:82-85` — `cleanedData` filtra todo `''` → **imposible limpiar un campo opcional** en edición (teléfono/descripción). Enviar `null` explícito para campos que pasaron de valor a vacío. Test: "limpiar teléfono de proveedor".
-- [ ] **6.** `src/app/features/admin/pages/AdminDescuentosPage.tsx:122-135` — "Activar" manda `PUT {activo}` solo: si el back es full-replace, **reactivar borra los campos** (`api-contract.md:194-196`). Enviar el payload completo desde la fila (seguro en ambos casos) + **test de reactivación** (hoy no existe).
-- [ ] **7.** `src/app/features/admin/pages/AdminClientesPage.tsx:21,253-261` — `q` dispara **un request por tecla** contra `/api/clientes`. Crear `src/app/shared/hooks/useDebounce.ts` (AGENTS.md ya lo presume) y debounced. Test con fake timers.
-- [ ] **8.** `src/app/core/guards/AdminRoute.tsx:7` — Redirige a `/login` **sin `state.from`** → el ADMIN pierde el deep-link tras re-login (ClientRoute sí lo guarda). Mismo patrón: `state={{ from: location.pathname }}`.
-- [ ] **9.** `src/app/features/cart/pages/CarritoPage.tsx:105-109` — `descuentoAplicado` truthiness: `"0.00"` imprime "(0.00% de descuento)". No pintar si es `null` o `"0.00"` (comparación de string, sin aritmética). Test ambos casos.
-- [ ] **10.** `src/app/features/products/pages/ProductoDetallePage.tsx:23-25` — `cantidad`/`cartNotice`/`cartError` sobreviven al navegar detalle→detalle (cantidad/aviso del producto anterior). Resetear al cambiar `productoId`.
-- [ ] **11.** `src/app/features/admin/components/ProductoImagenesPanel.tsx:84-94,160-166` — **Fuera de alcance**: botón "Usar foto de referencia de creatina" con `fetch()` crudo (única red fuera de `api/`), hardcodeado a un producto, ausente de `spec/013`. Borrar botón + `selectReferencePhoto` + el bloque canónizado en `tests/feature/admin-productos.feature.test.tsx:375-398` (conservar el test del upload por `input[type=file]`).
+- [x] **1.** `src/app/features/products/pages/CatalogoPage.tsx:227-233` — Página fuera de rango (`?page=99` o `total` que se achica): muestra "Todavía no hay productos" (mensaje falso) y **esconde la paginación** (sin "Anterior" el usuario queda pátinado). Bifurcar `total === 0` (vacío real + CTA "Limpiar filtros") vs `total > 0 && data.length === 0` (fuera de rango + "Ir a la página 1"); renderizar el `<nav>` siempre que `total > 0`.
+- [x] **2.** `src/app/features/products/pages/CatalogoPage.tsx:241` — "Página X de Y" usa el `page` pedido, no el del wrapper `{data,total,page,size}` → muestra "Página 99 de 2" si el back clampa. Usar `productos.data?.page ?? filters.page`.
+- [x] **3.** `src/app/core/api/api.client.ts:20-22` — `apiAssetUrl` con `new URL(path, baseURL)` **no concatena como axios**: con `VITE_API_URL` con path (`/api`) pierde el path en silencio → imágenes rotas. Cambiar a `apiClient.getUri({ url: path })` + tests unitarios en `tests/unit/api-client.unit.test.ts` (base con/sin path, ruta relativa/absoluta).
+- [x] **4.** `src/app/core/auth/AuthProvider.tsx:10-13` — `JSON.parse(entreno_user)` sin `try/catch` ni validación de shape → storage corrupto = **pantalla blanca en el mount**. Extraer `readStoredUser()` con guard (`id: number`, `nombre/email: string`, `rol` válido); si falla → `removeItem` + `null`. Test de storage corrupto.
+- [x] **5.** `src/app/features/admin/components/AdminMasterPage.tsx:82-85` — `cleanedData` filtra todo `''` → **imposible limpiar un campo opcional** en edición (teléfono/descripción). Enviar `null` explícito para campos que pasaron de valor a vacío. Test: "limpiar teléfono de proveedor".
+- [x] **6.** `src/app/features/admin/pages/AdminDescuentosPage.tsx:122-135` — "Activar" manda `PUT {activo}` solo: si el back es full-replace, **reactivar borra los campos** (`api-contract.md:194-196`). Enviar el payload completo desde la fila (seguro en ambos casos) + **test de reactivación** (hoy no existe).
+- [x] **7.** `src/app/features/admin/pages/AdminClientesPage.tsx:21,253-261` — `q` dispara **un request por tecla** contra `/api/clientes`. Crear `src/app/shared/hooks/useDebounce.ts` (AGENTS.md ya lo presume) y debounced. Test con fake timers.
+- [x] **8.** `src/app/core/guards/AdminRoute.tsx:7` — Redirige a `/login` **sin `state.from`** → el ADMIN pierde el deep-link tras re-login (ClientRoute sí lo guarda). Mismo patrón: `state={{ from: location.pathname }}`.
+- [x] **9.** `src/app/features/cart/pages/CarritoPage.tsx:105-109` — `descuentoAplicado` truthiness: `"0.00"` imprime "(0.00% de descuento)". No pintar si es `null` o `"0.00"` (comparación de string, sin aritmética). Test ambos casos.
+- [x] **10.** `src/app/features/products/pages/ProductoDetallePage.tsx:23-25` — `cantidad`/`cartNotice`/`cartError` sobreviven al navegar detalle→detalle (cantidad/aviso del producto anterior). Resetear al cambiar `productoId`.
+- [x] **11.** `src/app/features/admin/components/ProductoImagenesPanel.tsx:84-94,160-166` — **Fuera de alcance**: botón "Usar foto de referencia de creatina" con `fetch()` crudo (única red fuera de `api/`), hardcodeado a un producto, ausente de `spec/013`. Borrar botón + `selectReferencePhoto` + el bloque canónizado en `tests/feature/admin-productos.feature.test.tsx:375-398` (conservar el test del upload por `input[type=file]`).
 
 ---
 
@@ -86,9 +86,9 @@ _(vacío)_
 
 ## Cierre de lotes
 
-| Lote | Cerrado | Commit |
-| ---- | ------- | ------ |
-| T1   | —       | —      |
-| T2   | —       | —      |
-| T3   | —       | —      |
-| T4   | —       | —      |
+| Lote | Cerrado    | Commit    |
+| ---- | ---------- | --------- |
+| T1   | 2026-10-12 | `5173e73` |
+| T2   | —          | —         |
+| T3   | —          | —         |
+| T4   | —          | —         |
