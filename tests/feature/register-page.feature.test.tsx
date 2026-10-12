@@ -1,10 +1,9 @@
 /** @vitest-environment jsdom */
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { AxiosAdapter } from 'axios';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { apiClient } from '@/core/api/api.client';
+import { apiClient, TOKEN_KEY } from '@/core/api/api.client';
 import RegisterPage from '@/features/auth/pages/RegisterPage';
 
 const adapterOriginal = apiClient.defaults.adapter;
@@ -35,18 +34,13 @@ function mockApiResponse(status: number, data: unknown): AxiosAdapter {
 }
 
 function renderRegisterPage(): void {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false }, mutations: { retry: false } },
-  });
   render(
-    <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={['/registro']}>
-        <Routes>
-          <Route path="/registro" element={<RegisterPage />} />
-          <Route path="/login" element={<div data-testid="login-marker" />} />
-        </Routes>
-      </MemoryRouter>
-    </QueryClientProvider>,
+    <MemoryRouter initialEntries={['/registro']}>
+      <Routes>
+        <Route path="/registro" element={<RegisterPage />} />
+        <Route path="/login" element={<div data-testid="login-marker" />} />
+      </Routes>
+    </MemoryRouter>,
   );
 }
 
@@ -72,10 +66,10 @@ describe('RegisterPage', () => {
     renderRegisterPage();
     fillRegisterForm();
 
-    fireEvent.click(screen.getByTestId('auth-register-submit'));
+    fireEvent.click(screen.getByRole('button', { name: 'Registrarme' }));
 
     expect(await screen.findByTestId('login-marker')).toBeInTheDocument();
-    expect(localStorage.getItem('token')).toBeNull();
+    expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
   });
 
   it('con 409 muestra el aviso junto al campo email', async () => {
@@ -86,7 +80,7 @@ describe('RegisterPage', () => {
     renderRegisterPage();
     fillRegisterForm();
 
-    fireEvent.click(screen.getByTestId('auth-register-submit'));
+    fireEvent.click(screen.getByRole('button', { name: 'Registrarme' }));
 
     expect(await screen.findByText('Ya existe un usuario con ese email')).toBeInTheDocument();
   });
@@ -100,9 +94,11 @@ describe('RegisterPage', () => {
     renderRegisterPage();
     fillRegisterForm('abc');
 
-    fireEvent.click(screen.getByTestId('auth-register-submit'));
+    fireEvent.click(screen.getByRole('button', { name: 'Registrarme' }));
 
-    expect(await screen.findByText('Debe tener al menos 8 caracteres')).toBeInTheDocument();
+    expect(
+      await screen.findByText('La contraseña debe tener al menos 8 caracteres.'),
+    ).toBeInTheDocument();
     expect(requestCount).toBe(0);
   });
 });

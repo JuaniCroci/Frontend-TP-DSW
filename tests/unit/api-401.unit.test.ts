@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import type { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { apiClient } from '@/core/api/api.client';
+import { apiClient, TOKEN_KEY } from '@/core/api/api.client';
 
 const adapterOriginal = apiClient.defaults.adapter;
 
@@ -28,7 +28,7 @@ describe('interceptor de 401: cierre de sesión', () => {
   });
 
   it('limpia el token y notifica a los listeners cuando un endpoint normal responde 401', async () => {
-    localStorage.setItem('token', 'jwt-vencido');
+    localStorage.setItem(TOKEN_KEY, 'jwt-vencido');
     const onExpired = vi.fn();
     window.addEventListener('auth:session-expired', onExpired);
     apiClient.defaults.adapter = (config) => rejectWith401(config);
@@ -38,19 +38,19 @@ describe('interceptor de 401: cierre de sesión', () => {
       message: 'Token inválido',
     });
 
-    expect(localStorage.getItem('token')).toBeNull();
+    expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
     expect(onExpired).toHaveBeenCalledTimes(1);
   });
 
   it('no toca la sesión cuando el 401 viene de un endpoint de auth', async () => {
-    localStorage.setItem('token', 'jwt-de-otra-sesion');
+    localStorage.setItem(TOKEN_KEY, 'jwt-de-otra-sesion');
     const onExpired = vi.fn();
     window.addEventListener('auth:session-expired', onExpired);
     apiClient.defaults.adapter = (config) => rejectWith401(config);
 
     await expect(apiClient.post('/api/auth/login', {})).rejects.toMatchObject({ statusCode: 401 });
 
-    expect(localStorage.getItem('token')).toBe('jwt-de-otra-sesion');
+    expect(localStorage.getItem(TOKEN_KEY)).toBe('jwt-de-otra-sesion');
     expect(onExpired).not.toHaveBeenCalled();
   });
 

@@ -73,5 +73,6 @@ Actualizar `src/App.tsx` para envolver la app con `AuthProvider` y renderizar `L
 
 ## Desvíos de implementación
 
+- **Sync con implementación paralela (2026-10-12)**: esta feature existía en dos versiones (rama local y `origin/main`). Se resolvió por rebase tomando la versión mergeada como base y portando encima: `session.ts` como dueño único del token (`entreno_token`), interceptor de `401` + evento `auth:session-expired` y copy amigable de `429`. La rama alternativa quedó en `backup/local-wip`.
 - Si el backend devuelve errores con shape distinto en algunos endpoints, se normaliza en el interceptor; no se hardcodea en los componentes.
 - Se usa `localStorage` por decisión de feature y compatibilidad inmediata con el stack actual.

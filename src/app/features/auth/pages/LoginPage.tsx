@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { friendlyErrorMessage } from '../../../core/api/friendlyError';
+import { toApiError } from '../../../core/api/apiError';
 import { useAuth } from '../../../core/auth/AuthContext';
 
 export default function LoginPage() {
@@ -26,7 +28,7 @@ export default function LoginPage() {
         { replace: true },
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'No se pudo iniciar sesión');
+      setError(friendlyErrorMessage(toApiError(err)));
     } finally {
       setIsSubmitting(false);
     }

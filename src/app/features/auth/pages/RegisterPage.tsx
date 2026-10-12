@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
-import { ApiError } from '../../../core/api/apiError';
+import { friendlyErrorMessage } from '../../../core/api/friendlyError';
+import { toApiError } from '../../../core/api/apiError';
 import { apiClient } from '../../../core/api/api.client';
 
 interface FormularioRegistro {
@@ -50,11 +51,10 @@ export default function RegisterPage() {
       await apiClient.post('/api/auth/register', data);
       navigate('/login', { replace: true, state: { registrationSuccess: true } });
     } catch (error) {
-      setApiError(error instanceof Error ? error.message : 'No se pudo crear la cuenta.');
-      if (error instanceof ApiError && error.details) {
-        setFieldErrors(
-          Object.fromEntries(error.details.map((detail) => [detail.field, detail.message])),
-        );
+      const apiError = toApiError(error);
+      setApiError(friendlyErrorMessage(apiError));
+      if (apiError.details) {
+        setFieldErrors(Object.fromEntries(apiError.details.map((d) => [d.field, d.message])));
       }
     }
   }

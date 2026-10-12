@@ -2,7 +2,7 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { apiClient } from '@/core/api/api.client';
+import { apiClient, TOKEN_KEY } from '@/core/api/api.client';
 import { AuthProvider } from '@/core/auth/AuthProvider';
 import LoginPage from '@/features/auth/pages/LoginPage';
 
@@ -12,12 +12,7 @@ const userFixture = {
   id: 1,
   nombre: 'Ana Cliente',
   email: 'ana@entreno.com.ar',
-  telefono: '1155555555',
-  direccion: 'Av. Siempreviva 742',
   rol: 'CLIENTE' as const,
-  activo: true,
-  createdAt: '2026-10-01T12:00:00.000Z',
-  updatedAt: '2026-10-01T12:00:00.000Z',
 };
 
 function mockApiResponse(status: number, data: unknown): void {
@@ -52,7 +47,7 @@ function fillCredentials(): void {
 }
 
 function submitLoginForm(): void {
-  fireEvent.click(screen.getByTestId('auth-login-submit'));
+  fireEvent.click(screen.getByRole('button', { name: 'Entrar' }));
 }
 
 describe('LoginPage', () => {
@@ -78,7 +73,7 @@ describe('LoginPage', () => {
     submitLoginForm();
 
     expect(await screen.findByTestId('home-marker')).toBeInTheDocument();
-    expect(localStorage.getItem('token')).toBe('jwt-login');
+    expect(localStorage.getItem(TOKEN_KEY)).toBe('jwt-login');
   });
 
   it('con 401 muestra "Credenciales inválidas"', async () => {
@@ -88,13 +83,11 @@ describe('LoginPage', () => {
 
     submitLoginForm();
 
-    expect(await screen.findByTestId('auth-login-error')).toHaveTextContent(
-      'Credenciales inválidas',
-    );
-    expect(localStorage.getItem('token')).toBeNull();
+    expect(await screen.findByRole('alert')).toHaveTextContent('Credenciales inválidas');
+    expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
   });
 
-  it('con 400 con details muestra el mensaje bajo el campo email', async () => {
+  it('con 400 con details informa el error sin perder el formulario', async () => {
     mockApiResponse(400, {
       statusCode: 400,
       message: 'Error de validación',
@@ -105,7 +98,8 @@ describe('LoginPage', () => {
 
     submitLoginForm();
 
-    expect(await screen.findByText('email debe ser un email válido')).toBeInTheDocument();
+    expect(await screen.findByRole('alert')).toHaveTextContent('Error de validación');
+    expect(screen.getByLabelText('Email')).toHaveValue('ana@entreno.com.ar');
   });
 
   it('con 429 muestra el copy amigable de rate limit', async () => {
@@ -115,7 +109,7 @@ describe('LoginPage', () => {
 
     submitLoginForm();
 
-    expect(await screen.findByTestId('auth-login-error')).toHaveTextContent(
+    expect(await screen.findByRole('alert')).toHaveTextContent(
       'Demasiados intentos. Esperá unos minutos y volvé a intentar.',
     );
   });

@@ -32,6 +32,17 @@ La app necesita autenticarse con la API antes de poder crear cualquier flujo pro
 - [x] Hay un test unitario del `AuthProvider` y un test de feature del login.
 - [x] La UI no hardcodea la URL del backend.
 
+## Notas de integración (sync 2026-10-12)
+
+Se integró una rama local paralela de esta misma feature con la implementación ya mergeada (la de este documento es la referencia). Lo que quedó de esa rama:
+
+- `core/auth/session.ts` es el **único** módulo que lee/escribe el token (`TOKEN_KEY = 'entreno_token'`, unificado con la clave del merge); `api.client.ts` lo re-exporta y consume `getToken()`.
+- Interceptor de `401` en `api.client.ts`: si el request no es de `/api/auth/` y había sesión → `clearSession()` + evento `auth:session-expired`; `AuthProvider` lo escucha y limpia el estado, así los guards redirigen.
+- `friendlyErrorMessage` aplicado en `LoginPage` y `RegisterPage` (`429` → copy amigable de rate limit).
+- Tests adaptados a esta implementación: guards (`AdminRoute`/`ClientRoute`), login (4 casos) y registro (3 casos).
+
+La alternativa descartada (implementación propia con `status`/`GET /api/auth/me`, `ProtectedRoute` y páginas con RHF) vive en la rama `backup/local-wip`.
+
 ## Fuera de alcance
 
 - Layout shell completo.
