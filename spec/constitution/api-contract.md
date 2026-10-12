@@ -184,6 +184,41 @@ POST /api/marcas con body inválido → 400 Bad Request
 - El archivo se almacena en `PRODUCT_IMAGES_DIR` con nombre UUID; MySQL guarda solo la ruta
   relativa, MIME, tamano, texto alternativo, fuente, licencia, atribucion, fecha y estado.
 
+## Descuentos por cantidad
+
+- `GET /api/descuentos` devuelve `{ "data": [...], "total": n }`; cada descuento incluye
+  `id`, `descripcion`, `cantidadMinima`, `porcentaje`, `activo`, `createdAt` y `updatedAt`.
+- `GET /api/descuentos/:id` devuelve el descuento directamente y agrega `aplicaciones`; cada
+  aplicación contiene `id`, `idDescuento`, `idProducto`, `fechaDesde`, `fechaHasta` y el resumen
+  del producto.
+- `POST /api/descuentos` y `PUT /api/descuentos/:id` reciben `descripcion`, `cantidadMinima`
+  (entero >= 1), `porcentaje` (> 0 y <= 100) y, opcionalmente, `activo`. `DELETE /api/descuentos/:id`
+  desactiva el descuento; `PUT` puede reactivarlo.
+- `POST /api/descuentos/:id/aplicaciones` recibe `idProducto`, `fechaDesde` y `fechaHasta`.
+  Ambas fechas son inclusivas; el backend requiere producto y descuento activos, y rechaza con
+  `409` dos aplicaciones solapadas del mismo descuento al mismo producto.
+- `DELETE /api/descuentos/:id/aplicaciones/:aplicacionId` quita la asociación.
+- Los endpoints de mutación requieren rol `ADMIN`. El frontend obtiene las aplicaciones y ofrece
+  productos activos, pero no decide el importe descontado. Al confirmar el pedido, el backend
+  aplica por línea el descuento elegible de mayor porcentaje y persiste el porcentaje en
+  `descuentoAplicado`; los descuentos no se acumulan.
+
+## Carrito y confirmación de pedido
+
+- `GET /api/carrito` (autenticado) devuelve la vista del carrito activo o `404` si aún no existe.
+  `POST /api/carrito` crea uno si falta y devuelve la vista; si ya existe, es idempotente.
+- La vista contiene `{ id, estado, items, total }`; cada item contiene su `id`, resumen del
+  producto (`id`, `nombre`, `precioUnitario`), `cantidad` y `subtotal`. Los importes son strings
+  decimales calculados por el backend.
+- `POST /api/carrito/items` recibe `{ idProducto, cantidad }`, agrega a la línea existente o crea
+  una y responde la vista completa. `PUT /api/carrito/items/:id` recibe `{ cantidad }` y también
+  responde la vista completa. Cantidad debe ser un entero >= 1 y el backend valida stock (`409`).
+- `DELETE /api/carrito/items/:id` quita la línea y responde `204`.
+- `POST /api/carrito/confirmar` confirma un carrito no vacío y devuelve el detalle del pedido
+  creado, incluyendo `importeTotal` y sus items (`cantidad`, `precioUnitario`, `subtotal`,
+  `descuentoAplicado`). El backend vuelve a validar stock, aplica descuentos y descuenta
+  existencias. El estado inicial del pedido es `REALIZADO`; esta operación no procesa pagos.
+
 ## Campos de respuesta a excluir siempre
 
 Los siguientes campos **nunca** deben aparecer en ninguna respuesta:

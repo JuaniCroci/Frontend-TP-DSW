@@ -12,6 +12,11 @@ const sections = [
     description: 'Administrá productos, precios, relaciones y stock inicial.',
   },
   {
+    to: '/admin/descuentos',
+    title: 'Descuentos',
+    description: 'Definí descuentos por cantidad y su vigencia para cada producto.',
+  },
+  {
     to: '/admin/marcas',
     title: 'Marcas',
     description: 'Administrá las marcas disponibles para el catálogo.',

@@ -1,4 +1,7 @@
 import { Link, useLocation, useParams } from 'react-router-dom';
+import { useState } from 'react';
+import { useAuth } from '../../../core/auth/AuthContext';
+import { useAgregarAlCarrito } from '../../cart/api/mutations';
 import { useProductoDetalle } from '../api/queries';
 import ProductoImagen from '../components/ProductoImagen';
 
@@ -15,7 +18,25 @@ export default function ProductoDetallePage() {
   const location = useLocation();
   const productoId = Number(id);
   const producto = useProductoDetalle(productoId);
+  const { isAuthenticated, user } = useAuth();
+  const agregar = useAgregarAlCarrito();
+  const [cantidad, setCantidad] = useState(1);
+  const [cartNotice, setCartNotice] = useState('');
+  const [cartError, setCartError] = useState('');
   const backToCatalog = `/productos${location.search}`;
+  const loginReturn = `${location.pathname}${location.search}`;
+
+  async function addToCart() {
+    if (!producto.data) return;
+    setCartError('');
+    setCartNotice('');
+    try {
+      await agregar.mutateAsync({ idProducto: producto.data.id, cantidad });
+      setCartNotice('Producto agregado al carrito.');
+    } catch (error) {
+      setCartError(error instanceof Error ? error.message : 'No se pudo agregar el producto.');
+    }
+  }
 
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-12 sm:py-16">
@@ -61,6 +82,59 @@ export default function ProductoDetallePage() {
                 ? `${producto.data.stock} unidades disponibles`
                 : 'Sin stock'}
             </p>
+
+            {user?.rol === 'CLIENTE' ? (
+              <div className="mt-6">
+                <label className="block max-w-xs text-sm font-semibold text-slate-700">
+                  Cantidad
+                  <input
+                    type="number"
+                    min="1"
+                    max={producto.data.stock}
+                    step="1"
+                    value={cantidad}
+                    onChange={(event) => setCantidad(Number(event.target.value))}
+                    disabled={!producto.data.disponible || agregar.isPending}
+                    className="mt-2 block w-full rounded-lg border border-slate-300 px-3 py-2.5"
+                  />
+                </label>
+                <button
+                  type="button"
+                  onClick={() => void addToCart()}
+                  disabled={
+                    !producto.data.disponible ||
+                    agregar.isPending ||
+                    !Number.isInteger(cantidad) ||
+                    cantidad < 1 ||
+                    cantidad > producto.data.stock
+                  }
+                  className="mt-4 rounded-full bg-slate-950 px-5 py-2.5 font-bold text-white enabled:hover:bg-lime-700 disabled:opacity-50"
+                >
+                  {agregar.isPending ? 'Agregando...' : 'Agregar al carrito'}
+                </button>
+                {cartNotice && (
+                  <p role="status" className="mt-3 text-sm font-semibold text-green-700">
+                    {cartNotice}{' '}
+                    <Link to="/carrito" className="underline underline-offset-2">
+                      Ver carrito
+                    </Link>
+                  </p>
+                )}
+                {cartError && (
+                  <p role="alert" className="mt-3 text-sm font-semibold text-red-700">
+                    {cartError}
+                  </p>
+                )}
+              </div>
+            ) : !isAuthenticated ? (
+              <Link
+                to="/login"
+                state={{ from: loginReturn }}
+                className="mt-6 inline-flex rounded-full bg-slate-950 px-5 py-2.5 font-bold text-white hover:bg-lime-700"
+              >
+                Iniciá sesión para comprar
+              </Link>
+            ) : null}
 
             <div className="mt-8 border-t border-slate-200 pt-6">
               <h2 className="font-bold text-slate-950">Descripción</h2>

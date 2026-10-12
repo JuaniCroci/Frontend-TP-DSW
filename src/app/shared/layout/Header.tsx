@@ -27,6 +27,11 @@ export function Header() {
           {isAuthenticated ? (
             <>
               <span className="text-slate-500">Hola, {user?.nombre}</span>
+              {user?.rol === 'CLIENTE' && (
+                <Link to="/carrito" className="transition hover:text-lime-700">
+                  Carrito
+                </Link>
+              )}
               {user?.rol === 'ADMIN' && (
                 <Link to="/admin" className="transition hover:text-lime-700">
                   Administración

@@ -67,7 +67,8 @@ Dependencias: producto requiere los maestros activos de tipo y marca; proveedor 
 - Endpoints: `GET /api/descuentos`, `GET /api/descuentos/:id`, `POST /api/descuentos`, `PUT /api/descuentos/:id`, `DELETE /api/descuentos/:id`, `POST /api/descuentos/:id/aplicaciones`, `DELETE /api/descuentos/:id/aplicaciones/:aplicacionId`.
 - Descuento: `descripcion`, `cantidadMinima` (mínimo 1), `porcentaje` (mayor a 0 y hasta 100), `activo?`.
 - Aplicación: `idProducto`, `fechaDesde`, `fechaHasta`; fechas inclusivas gestionadas por el backend.
-- El frontend presenta los descuentos y aplicaciones recibidos, pero no calcula descuentos de compra ni decide cuál se aplica. Descuentos distintos pueden tener vigencias solapadas; no se repite el mismo descuento sobre el mismo producto con fechas solapadas (`409`).
+- La pantalla administrativa lista, crea, edita, activa/desactiva descuentos y administra sus aplicaciones por producto y rango de fechas. Solo ofrece productos activos y permite quitar aplicaciones.
+- El frontend no calcula descuentos de compra ni decide cuál se aplica. Al confirmar un pedido, el backend usa el mejor descuento elegible por línea de producto; no se acumulan descuentos. Descuentos distintos pueden tener vigencias solapadas; no se repite el mismo descuento sobre el mismo producto con fechas solapadas (`409`).
 
 ### Ingresos
 
@@ -80,14 +81,15 @@ Dependencias: producto requiere los maestros activos de tipo y marca; proveedor 
 
 - [x] Existe navegación administrativa visible únicamente para `ADMIN` y una sección de administración para marcas, tipos y proveedores.
 - [x] Rutas administrativas bloquean tanto usuarios anónimos como usuarios `CLIENTE`; las llamadas también dependen de autorización del backend.
-- [ ] Los siete módulos cubiertos ofrecen listado, alta y las operaciones de edición/detalle/activación/baja que define su API, con formularios basados en DTOs reales. (Acceso, maestros, clientes y productos implementados; descuentos e ingresos pendientes.)
-- [ ] Los campos de relación usan opciones cargadas de la API; se impide ofrecer maestros inactivos para nuevas asignaciones.
+- [ ] Los siete módulos cubiertos ofrecen listado, alta y las operaciones de edición/detalle/activación/baja que define su API, con formularios basados en DTOs reales. (Acceso, maestros, clientes, productos y descuentos implementados; ingresos pendiente.)
+- [x] Las aplicaciones de descuento ofrecen productos activos cargados desde la API y respetan los rangos de vigencia del backend.
 - [ ] Cada pantalla presenta estados de carga, error, resultado vacío y confirmación visible de operación exitosa.
 - [ ] Errores de validación, duplicados y autorización se comunican sin descartarlos ni simular éxito.
 - [x] Se invalidan/refrescan las queries relacionadas después de una mutación de marcas, tipos o proveedores, manteniendo la UI sincronizada con el servidor.
+- [x] Las mutaciones de descuentos refrescan el listado, el detalle de aplicaciones y las vistas públicas del catálogo.
 - [ ] El stock inicial se define solo al dar de alta el producto; después, el stock solo cambia como efecto de ingresos/anulaciones procesados por el backend, nunca desde la edición del producto ni por cálculos locales.
 - [ ] El frontend no incluye permisos codificados como sustituto de las comprobaciones del servidor, ni registra secretos/tokens.
-- [ ] Hay pruebas para autorización de rutas, formularios/requests, respuesta exitosa y errores de cada bloque. (Acceso, maestros, clientes y productos cubiertos.)
+- [ ] Hay pruebas para autorización de rutas, formularios/requests, respuesta exitosa y errores de cada bloque. (Acceso, maestros, clientes, productos y descuentos cubiertos; ingresos pendiente.)
 
 ## Fuera de alcance
 

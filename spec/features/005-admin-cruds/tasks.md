@@ -1,6 +1,6 @@
 # 005 · Administración de datos — Tareas
 
-> Feature implementada por bloques. Acceso, maestros, clientes y productos están completos; descuentos e ingresos siguen pendientes.
+> Feature implementada por bloques. Acceso, maestros, clientes, productos y descuentos están completos; ingresos sigue pendiente.
 
 ## A. Contrato y acceso
 
@@ -34,10 +34,10 @@
 
 ## E. Descuentos
 
-- [ ] Implementar listado, detalle y CRUD del descuento.
-- [ ] Implementar gestión de aplicaciones con producto y ventana de vigencia.
-- [ ] Presentar errores 400/404/409 de reglas de vigencia sin calcular descuentos localmente.
-- [ ] Cubrir alta/edición/baja y aplicaciones con tests.
+- [x] Implementar listado, detalle y CRUD del descuento.
+- [x] Implementar gestión de aplicaciones con producto activo y ventana de vigencia.
+- [x] Presentar errores 400/404/409 de reglas de vigencia sin calcular descuentos localmente.
+- [x] Cubrir alta/edición/baja y aplicaciones con tests.
 
 ## F. Ingresos
 

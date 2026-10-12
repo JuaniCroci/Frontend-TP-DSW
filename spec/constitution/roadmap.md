@@ -12,6 +12,7 @@ La columna **Back** indica qué feature del backend necesita esa UI:
 3. **[003 · Layout shell](../features/003-layout-shell/)** — portada adaptable, navegación, estado de sesión y rutas de inicio/login.
 4. **[004 · Catálogo](../features/004-catalogo-productos/)** — listado público filtrable y paginado, detalle de producto y estados vacíos/error. El catálogo de desarrollo aún no tiene datos.
 5. **[013 · Imágenes de productos](../features/013-imagenes-productos/)** — registro UUID, carga administrativa, metadatos y visualización en catálogo y detalle (front ✅, back ✅).
+6. **[006 · Carrito](../features/006-carrito/)** — carrito persistente, edición de cantidades y confirmación de pedido (front ✅, back ✅; sin pagos).
 
 ## En orden (regularidad)
 
@@ -21,8 +22,8 @@ La columna **Back** indica qué feature del backend necesita esa UI:
 | ~~002~~ | ~~[Core API + Auth](../features/002-core-api-auth/)~~ — ✅                                                              | 002 ✅             |
 | ~~003~~ | ~~[Layout shell](../features/003-layout-shell/)~~ — ✅                                                                  | —                  |
 | ~~004~~ | ~~[Catálogo](../features/004-catalogo-productos/)~~ — ✅                                                                | 007 ✅, 010 ✅     |
-| 005     | [Admin CRUDs](../features/005-admin-cruds/) — acceso, maestros, clientes y productos listos; faltan descuentos/ingresos | 003–009 ✅         |
-| 006     | [Carrito](../features/006-carrito/) — carrito persistente + confirmar pedido                                            | 011 ✅             |
+| 005     | [Admin CRUDs](../features/005-admin-cruds/) — acceso, maestros, clientes, productos y descuentos listos; falta ingresos | 003–009 ✅         |
+| ~~006~~ | ~~[Carrito](../features/006-carrito/) — carrito persistente + confirmar pedido (sin pagos)~~ — ✅                       | 011 ✅             |
 | 007     | [Pedidos](../features/007-pedidos/) — mis pedidos, gestión admin, listado filtrado                                      | 012 ✅, **013 ⏳** |
 | 008     | [Perfil](../features/008-perfil/) — datos del cliente                                                                   | 002 ✅             |
 

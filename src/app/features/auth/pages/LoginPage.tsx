@@ -20,7 +20,11 @@ export default function LoginPage() {
 
     try {
       await login(email, password);
-      navigate('/');
+      const from = (location.state as { from?: unknown } | null)?.from;
+      navigate(
+        typeof from === 'string' && from.startsWith('/') && !from.startsWith('//') ? from : '/',
+        { replace: true },
+      );
     } catch (err) {
       setError(err instanceof Error ? err.message : 'No se pudo iniciar sesión');
     } finally {

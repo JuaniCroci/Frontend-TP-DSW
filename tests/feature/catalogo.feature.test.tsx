@@ -5,6 +5,7 @@ import { AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } fro
 import { afterEach, describe, expect, it } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { apiClient } from '@/core/api/api.client';
+import { AuthContext } from '@/core/auth/AuthContext';
 import CatalogoPage from '@/features/products/pages/CatalogoPage';
 import ProductoDetallePage from '@/features/products/pages/ProductoDetallePage';
 
@@ -62,12 +63,22 @@ function renderRoutes(path: string) {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter initialEntries={[path]}>
-        <Routes>
-          <Route path="/productos" element={<CatalogoPage />} />
-          <Route path="/productos/:id" element={<ProductoDetallePage />} />
-        </Routes>
-      </MemoryRouter>
+      <AuthContext.Provider
+        value={{
+          user: null,
+          token: null,
+          isAuthenticated: false,
+          login: async () => {},
+          logout: () => {},
+        }}
+      >
+        <MemoryRouter initialEntries={[path]}>
+          <Routes>
+            <Route path="/productos" element={<CatalogoPage />} />
+            <Route path="/productos/:id" element={<ProductoDetallePage />} />
+          </Routes>
+        </MemoryRouter>
+      </AuthContext.Provider>
     </QueryClientProvider>,
   );
 }

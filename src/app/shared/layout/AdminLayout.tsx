@@ -4,6 +4,7 @@ const sections = [
   { to: '/admin', label: 'Resumen', end: true },
   { to: '/admin/clientes', label: 'Clientes' },
   { to: '/admin/productos', label: 'Productos' },
+  { to: '/admin/descuentos', label: 'Descuentos' },
   { to: '/admin/marcas', label: 'Marcas' },
   { to: '/admin/tipos-producto', label: 'Tipos de producto' },
   { to: '/admin/proveedores', label: 'Proveedores' },
