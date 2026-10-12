@@ -5,7 +5,7 @@
 - **Lenguaje:** TypeScript estricto (`strict: true`)
 - **Framework:** React 19 (SPA cliente)
 - **Build / dev server:** Vite 6 (+ `@vitejs/plugin-react`)
-- **Estilos:** Tailwind CSS 4 (`@tailwindcss/vite`) — **tentativo**, confirmar con el equipo
+- **Estilos:** Tailwind CSS 4 (`@tailwindcss/vite`) — **definitivo** (confirmado 2026-10-04)
 - **Routing:** React Router 7 (layout routes, rutas anidadas y protegidas)
 - **Data fetching / server state:** TanStack Query 5 + Axios 1
 - **Formularios:** React Hook Form 7
@@ -32,6 +32,7 @@ src/
     └── shared/
         ├── components/   → Button, Card, Modal, Input, Spinner...
         ├── hooks/        → useDebounce, useMediaQuery...
+        ├── utils/        → cn() (clsx + tailwind-merge), formatMoney, formatDate...
         └── layout/       → MainLayout, Header, Footer, Sidebar
 tests/
 ├── unit/                 → hooks, utils, normalizadores (sin UI)
@@ -55,6 +56,25 @@ tests/
 - **Wrappers de listado** — toda respuesta de listado llega `{ data, total }` (y `page`/`size` cuando aplica). El modelo de respuesta respeta eso; no se aplanar en el modelo.
 - **Errores de API** — forma `{ statusCode, message, details? }`. El interceptor de Axios la normaliza a una `ApiError` tipada que las páginas consumen.
 - **Auth** — token JWT en `localStorage`; el interceptor de request adjunta `Authorization: Bearer <token>` cuando existe. 401 → limpiar sesión y redirigir a login.
+
+## Requisitos técnicos del enunciado (cátedra)
+
+Mapeo de los requisitos de frontend de [`docs/catedra/enunciado-tp.md`](../../docs/catedra/enunciado-tp.md) a decisiones de este repo:
+
+| Requisito (cátedra)                                   | Implementación acá                                                                                        |
+| ----------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Framework de frontend + HTML5                         | React 19 + TypeScript (JSX → HTML5 semántico)                                                             |
+| CSS con framework/guía de estilo                      | Tailwind CSS 4 (definitivo); metodología: utility-first con tokens `@theme`                               |
+| Guía de estilo JS (Airbnb, sugerida)                  | ESLint flat + Prettier (equivalente moderno; Airbnb config no soporta flat config)                        |
+| **Mobile-first** y breakpoints **SM / MD / LG**       | Obligatorio en `coding-playbook.md` (sección CSS/Tailwind)                                                |
+| Manejo de eventos del usuario                         | Eventos React en componentes (`onChange`, `onClick`, …)                                                   |
+| Manejo de errores amigable                            | Estados `error` + `ApiError.message` en toda pantalla asíncrona                                           |
+| Reactividad ante un estado                            | `useState`/Context para UI local; TanStack Query para estado de servidor                                  |
+| **Input property** / **Output property**              | Props del componente / callbacks (`onXxx`) — ver playbook sección 3                                       |
+| Al menos un servicio                                  | Capa de red `features/<name>/api/` (queries/mutations) + `core/api/`                                      |
+| Modelos con clases/interfaces/tipos custom            | `src/app/models/` derivados de `api-contract.md`                                                          |
+| Patrón de diseño orientado a objetos (de ser posible) | `ApiError` (clase con encapsulamiento); se evalúan más (factory/strategy) donde aporte                    |
+| Tests (aprobación): 1 unit de componente + 1 E2E      | Vitest + Testing Library ya activos; **E2E pendiente** — decidir Playwright/Cypress al iniciar aprobación |
 
 ## Variables de entorno (`.env.example`)
 

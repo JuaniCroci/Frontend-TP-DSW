@@ -1,1 +1,20 @@
 @import 'tailwindcss';
+
+@theme {
+  --color-brand-600: oklch(0.705 0.213 47.604);
+  --color-brand-700: oklch(0.646 0.222 41.116);
+}
+
+@layer components {
+  .label-campo {
+    @apply block text-sm font-medium text-slate-700;
+  }
+
+  .input-campo {
+    @apply w-full px-3 py-2 text-sm rounded border border-slate-300 focus:border-brand-600 focus:ring-1 focus:ring-brand-600 focus:outline-none;
+  }
+
+  .mensaje-error {
+    @apply text-sm text-red-600;
+  }
+}

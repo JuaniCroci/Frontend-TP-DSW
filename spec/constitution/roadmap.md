@@ -55,7 +55,7 @@ _Features de **aprobación** — se crean sus carpetas al iniciar la fase. Todas
 
 ## Pendientes / riesgos del equipo (no son features)
 
-- **Tailwind 4 tentativo** — confirmar con el equipo; si cambia, es solo la sección "Estilos" de `tech-stack.md`.
+- **Tailwind 4 confirmado** (2026-10-04): definitivo; solo cambia si el equipo lo decide de nuevo (entonces actualizar la sección "Estilos" de `tech-stack.md`).
 - **`api-contract.md` snapshot** — si el back modifica su contrato, sincronizar [`constitution/api-contract.md`](../constitution/api-contract.md) antes de implementar la feature que lo usa.
 - **Evidencia ágil**: GitHub Projects (issues/PRs) + minutas de reuniones (README de la cátedra la exige).
 

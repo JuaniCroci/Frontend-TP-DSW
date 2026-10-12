@@ -3,3 +3,11 @@ dist
 coverage
 pnpm-lock.yaml
 *.tsbuildinfo
+
+# skills de terceros (contenido vendor, no formatear)
+.agents
+
+# copias verbatim del material de la cátedra (deben ser idénticas al origen)
+docs/catedra/enunciado-tp.md
+docs/catedra/proposal-catedra.md
+docs/catedra/DER-Entreno2.0.drawio.html

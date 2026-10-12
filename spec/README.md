@@ -13,6 +13,7 @@ spec/
 │   ├── roadmap.md           ← orden y estado de las features + dependencias del back
 │   ├── coding-playbook.md   ← fuente de verdad para escribir código
 │   ├── api-contract.md      ← snapshot del contrato HTTP del backend
+│   ├── api-endpoints.md     ← snapshot del catálogo de endpoints del backend
 │   └── engineering-loop.md  ← loop de validación por feature (gates)
 └── features/                ← una carpeta por feature
     └── NNN-nombre-feature/
@@ -35,6 +36,7 @@ spec/
 - **Repositorios agnósticos**: este repo no importa ni depende de código del backend. Toda comunicación es REST.
 - **Fuente de verdad del contrato HTTP**: `spec/constitution/api-contract.md` **del backend**.
 - Este repo guarda un **snapshot** en [`constitution/api-contract.md`](./constitution/api-contract.md); si el back cambia ese archivo, sincronizarlo (gate en el loop).
+- **Catálogo de endpoints**: snapshot en [`constitution/api-endpoints.md`](./constitution/api-endpoints.md), extraído de los `spec.md` de cada feature del back (`tp-dsw-back00/spec/features/`); también se sincroniza como gate.
 - **El front no implementa lógica de negocio**: stock, descuentos, totales y transiciones de estado los calcula/enforcea la API. El frontend valida entradas para UX y presenta lo que la API responde.
 
 > La constitución manda: si una feature choca con `mission.md` o `tech-stack.md`, se replantea la feature, no la constitución.

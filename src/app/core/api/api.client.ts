@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { clearSession, getToken } from '../auth/session';
 import { toApiError } from './apiError';
 
-export const TOKEN_KEY = 'entreno_token';
+export { TOKEN_KEY } from '../auth/session';
 
 export function requireBaseUrl(value: string | undefined): string {
   if (!value) {
@@ -21,12 +22,20 @@ export function apiAssetUrl(path: string): string {
 }
 
 apiClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem(TOKEN_KEY);
+  const token = getToken();
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
 apiClient.interceptors.response.use(
   (response) => response,
-  (error) => Promise.reject(toApiError(error)),
+  (error) => {
+    const apiError = toApiError(error);
+    const url = axios.isAxiosError(error) ? (error.config?.url ?? '') : '';
+    if (apiError.statusCode === 401 && !url.includes('/api/auth/') && getToken()) {
+      clearSession();
+      window.dispatchEvent(new Event('auth:session-expired'));
+    }
+    return Promise.reject(apiError);
+  },
 );

@@ -218,9 +218,13 @@ export interface Pedido {
     - Diseñar endpoints o contratos de módulo → `api-and-interface-design`.
     - Auth, input de usuario, secretos → `security-and-hardening`.
     - Búsqueda de skills nuevas → `find-skills`.
+    - **Diseño UI** (crear/restilizar pantallas, dirección visual, componentes) → `frontend-design` + `design-taste-frontend`.
+    - **Review de UI** (accesibilidad, UX, guidelines, "revisá esta interfaz") → `web-design-guidelines`.
+    - **Tailwind** (design system, tokens, clases, responsive) → `tailwind-design-system`.
   - **Casos específicos** (solo cuando aplica):
     - `requesting-code-review` → pedir review explícita (requiere repo git).
     - `supabase-postgres-best-practices` → no aplica (no hay Postgres acá).
+  - **Normas de naming y CSS** no viven en skills: son obligatorias en [`spec/constitution/coding-playbook.md`](./spec/constitution/coding-playbook.md) (secciones 2, 4 y 5).
 
 ## Alcance funcional (resumen)
 
@@ -248,3 +252,6 @@ Ver [proposal.md](./proposal.md) para detalle completo y [`spec/constitution/roa
 - Mantener los archivos pequeños; extraer lógica a hooks.
 - Estados **loading / error / vacío** en toda pantalla asíncrona.
 - Sin `console.log` en código comiteado.
+- **Naming de identificadores**: código en inglés, contrato en español (`handle<Evento>`, `on<Action>`, `is/has/can`, `use<Recurso>`) — [`coding-playbook.md` §2](./spec/constitution/coding-playbook.md).
+- **HTML semántico** + `data-testid` en `kebab-case` (`<feature>-<elemento>`) — §4 del playbook.
+- **CSS mobile-first con Tailwind**: breakpoints solo `sm:/md:/lg:`, orden de utilidades, `cn()` para variantes, colores via tokens `@theme` — §5 del playbook. Pantalla OK en 360px / 768px / 1024px+.

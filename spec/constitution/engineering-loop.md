@@ -30,21 +30,27 @@
 
 El agente **debe leer** estos archivos antes de escribir una sola línea:
 
-| Archivo                                | Por qué                                         |
-| -------------------------------------- | ----------------------------------------------- |
-| `spec/constitution/tech-stack.md`      | Stack, estructura, decisiones cerradas, límites |
-| `spec/constitution/coding-playbook.md` | Convenciones de código                          |
-| `spec/constitution/api-contract.md`    | Formato de respuestas HTTP (snapshot del back)  |
-| `spec/constitution/mission.md`         | Qué construimos y para quién                    |
-| `spec/features/NNN-nombre/spec.md`     | Qué hace la feature + criterios de aceptación   |
-| `spec/features/NNN-nombre/plan.md`     | Cómo implementarla + interfaces externas        |
-| `spec/features/NNN-nombre/tasks.md`    | Checklist de tareas a ejecutar                  |
+| Archivo                                | Por qué                                                       |
+| -------------------------------------- | ------------------------------------------------------------- |
+| `spec/constitution/tech-stack.md`      | Stack, estructura, decisiones cerradas, límites               |
+| `spec/constitution/coding-playbook.md` | Convenciones de código                                        |
+| `spec/constitution/api-contract.md`    | Formato de respuestas HTTP (snapshot del back)                |
+| `spec/constitution/api-endpoints.md`   | Catálogo de endpoints, filtros y permisos (snapshot del back) |
+| `spec/constitution/mission.md`         | Qué construimos y para quién                                  |
+| `spec/features/NNN-nombre/spec.md`     | Qué hace la feature + criterios de aceptación                 |
+| `spec/features/NNN-nombre/plan.md`     | Cómo implementarla + interfaces externas                      |
+| `spec/features/NNN-nombre/tasks.md`    | Checklist de tareas a ejecutar                                |
 
 > **No** leer otros `plan.md` o código fuente salvo que la sección "Interfaces externas" del `plan.md` de la feature lo indique explícitamente.
 
 ### 1.b Sincronizar el contrato
 
-Antes de implementar, verificar que el snapshot `spec/constitution/api-contract.md` siga igual al del backend (mismo path en el repo del back). Si cambió, copiar los cambios y anotarlo en `plan.md` bajo "Desvíos de implementación".
+Antes de implementar, verificar que los snapshots del back sigan iguales a los del backend (mismo path en el repo del back):
+
+1. `spec/constitution/api-contract.md` → `tp-dsw-back00/spec/constitution/api-contract.md`
+2. `spec/constitution/api-endpoints.md` → `tp-dsw-back00/spec/features/*/spec.md` (rutas, filtros, permisos)
+
+Si cambió, copiar los cambios y anotarlo en `plan.md` bajo "Desvíos de implementación".
 
 ---
 
@@ -136,8 +142,16 @@ Checklist manual contra `coding-playbook.md`. El agente responde cada ítem ante
 
 ```
 [ ] Archivos siguen la tabla de sección 1 del playbook
+[ ] Identificadores según sección 2: código en inglés, contrato en español,
+    handle<Evento>, on<Action>, is/has/can, use<Recurso>; un solo idioma por nombre
 [ ] Estructura feature module correcta (pages/components/hooks/api); la red vive en api/
 [ ] Componentes: un componente por archivo, props tipadas, export default solo en páginas
+[ ] Input/output property: props de entrada tipadas, salidas vía callbacks onX (sin mutar props)
+[ ] HTML semántico (header/nav/main/article, <button> real) y data-testid
+    en kebab-case <feature>-<elemento> donde los tests lo necesiten
+[ ] CSS mobile-first: base sin prefijo, breakpoints solo sm:/md:/lg:,
+    orden de utilidades fijo, cn() para variantes, colores vía tokens @theme
+[ ] Pantalla verificada en 360px / 768px / 1024px+ (checklist responsive del playbook)
 [ ] Estados loading / error / vacío presentes en cada pantalla asíncrona
 [ ] Data fetching vía TanStack Query con queryKey canónica; sin fetch en useEffect
 [ ] Mutations invalidan sus queryKeys después del éxito
@@ -147,7 +161,8 @@ Checklist manual contra `coding-playbook.md`. El agente responde cada ítem ante
 [ ] Sin URLs hardcodeadas (VITE_API_URL) ni dependencias del backend
 [ ] Sin console.log ni .env commiteado
 [ ] Sin lógica de negocio autoritativa en el front
-[ ] Snapshot de api-contract.md sincronizado con el back (si hubo cambios allá)
+[ ] Snapshots sincronizados con el back: api-contract.md y api-endpoints.md
+    (si hubo cambios allá)
 ```
 
 Si algún ítem falla → corregir y volver al gate de lint.
