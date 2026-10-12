@@ -14,7 +14,7 @@
 | Lote   | Alcance                                  | Prioridad | Estado                             |
 | ------ | ---------------------------------------- | --------- | ---------------------------------- |
 | **T1** | Bugs de correctividad + fuera de alcance | P0        | ✅ cerrado (2026-10-12, `5173e73`) |
-| **T2** | Reglas de la cátedra (playbook)          | P1        | ⬜ pendiente                       |
+| **T2** | Reglas de la cátedra (playbook)          | P1        | ✅ cerrado (2026-10-12, `1e8d321`) |
 | **T3** | Refactors y duplicación                  | P2        | ⬜ pendiente                       |
 | **T4** | Cobertura y salud de tests               | P2        | ⬜ pendiente                       |
 
@@ -38,16 +38,22 @@
 
 ## Lote T2 · Reglas de la cátedra [P1]
 
-- [ ] **1.** `cn()` inexistente (playbook §5.3 lo exige desde 003): agregar `clsx` + `tailwind-merge`, crear `src/app/shared/utils/cn.ts` y migrar variantes con template literals (`AdminLayout.tsx:23-28`, `HomePage.tsx:102`, `CatalogoPage.tsx:265-271`, `ProductoDetallePage.tsx:76-84`). Si el equipo decide no usarlo → documentar la desvío en `plan.md` de 003.
-- [ ] **2.** Paleta partida: `@theme` declara `brand-*` (naranja) pero todo el shell/admin usa `lime-*`. **Decidir la marca** (migrar `lime` → `brand` o exponer acentos como tokens) y **borrar CSS muerto** de `src/index.css`: `.label-campo`, `.input-campo`, `.mensaje-error` (0 usos) + tokens/componentes sin uso.
-- [ ] **3.** `export default` en componentes (solo páginas lo usan): `products/components/ProductoImagen.tsx:11`, `admin/components/ProductoImagenesPanel.tsx:29` → named export + ajustar imports.
-- [ ] **4.** Breakpoints fuera de regla (`solo sm:/md:/lg:`): `CatalogoPage.tsx:244` (`xl:grid-cols-4`), `admin/pages/AdminHomePage.tsx:46` (`xl:grid-cols-3`) → `lg:`.
-- [ ] **5.** `admin/pages/AdminCatalogoPages.tsx` — 3 páginas en un archivo con named export → una por archivo con `export default` (ajustar `App.tsx:14-18`). Ídem `ProductoImagenesPanel` usa default export (inverso del caso 3).
-- [ ] **6.** **Código muerto** (grep verificado): `features/auth/api/mutations.ts` (`useRegister`), `models/Auth.ts` (`RegisterInput`, `AuthResponse`), `shared/utils/fieldErrors.ts` (`detailsToFieldErrors`), `shared/components/Spinner.tsx`, clases del caso 2. La mayoría se salva usándolos: `RegisterPage.tsx:51` debe llamar `useRegister()` (hoy hace `apiClient.post` directo, fuera del patrón `api/`), tipar la respuesta como `AuthResponse`, mapear `details` con `detailsToFieldErrors` y borrar el `DatosRegistro` local.
-- [ ] **7.** Docs desfasadas por el sync: `AGENTS.md` (structure `core/auth` y §9: `ProtectedRoute` → `ClientRoute`/`AdminRoute`; provider en `App.tsx`, no `main.tsx`), `spec/constitution/tech-stack.md:25`, `spec/constitution/coding-playbook.md:205-206`.
-- [ ] **8.** **Decisión de convention** (anotar el resultado acá): (a) queryKeys con acción en inglés (`'list'`) vs playbook (`'listado'`); (b) `data-testid`: 0 usos en `src/` vs playbook §4 — ¿alinear el texto ("solo donde el test lo necesite") o agregar testids; (c) handlers `applyFilters`/`submit` vs `handle<Evento>`.
-- [ ] **9.** Casting en el punto de la sesión: `AuthProvider.tsx:37-38` (`response.data.token as string`) → `apiClient.post<AuthResponse>` + validación de shape. Ídem `location.state as` en `LoginPage.tsx:11,25` → un solo tipo `LoginState`.
-- [ ] **10.** `AdminRoute` sin `from` ya está en T1-8; acá queda el test `login-page` de open-redirect (`from: '//evil.com'` → cae en `/`, guard ya escrito pero sin cubrir).
+- [x] **1.** `cn()` inexistente (playbook §5.3 lo exige desde 003): agregar `clsx` + `tailwind-merge`, crear `src/app/shared/utils/cn.ts` y migrar variantes con template literals (`AdminLayout.tsx:23-28`, `HomePage.tsx:102`, `CatalogoPage.tsx:265-271`, `ProductoDetallePage.tsx:76-84`). Si el equipo decide no usarlo → documentar la desvío en `plan.md` de 003.
+- [x] **2.** Paleta partida: `@theme` declara `brand-*` (naranja) pero todo el shell/admin usa `lime-*`. **Decidir la marca** (migrar `lime` → `brand` o exponer acentos como tokens) y **borrar CSS muerto** de `src/index.css`: `.label-campo`, `.input-campo`, `.mensaje-error` (0 usos) + tokens/componentes sin uso.
+- [x] **3.** `export default` en componentes (solo páginas lo usan): `products/components/ProductoImagen.tsx:11`, `admin/components/ProductoImagenesPanel.tsx:29` → named export + ajustar imports.
+- [x] **4.** Breakpoints fuera de regla (`solo sm:/md:/lg:`): `CatalogoPage.tsx:244` (`xl:grid-cols-4`), `admin/pages/AdminHomePage.tsx:46` (`xl:grid-cols-3`) → `lg:`.
+- [x] **5.** `admin/pages/AdminCatalogoPages.tsx` — 3 páginas en un archivo con named export → una por archivo con `export default` (ajustar `App.tsx:14-18`). Ídem `ProductoImagenesPanel` usa default export (inverso del caso 3).
+- [x] **6.** **Código muerto** (grep verificado): `features/auth/api/mutations.ts` (`useRegister`), `models/Auth.ts` (`RegisterInput`, `AuthResponse`), `shared/utils/fieldErrors.ts` (`detailsToFieldErrors`), `shared/components/Spinner.tsx`, clases del caso 2. La mayoría se salva usándolos: `RegisterPage.tsx:51` debe llamar `useRegister()` (hoy hace `apiClient.post` directo, fuera del patrón `api/`), tipar la respuesta como `AuthResponse`, mapear `details` con `detailsToFieldErrors` y borrar el `DatosRegistro` local.
+- [x] **7.** Docs desfasadas por el sync: `AGENTS.md` (structure `core/auth` y §9: `ProtectedRoute` → `ClientRoute`/`AdminRoute`; provider en `App.tsx`, no `main.tsx`), `spec/constitution/tech-stack.md:25`, `spec/constitution/coding-playbook.md:205-206`.
+- [x] **8.** **Decisión de convention** (anotar el resultado acá): (a) queryKeys con acción en inglés (`'list'`) vs playbook (`'listado'`); (b) `data-testid`: 0 usos en `src/` vs playbook §4 — ¿alinear el texto ("solo donde el test lo necesite") o agregar testids; (c) handlers `applyFilters`/`submit` vs `handle<Evento>`.
+- [x] **9.** Casting en el punto de la sesión: `AuthProvider.tsx:37-38` (`response.data.token as string`) → `apiClient.post<AuthResponse>` + validación de shape. Ídem `location.state as` en `LoginPage.tsx:11,25` → un solo tipo `LoginState`.
+- [x] **10.** `AdminRoute` sin `from` ya está en T1-8; acá queda el test `login-page` de open-redirect (`from: '//evil.com'` → cae en `/`, guard ya escrito pero sin cubrir).
+
+**Decisiones de convención (T2-8, resueltas 2026-10-12 con el equipo):**
+
+- **(a) queryKeys → español.** Se migró el código a `'listado'`/`'detalle'` (5 factories de keys) para cumplir el playbook §1 (línea 30, que incluye queryKeys en los nombres del contrato) sin tocar la spec.
+- **(b) `data-testid` → sin cambios.** El texto del playbook §4 ya es el correcto ("solo donde el test lo necesite; no decorar todo el árbol") y los tests usan queries accesibles por roles/labels. No se agregan testids de forma rutinaria.
+- **(c) handlers → `handle<Evento>`.** Se renombró el código existente. Excepción documentada: en formularios con React Hook Form el submit local se llama `handleFormSubmit` (no `handleSubmit`, que es nombre reservado de RHF); los helpers puros (`fieldError`, `buildPayload`, `buildQueryParams`, `formatPrice`...) **no** llevan prefijo `handle` porque no son handlers.
 
 ---
 
@@ -89,6 +95,6 @@ _(vacío)_
 | Lote | Cerrado    | Commit    |
 | ---- | ---------- | --------- |
 | T1   | 2026-10-12 | `5173e73` |
-| T2   | —          | —         |
+| T2   | 2026-10-12 | `1e8d321` |
 | T3   | —          | —         |
 | T4   | —          | —         |
