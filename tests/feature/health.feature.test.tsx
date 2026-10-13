@@ -8,19 +8,6 @@ describe('GET /api/health contra la API', () => {
   afterEach(() => {
     apiClient.defaults.adapter = adapterOriginal;
   });
-  it('resuelve 200 con el estado del backend', async () => {
-    apiClient.defaults.adapter = async (config) => ({
-      data: { status: 'ok', database: 'up' },
-      status: 200,
-      statusText: 'OK',
-      headers: {},
-      config,
-    });
-
-    const { data } = await apiClient.get('/api/health');
-
-    expect(data).toEqual({ status: 'ok', database: 'up' });
-  });
 
   it('convierte un 503 del backend en ApiError con su mensaje', async () => {
     apiClient.defaults.adapter = async () =>

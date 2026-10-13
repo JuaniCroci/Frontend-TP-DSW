@@ -232,4 +232,35 @@ describe('carrito de compras', () => {
     ).toBeInTheDocument();
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
+
+  it('presenta el mensaje del servidor cuando la confirmación falla con 400', async () => {
+    apiClient.defaults.adapter = async (config) => {
+      if (config.url === '/api/carrito' && config.method === 'get') {
+        return response(config, activeCart);
+      }
+      if (config.url === '/api/carrito/confirmar' && config.method === 'post') {
+        return Promise.reject({
+          isAxiosError: true,
+          config,
+          response: {
+            data: { statusCode: 400, message: 'El carrito está vacío' },
+            status: 400,
+            statusText: 'Bad Request',
+            headers: {},
+          },
+        });
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    renderCart();
+    await screen.findByText('Creatina');
+    fireEvent.click(screen.getByRole('button', { name: 'Confirmar pedido' }));
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('El carrito está vacío');
+    expect(screen.getByRole('button', { name: 'Confirmar pedido' })).toBeEnabled();
+    expect(
+      screen.queryByRole('heading', { name: 'Pedido confirmado' }),
+    ).not.toBeInTheDocument();
+  });
 });

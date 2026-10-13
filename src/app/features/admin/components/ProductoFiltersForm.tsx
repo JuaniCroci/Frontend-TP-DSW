@@ -68,6 +68,7 @@ export function ProductoFiltersForm({
   return (
     <form
       onSubmit={handleApplyFilters}
+      aria-label="Filtros de productos"
       className="mb-5 grid gap-3 rounded-2xl border border-slate-200 bg-white p-4 sm:grid-cols-2 lg:grid-cols-6"
     >
       <label className="text-sm font-semibold text-slate-700 lg:col-span-2">

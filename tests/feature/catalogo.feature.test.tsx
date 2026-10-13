@@ -4,7 +4,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import { AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { afterEach, describe, expect, it } from 'vitest';
 import { MemoryRouter, Route, Routes, useNavigate } from 'react-router-dom';
-import { apiClient } from '@/core/api/api.client';
+import { apiAssetUrl, apiClient } from '@/core/api/api.client';
 import { AuthContext } from '@/core/auth/AuthContext';
 import CatalogoPage from '@/features/products/pages/CatalogoPage';
 import ProductoDetallePage from '@/features/products/pages/ProductoDetallePage';
@@ -116,11 +116,11 @@ describe('catálogo de productos', () => {
 
     expect(await screen.findByRole('heading', { name: 'Proteína de suero' })).toBeInTheDocument();
     expect(screen.getByText('Entreno Nutrition')).toBeInTheDocument();
-    expect(screen.getByText((content) => content.includes('12.500,00'))).toBeInTheDocument();
+    expect(screen.getByText(/\$\s*12\.500,00/)).toBeInTheDocument();
     const productImage = screen.getByRole('img', { name: 'Envase de proteína' });
     expect(productImage).toHaveAttribute(
       'src',
-      'http://localhost:3000/api/productos/imagenes/2d4fcba2-a86c-4ca1-a127-28bd24bf0a58',
+      apiAssetUrl('/api/productos/imagenes/2d4fcba2-a86c-4ca1-a127-28bd24bf0a58'),
     );
     fireEvent.error(productImage);
     expect(await screen.findByText('E.')).toBeInTheDocument();

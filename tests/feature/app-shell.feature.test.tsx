@@ -10,6 +10,9 @@ describe('app shell', () => {
   beforeEach(() => {
     localStorage.clear();
     window.history.replaceState({}, '', '/');
+    apiClient.defaults.adapter = async (config) => {
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
   });
 
   afterEach(() => {

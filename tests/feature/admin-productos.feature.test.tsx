@@ -1,6 +1,6 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import type { InternalAxiosRequestConfig } from 'axios';
 import { response, requestBody } from '../helpers/axios-adapter';
 import { saveSession } from '../helpers/session';
@@ -10,6 +10,10 @@ import { apiClient } from '@/core/api/api.client';
 import AdminProductosPage from '@/features/admin/pages/AdminProductosPage';
 
 const adapterOriginal = apiClient.defaults.adapter;
+
+function formProducto() {
+  return within(screen.getByRole('form', { name: 'Formulario de producto' }));
+}
 
 const producto = {
   id: 21,
@@ -148,7 +152,7 @@ describe('administración de productos', () => {
     });
     fireEvent.change(screen.getByLabelText('Stock inicial'), { target: { value: '8' } });
     fireEvent.change(screen.getByLabelText('Tipo de producto'), { target: { value: '3' } });
-    fireEvent.change(screen.getAllByLabelText('Marca')[0], { target: { value: '2' } });
+    fireEvent.change(formProducto().getByLabelText('Marca'), { target: { value: '2' } });
     fireEvent.change(screen.getByLabelText('Proveedor (opcional)'), { target: { value: '4' } });
     fireEvent.click(screen.getByRole('button', { name: /^Crear$/ }));
 
@@ -197,7 +201,7 @@ describe('administración de productos', () => {
     expect(screen.getByText((text) => text.startsWith('Stock actual:'))).toHaveTextContent('8');
     expect(screen.queryByLabelText('Stock inicial')).not.toBeInTheDocument();
     fireEvent.change(screen.getByLabelText('Precio unitario'), { target: { value: '13000.00' } });
-    fireEvent.change(screen.getAllByLabelText('Marca')[0], { target: { value: '2' } });
+    fireEvent.change(formProducto().getByLabelText('Marca'), { target: { value: '2' } });
     fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
 
     expect(await screen.findByText('Producto actualizado correctamente.')).toBeInTheDocument();
@@ -268,8 +272,8 @@ describe('administración de productos', () => {
     renderProductosPage();
     await screen.findByText('Proteína de suero');
     fireEvent.click(screen.getByRole('button', { name: 'Editar' }));
-    expect(screen.getAllByLabelText('Marca')[0]).toContainElement(
-      screen.getAllByRole('option', { name: 'Star Nutrition' })[0],
+    expect(formProducto().getByLabelText('Marca')).toContainElement(
+      formProducto().getByRole('option', { name: 'Star Nutrition' }),
     );
     expect(screen.queryByRole('option', { name: 'Marca inactiva' })).not.toBeInTheDocument();
     expect(screen.queryByRole('option', { name: 'Tipo inactivo' })).not.toBeInTheDocument();
@@ -397,12 +401,146 @@ describe('administración de productos', () => {
     fireEvent.change(screen.getByLabelText('Precio unitario'), { target: { value: '100' } });
     fireEvent.change(screen.getByLabelText('Stock inicial'), { target: { value: '0' } });
     fireEvent.change(screen.getByLabelText('Tipo de producto'), { target: { value: '3' } });
-    fireEvent.change(screen.getAllByLabelText('Marca')[0], { target: { value: '2' } });
+    fireEvent.change(formProducto().getByLabelText('Marca'), { target: { value: '2' } });
     fireEvent.click(screen.getByRole('button', { name: /^Crear$/ }));
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'La marca seleccionada no existe o está inactiva',
     );
     expect(screen.queryByText('Producto creado correctamente.')).not.toBeInTheDocument();
+  });
+
+  it('muestra el error del listado y Reintentar vuelve a consultar', async () => {
+    saveSession('ADMIN');
+    let listCalls = 0;
+    apiClient.defaults.adapter = async (config) => {
+      const masterResponse = masterDataResponse(config);
+      if (masterResponse) return masterResponse;
+      if (config.url === '/api/productos/admin' && config.method === 'get') {
+        listCalls += 1;
+        if (listCalls === 1) {
+          return Promise.reject({
+            isAxiosError: true,
+            config,
+            response: {
+              data: { statusCode: 503, message: 'Servicio temporalmente no disponible' },
+              status: 503,
+              statusText: 'Service Unavailable',
+              headers: {},
+            },
+          });
+        }
+        return response(config, { data: [producto], total: 1, page: 1, size: 20 });
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    renderProductosPage();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'No se pudo cargar el listado: Servicio temporalmente no disponible',
+    );
+    expect(listCalls).toBe(1);
+
+    fireEvent.click(screen.getByRole('button', { name: 'Reintentar' }));
+
+    expect(await screen.findByText('Proteína de suero')).toBeInTheDocument();
+    expect(listCalls).toBe(2);
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('pagina con Anterior/Siguiente y pide la página elegida al backend', async () => {
+    saveSession('ADMIN');
+    const requests: Array<{ params?: unknown }> = [];
+    apiClient.defaults.adapter = async (config) => {
+      const masterResponse = masterDataResponse(config);
+      if (masterResponse) return masterResponse;
+      if (config.url === '/api/productos/admin' && config.method === 'get') {
+        requests.push({ params: config.params });
+        const page = Number(config.params?.page ?? 1);
+        return response(config, { data: [producto], total: 40, page, size: 20 });
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    renderProductosPage();
+    await screen.findByText('Proteína de suero');
+
+    expect(screen.getByText('Página 1 de 2')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Anterior' })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Siguiente' }));
+
+    await waitFor(() => expect(requests[requests.length - 1]?.params).toMatchObject({ page: 2 }));
+    expect(screen.getByText('Página 2 de 2')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Anterior' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: 'Siguiente' })).toBeDisabled();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Anterior' }));
+
+    await waitFor(() => expect(requests[requests.length - 1]?.params).toMatchObject({ page: 1 }));
+    expect(screen.getByText('Página 1 de 2')).toBeInTheDocument();
+  });
+
+  it('envía los ids nuevos de tipo y proveedor al editar las relaciones', async () => {
+    saveSession('ADMIN');
+    let updateBody: Record<string, unknown> | undefined;
+    const tiposEdit = [
+      ...tipos,
+      { id: 7, nombre: 'Barras', descripcion: null, activo: true, createdAt: '', updatedAt: '' },
+    ];
+    const proveedoresEdit = [
+      ...proveedores,
+      {
+        id: 9,
+        razonSocial: 'Distribuidora Sur',
+        cuit: '20709876543',
+        telefono: null,
+        email: null,
+        domicilio: null,
+        activo: true,
+        createdAt: '',
+        updatedAt: '',
+      },
+    ];
+    apiClient.defaults.adapter = async (config) => {
+      if (config.url === '/api/marcas') {
+        return response(config, { data: marcas, total: marcas.length });
+      }
+      if (config.url === '/api/tipos-producto') {
+        return response(config, { data: tiposEdit, total: tiposEdit.length });
+      }
+      if (config.url === '/api/proveedores') {
+        return response(config, { data: proveedoresEdit, total: proveedoresEdit.length });
+      }
+      if (config.url === '/api/productos/admin' && config.method === 'get') {
+        return response(config, { data: [producto], total: 1, page: 1, size: 20 });
+      }
+      if (config.url === '/api/productos/admin/21' && config.method === 'get') {
+        return response(config, producto);
+      }
+      if (config.url === '/api/productos/admin/21' && config.method === 'put') {
+        updateBody = requestBody(config.data) as Record<string, unknown>;
+        return response(config, { ...producto, ...updateBody });
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    renderProductosPage();
+    await screen.findByText('Proteína de suero');
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }));
+
+    fireEvent.change(formProducto().getByLabelText('Tipo de producto'), {
+      target: { value: '7' },
+    });
+    fireEvent.change(formProducto().getByLabelText('Proveedor (opcional)'), {
+      target: { value: '9' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Guardar cambios' }));
+
+    await waitFor(() => expect(updateBody).toBeDefined());
+    expect(updateBody).toMatchObject({ idTipoProducto: 7, idProveedor: 9 });
+    expect(updateBody).not.toHaveProperty('idMarca');
+    expect(updateBody).not.toHaveProperty('stock');
   });
 });

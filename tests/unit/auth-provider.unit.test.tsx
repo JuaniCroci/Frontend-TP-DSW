@@ -97,7 +97,13 @@ describe('AuthProvider', () => {
     expect(localStorage.getItem('entreno_user')).toBeNull();
   });
 
-  it('conserva el usuario guardado cuando tiene la forma válida', () => {
+  it('restaura la sesión guardada sin consultar al backend', async () => {
+    const requests: string[] = [];
+    apiClient.defaults.adapter = async (config) => {
+      requests.push(`${config.method} ${config.url}`);
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
     localStorage.setItem(TOKEN_KEY, 'jwt-vigente');
     localStorage.setItem(
       'entreno_user',
@@ -111,5 +117,7 @@ describe('AuthProvider', () => {
     );
 
     expect(screen.getByText('Sesión: ana@entreno.test')).toBeInTheDocument();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    expect(requests).toEqual([]);
   });
 });

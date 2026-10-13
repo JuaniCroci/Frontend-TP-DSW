@@ -125,6 +125,7 @@ export function ProductoForm({
   return (
     <form
       onSubmit={handleSubmit(handleFormSubmit)}
+      aria-label="Formulario de producto"
       className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
     >
       <h2 className="mb-5 text-xl font-bold text-slate-900">

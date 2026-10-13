@@ -1,5 +1,6 @@
 /** @vitest-environment jsdom */
-import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import type { AxiosResponse } from 'axios';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { apiClient, TOKEN_KEY } from '@/core/api/api.client';
@@ -90,6 +91,37 @@ describe('LoginPage', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Credenciales inválidas');
     expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
+  });
+
+  it('muestra el estado de carga mientras espera la respuesta y se recupera tras el error', async () => {
+    let rechazar: (() => void) | undefined;
+    apiClient.defaults.adapter = (config) =>
+      new Promise<AxiosResponse>((_resolve, reject) => {
+        rechazar = () =>
+          reject({
+            isAxiosError: true,
+            config,
+            response: {
+              data: { statusCode: 401, message: 'Credenciales inválidas' },
+              status: 401,
+              statusText: 'Unauthorized',
+              headers: {},
+            },
+          });
+      });
+
+    renderLoginPage();
+    fillCredentials();
+    submitLoginForm();
+
+    const loadingButton = await screen.findByRole('button', { name: 'Ingresando...' });
+    expect(loadingButton).toBeDisabled();
+    await waitFor(() => expect(rechazar).toBeDefined());
+
+    rechazar?.();
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Credenciales inválidas');
+    expect(screen.getByRole('button', { name: 'Entrar' })).toBeEnabled();
   });
 
   it('con 400 con details informa el error sin perder el formulario', async () => {
