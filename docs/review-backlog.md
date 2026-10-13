@@ -15,7 +15,7 @@
 | ------ | ---------------------------------------- | --------- | ---------------------------------- |
 | **T1** | Bugs de correctividad + fuera de alcance | P0        | ✅ cerrado (2026-10-12, `5173e73`) |
 | **T2** | Reglas de la cátedra (playbook)          | P1        | ✅ cerrado (2026-10-12, `1e8d321`) |
-| **T3** | Refactors y duplicación                  | P2        | ⬜ pendiente                       |
+| **T3** | Refactors y duplicación                  | P2        | ✅ cerrado (2026-10-12)             |
 | **T4** | Cobertura y salud de tests               | P2        | ⬜ pendiente                       |
 
 ---
@@ -59,15 +59,15 @@
 
 ## Lote T3 · Refactors y duplicación [P2]
 
-- [ ] **1.** Descomponer páginas grandes: `AdminProductosPage.tsx` (872) → `ProductoForm.tsx` + `ProductoDetalleModal.tsx` + `ProductoFiltersForm.tsx` (~300 restantes); `AdminDescuentosPage.tsx` (576) → `AplicacionesDescuentoModal.tsx`; `AdminClientesPage.tsx` (415) → `ClienteForm` + `ClienteDetalleModal`; `AdminMasterPage.tsx` (387) → form + modal.
-- [ ] **2.** Duplicación copy-paste: `getApiMessage` **×5 con 3 nombres** (`AdminProductosPage:49`, `AdminMasterPage:36`, `AdminClientesPage:16`, `AdminDescuentosPage:34`, `ProductoImagenesPanel:25`) → un helper único (recomendado: delegar en `friendlyErrorMessage`). `formatPrice` **×4** → `shared/utils/formatMoney.ts`.
-- [ ] **3.** Bloques de UI repetidos en 4 páginas (banner éxito/error, badge de estado, esqueleto de tabla, modal) → `shared/components/`: `BadgeEstado`, `AdminBanner`, `AdminModal` (con Escape + focus trap, ver 6) + clases `@layer components` del playbook §5.4.
-- [ ] **4.** Modelos duplicados (playbook §3 "nunca se redefine un interface"): `Marca`/`TipoProducto` en `Producto.ts` **y** `AdminCatalogo.ts`; `ImagenPrincipalProducto` en `Producto.ts` **y** `AdminProducto.ts`; `DescuentoVigente ≡ AdminDescuento`; **6 variantes** del wrapper `{data,total}` → un `RespuestaLista<T>` único y un archivo por tipo. _Antes de la feature 007 (pedidos), que agregaría la séptima_.
-- [ ] **5.** `tests/`: helper compartido del adapter axios (`response()`/`requestBody()`/`saveSession()` copy-pasteados en **13 archivos**) → `tests/helpers/axios-adapter.ts` + `tests/helpers/session.ts`.
-- [ ] **6.** Modales con `aria-modal` sin Escape/focus trap/foco inicial: `ProductoImagenesPanel:100`, `AdminProductosPage:770`, `AdminMasterPage:325`, `AdminDescuentosPage:401` → resolver con el `AdminModal` compartido del punto 3.
-- [ ] **7.** Duplicación/semántica: secciones admin duplicadas (`AdminLayout.tsx:3-11` vs `AdminHomePage.tsx:3-34`) → `features/admin/adminSections.ts`. Landmark `<main>` inconsistente (solo 2 páginas admin lo usan) → `AdminLayout` envuelve `<Outlet/>` en `<main>` y las páginas usan `<section>`.
-- [ ] **8.** Menores agrupados: invalidaciones redundantes (`productosMutations.ts:71-78`); `img` sin `loading="lazy"`/`decoding` (`ProductoImagen.tsx:29`, historial de `ProductoImagenesPanel`); historial sin fallback `onError`; placeholder `aria-hidden` sin label (`ProductoImagen.tsx:17-24`); `formatSize` siempre en KiB (`ProductoImagenesPanel:21`); `key={searchParams.toString()}` opaco + foco perdido en `CatalogoPage:95`; `?` vacío en links (`CatalogoPage:248`); acoplamiento `products ↔ cart` (`ProductoDetallePage:4`); `spec/013/spec.md` con criterios `[ ]` marcado "implementada".
-- [ ] **9.** Performance/bundle (opcional, alto impacto): `App.tsx` sin code splitting → `lazy()` del subárbol `/admin` (aprovecha el `Spinner` existente) y de login/registro. Bundle actual: 453 kB.
+- [x] **1.** Descomponer páginas grandes: `AdminProductosPage.tsx` (872) → `ProductoForm.tsx` + `ProductoDetalleModal.tsx` + `ProductoFiltersForm.tsx` (~300 restantes); `AdminDescuentosPage.tsx` (576) → `AplicacionesDescuentoModal.tsx`; `AdminClientesPage.tsx` (415) → `ClienteForm` + `ClienteDetalleModal`; `AdminMasterPage.tsx` (387) → form + modal.
+- [x] **2.** Duplicación copy-paste: `getApiMessage` **×5 con 3 nombres** (`AdminProductosPage:49`, `AdminMasterPage:36`, `AdminClientesPage:16`, `AdminDescuentosPage:34`, `ProductoImagenesPanel:25`) → un helper único (recomendado: delegar en `friendlyErrorMessage`). `formatPrice` **×4** → `shared/utils/formatMoney.ts`.
+- [x] **3.** Bloques de UI repetidos en 4 páginas (banner éxito/error, badge de estado, esqueleto de tabla, modal) → `shared/components/`: `BadgeEstado`, `AdminBanner`, `AdminModal` (con Escape + focus trap, ver 6) + clases `@layer components` del playbook §5.4.
+- [x] **4.** Modelos duplicados (playbook §3 "nunca se redefine un interface"): `Marca`/`TipoProducto` en `Producto.ts` **y** `AdminCatalogo.ts`; `ImagenPrincipalProducto` en `Producto.ts` **y** `AdminProducto.ts`; `DescuentoVigente ≡ AdminDescuento`; **6 variantes** del wrapper `{data,total}` → un `RespuestaLista<T>` único y un archivo por tipo. _Antes de la feature 007 (pedidos), que agregaría la séptima_.
+- [x] **5.** `tests/`: helper compartido del adapter axios (`response()`/`requestBody()`/`saveSession()` copy-pasteados en **13 archivos**) → `tests/helpers/axios-adapter.ts` + `tests/helpers/session.ts`.
+- [x] **6.** Modales con `aria-modal` sin Escape/focus trap/foco inicial: `ProductoImagenesPanel:100`, `AdminProductosPage:770`, `AdminMasterPage:325`, `AdminDescuentosPage:401` → resolver con el `AdminModal` compartido del punto 3.
+- [x] **7.** Duplicación/semántica: secciones admin duplicadas (`AdminLayout.tsx:3-11` vs `AdminHomePage.tsx:3-34`) → `features/admin/adminSections.ts`. Landmark `<main>` inconsistente (solo 2 páginas admin lo usan) → `AdminLayout` envuelve `<Outlet/>` en `<main>` y las páginas usan `<section>`.
+- [x] **8.** Menores agrupados: invalidaciones redundantes (`productosMutations.ts:71-78`); `img` sin `loading="lazy"`/`decoding` (`ProductoImagen.tsx:29`, historial de `ProductoImagenesPanel`); historial sin fallback `onError`; placeholder `aria-hidden` sin label (`ProductoImagen.tsx:17-24`); `formatSize` siempre en KiB (`ProductoImagenesPanel:21`); `key={searchParams.toString()}` opaco + foco perdido en `CatalogoPage:95`; `?` vacío en links (`CatalogoPage:248`); acoplamiento `products ↔ cart` (`ProductoDetallePage:4`); `spec/013/spec.md` con criterios `[ ]` marcado "implementada".
+- [x] **9.** Performance/bundle (opcional, alto impacto): `App.tsx` sin code splitting → `lazy()` del subárbol `/admin` (aprovecha el `Spinner` existente) y de login/registro. Bundle actual: 453 kB.
 
 ---
 
@@ -96,5 +96,5 @@ _(vacío)_
 | ---- | ---------- | --------- |
 | T1   | 2026-10-12 | `5173e73` |
 | T2   | 2026-10-12 | `1e8d321` |
-| T3   | —          | —         |
+| T3   | 2026-10-12 | `977b8b7` |
 | T4   | —          | —         |
