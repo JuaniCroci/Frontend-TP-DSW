@@ -17,7 +17,7 @@
 | **T2** | Reglas de la cátedra (playbook)          | P1        | ✅ cerrado (2026-10-12, `1e8d321`) |
 | **T3** | Refactors y duplicación                  | P2        | ✅ cerrado (2026-10-12)             |
 | **T4** | Cobertura y salud de tests               | P2        | ✅ cerrado (2026-10-12, `aada99e`)  |
-| **T5** | Mejoras de UI y comportamiento (ex T4-7) | P2        | ⚠️ T5-2 ✅ (`8644df6`); T5-1 ⛔ bloqueado en back |
+| **T5** | Mejoras de UI y comportamiento (ex T4-7) | P2        | ✅ cerrado (T5-1 `f0610e7` + T5-2 `8644df6`) |
 
 ---
 
@@ -92,7 +92,7 @@
 
 > Split acordado al cerrar T4: acá vive solo lo que **falta implementar** (no es cobertura de tests).
 
-- [ ] **1.** **Logout real** — ⛔ **bloqueado en el backend** (verificado 2026-10-12, decisión del equipo: documentar y esperar): `POST /api/auth/logout` no existe en `api-endpoints.md` ni en el repo backend (local `Desktop\Backend-TP-DSW` y remoto, todas las ramas — no hay módulo auth ni login). Logout sigue local-only, aceptable hoy: el front no usa `refreshToken` (solo declara el tipo) y la invalidez del token la da su expiración. **Cuando el back agregue el endpoint**: llamarlo invalidando la sesión local (tragando errores) + test.
+- [x] **1.** **Logout real** — **cerrado 2026-10-12**. ⚠️ **Corrección de la verificación previa** (la nota de "bloqueado en backend" estaba mal): se había verificado contra **`Backend-TP-DSW`, que es un prototipo viejo sin módulo auth** — el back real es **`tp-dsw-back00` (`Entreno-2.0-Backend`)** y **ya tenía** `POST /api/auth/logout` (`src/modules/auth/auth.routes.ts:23`: `authenticate` → revoca los refresh tokens del usuario → `204`); `api-endpoints.md` §002 también lo documentaba (junto a `/api/auth/refresh`). Implementación: `AuthProvider.logout()` ahora es async y best-effort — `await apiClient.post('/api/auth/logout').catch(...)` y **siempre** limpia la sesión local (el interceptor de `api.client.ts` ya excluye `/api/auth/` del manejo de 401, así que un token vencido no dispara "sesión expirada"). Tests: 2 nuevos en `auth-provider.unit.test.tsx` (invoca el endpoint y limpia; se limpia aunque falle) con RED por mutación (M1 quitar el POST → 2 fallas; M2 quitar el catch → 1 falla + unhandled rejection); adaptación de `app-shell.feature.test.tsx` (logout async → `findByRole`). Commit `f0610e7`.
 - [x] **2.** **Estados loading** — auditado 2026-10-12: **ya estaban unificados** en todas las pantallas asíncronas (`role="status"` + "Cargando X…" en catálogo, detalle, carrito, los 6 listados admin y todos los modales) y todos los botones primarios tienen pending (`disabled` + texto: "Ingresando…", "Creando cuenta…", "Guardando…", "Confirmando pedido…", "Agregando…") — el "solo login los tiene" del análisis original ya no aplicaba. Faltaba testeo → 4 tests nuevos (catálogo, detalle, carrito, admin-productos) con helper `hang()`; RED verificado por mutación (6/6: los 4 nuevos por `Unable to find role="status"` + 2 colaterales existentes). Commit `8644df6`.
 
 ---
@@ -111,4 +111,4 @@ _(vacío)_
 | T2   | 2026-10-12 | `1e8d321` |
 | T3   | 2026-10-12 | `977b8b7` |
 | T4   | 2026-10-12 | `aada99e` |
-| T5   | 2026-10-12 (parcial: T5-2) | `8644df6` |
+| T5   | 2026-10-12 | `8644df6` + `f0610e7` |
