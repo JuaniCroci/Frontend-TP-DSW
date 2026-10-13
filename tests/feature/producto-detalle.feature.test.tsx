@@ -6,7 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { apiClient } from '@/core/api/api.client';
 import { AuthContext, type AuthContextValue } from '@/core/auth/AuthContext';
 import ProductoDetallePage from '@/features/products/pages/ProductoDetallePage';
-import { requestBody, response } from '../helpers/axios-adapter';
+import { hang, requestBody, response } from '../helpers/axios-adapter';
 
 const adapterOriginal = apiClient.defaults.adapter;
 
@@ -195,5 +195,13 @@ describe('agregar al carrito desde el detalle de producto', () => {
     expect(
       screen.queryByRole('button', { name: 'Agregar al carrito' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('muestra el estado de carga mientras el producto no responde', async () => {
+    apiClient.defaults.adapter = () => hang();
+
+    renderDetalle();
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Cargando producto...');
   });
 });

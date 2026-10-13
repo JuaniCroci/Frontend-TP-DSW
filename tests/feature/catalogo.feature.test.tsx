@@ -8,6 +8,7 @@ import { apiAssetUrl, apiClient } from '@/core/api/api.client';
 import { AuthContext } from '@/core/auth/AuthContext';
 import CatalogoPage from '@/features/products/pages/CatalogoPage';
 import ProductoDetallePage from '@/features/products/pages/ProductoDetallePage';
+import { hang } from '../helpers/axios-adapter';
 
 const adapterOriginal = apiClient.defaults.adapter;
 
@@ -316,5 +317,13 @@ describe('catálogo de productos', () => {
     expect(await screen.findByRole('heading', { name: 'Creatina micronizada' })).toBeInTheDocument();
     expect(screen.getByLabelText('Cantidad')).toHaveValue(1);
     expect(screen.queryByText('Producto agregado al carrito.')).not.toBeInTheDocument();
+  });
+
+  it('muestra el estado de carga mientras el listado no responde', async () => {
+    apiClient.defaults.adapter = () => hang();
+
+    renderRoutes('/productos');
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Cargando productos...');
   });
 });

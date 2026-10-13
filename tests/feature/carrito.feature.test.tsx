@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { response } from '../helpers/axios-adapter';
+import { hang, response } from '../helpers/axios-adapter';
 import { saveSession } from '../helpers/session';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -262,5 +262,13 @@ describe('carrito de compras', () => {
     expect(
       screen.queryByRole('heading', { name: 'Pedido confirmado' }),
     ).not.toBeInTheDocument();
+  });
+
+  it('muestra el estado de carga mientras el carrito no responde', async () => {
+    apiClient.defaults.adapter = () => hang();
+
+    renderCart();
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Cargando carrito...');
   });
 });

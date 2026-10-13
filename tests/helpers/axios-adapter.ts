@@ -17,3 +17,7 @@ export function response(
 export function requestBody(data: unknown): unknown {
   return typeof data === 'string' ? JSON.parse(data) : data;
 }
+
+export function hang(): Promise<never> {
+  return new Promise<never>(() => {});
+}
