@@ -16,7 +16,8 @@
 | **T1** | Bugs de correctividad + fuera de alcance | P0        | ✅ cerrado (2026-10-12, `5173e73`) |
 | **T2** | Reglas de la cátedra (playbook)          | P1        | ✅ cerrado (2026-10-12, `1e8d321`) |
 | **T3** | Refactors y duplicación                  | P2        | ✅ cerrado (2026-10-12)             |
-| **T4** | Cobertura y salud de tests               | P2        | ⬜ pendiente                       |
+| **T4** | Cobertura y salud de tests               | P2        | ✅ cerrado (2026-10-12, `aada99e`)  |
+| **T5** | Mejoras de UI y comportamiento (ex T4-7) | P2        | ⬜ pendiente                        |
 
 ---
 
@@ -73,14 +74,26 @@
 
 ## Lote T4 · Cobertura y salud de tests [P2]
 
-- [ ] **1.** **`POST /api/carrito/items` desde el detalle** — el flujo principal de 006, prometido en `spec/features/006-carrito/plan.md:27` y marcado `[x]`, **no tiene ningún test** (ni body `{idProducto,cantidad}`, ni éxito, ni error 409 de stock).
-- [ ] **2.** **`AdminHomePage`**: cero tests (solo se prueba como destino de guard).
-- [ ] **3.** **Decisión + test de restauración de sesión**: el `AuthProvider` actual restaura solo de `localStorage` (no llama `GET /api/auth/me`, que el contrato sí ofrece). Decidir: implementar hidratación con `/me` (y test del 401 al restaurar) o documentar que es intencional.
-- [ ] **4.** `tests/setup.ts` — agregar `afterEach(() => cleanup())` global: `login.feature.test.tsx` y `auth-provider.unit.test.tsx` renderizan **sin cleanup** (config sin `globals: true`) → bomba de tiempo.
-- [ ] **5.** `tests/feature/catalogo.feature.test.tsx:116-119` — hardcodea `http://localhost:3000/...` → comparar contra `` `${apiClient.defaults.baseURL}` `` o `apiAssetUrl()`.
-- [ ] **6.** Consolidar archivos gemelos: `login.feature` ⊂ `login-page.feature` y `registro.feature` ≈ `register-page.feature` (4 archivos para refactorizar 1 pantalla) → unificar y absorber los casos únicos (loading; flujo e2e con AuthProvider).
-- [ ] **7.** Huecos medios: logout real (`POST /api/auth/logout`), 404 en `ProductoDetallePage`, rama de error del listado en admin (503 + Reintentar), paginación clickeable en admin-productos, edición de tipo/proveedor en catálogo admin, carrito vacío → 400, estados loading (solo login los tiene), `from: '//evil.com'` en login, storage corrupto en AuthProvider (comparte con T1-4).
-- [ ] **8.** Higiens menores: listeners de `auth:session-expired` sin remover en `api-401.unit.test.ts`; test casi tautológico de `health.feature.test.tsx:11-23`; `app-shell` renderiza sin adapter (flakiness futuro si `HomePage` se vuelve dinámico); matcher frágil `getByText(content => ...)` en `catalogo.feature.test.tsx:114`; `getAllByLabelText('Marca')[0]` por labels duplicados (`admin-productos:176`).
+- [x] **1.** **`POST /api/carrito/items` desde el detalle** — el flujo principal de 006, prometido en `spec/features/006-carrito/plan.md:27` y marcado `[x]`, **no tenía ningún test** → `tests/feature/producto-detalle.feature.test.tsx` (body `{idProducto,cantidad}`, cantidad por defecto 1, éxito + link "Ver carrito", error 409 de stock). Verificado por mutación.
+- [x] **2.** **`AdminHomePage`**: cero tests (solo se prueba como destino de guard) → `tests/feature/admin-home.feature.test.tsx` (encabezado, hrefs de las 6 secciones sin autorreferencia, contenido de tarjetas). Verificado por mutación.
+- [x] **3.** **Decisión + test de restauración de sesión** — **resuelto 2026-10-12: se mantiene SIN hidratar (correcto, no un descuido)**. Motivos: (a) el backend es la autoridad — el token se revalida en cada request y el interceptor 401 ya cierra la sesión vencida (`api-401.unit.test.ts`); (b) `GET /api/auth/me` quedó fuera a propósito en la feature 002 (la alternativa con `/me` vive en `backup/local-wip`, ver `spec/features/002-core-api-auth/spec.md:44`). Riesgo residual solo cosmético: nombre/rol viejos si cambian sin re-login (un ADMIN degradado vería la UI admin pero sus requests fallarían 403 — sin fuga de datos). Test `auth-provider.unit.test.tsx` "restaura la sesión guardada sin consultar al backend" fija el comportamiento: si alguien agrega hidratación, el test obliga a actualizar la decisión.
+- [x] **4.** `tests/setup.ts` — `afterEach(() => cleanup())` global con guard `typeof document !== 'undefined'` (5 archivos corren en environment `node` sin DOM; las llamadas manuales a `cleanup()` quedan redundantes y se eliminan al tocar cada archivo).
+- [x] **5.** `tests/feature/catalogo.feature.test.tsx` — hardcodeo `http://localhost:3000/...` → `apiAssetUrl()` (deriva del baseURL); matcher frágil del precio → regex exacto `/\$\s*12\.500,00/` (tolera el NBSP de `Intl`).
+- [x] **6.** Consolidar archivos gemelos: `login.feature` ⊂ `login-page.feature` y `registro.feature` ≈ `register-page.feature` → 4 archivos → 2 (`git rm` de los borrados). Absorbidos: estado "Ingresando..." con promise colgada y el e2e de registro (body con `telefono`, request único); los 2 tests descartados eran duplicados exactos. 13 tests en 4 archivos → 11 en 2.
+- [x] **7.** Huecos medios — **split acordado con el equipo (2026-10-12)**: los tests puros entraron a T4, las mejoras de UI son el **lote T5**:
+  - ✅ Tests agregados (verificados por mutación 6/6): 404 en `ProductoDetallePage`; rama de error del listado admin (503 + `Reintentar`); paginación `Anterior`/`Siguiente` en admin-productos (pide la página al backend + estados de botones); edición de tipo/proveedor al editar un producto (envía `idTipoProducto`/`idProveedor`); confirmación de carrito fallando con 400 → mensaje del servidor.
+  - ✅ Ya cubiertos antes: `from: '//evil.com'` (`login-page.feature.test.tsx:168`) y storage corrupto en AuthProvider (T1-4 + tests existentes).
+  - → **T5**: logout real, estados loading (ver lote T5 más abajo).
+- [x] **8.** Higiens: listeners de `auth:session-expired` removidos en `afterEach` de `api-401.unit.test.ts` (`trackSessionExpired()`); test tautológico de `health.feature.test.tsx` borrado (conservado el 503, que sí prueba `toApiError`); `app-shell` con adapter default que lanza `Request inesperado` (sin red real si `HomePage` se vuelve dinámico); matcher frágil `getByText(content => ...)` → regex; `getAllByLabelText('Marca')[0]` → `aria-label` en ambos `<form>` (fix de a11y: landmarks con nombre) + helper `formProducto()` con `within()`.
+
+---
+
+## Lote T5 · Mejoras de UI y comportamiento (ex T4-7) [P2]
+
+> Split acordado al cerrar T4: acá vive solo lo que **falta implementar** (no es cobertura de tests).
+
+- [ ] **1.** **Logout real**: `AuthProvider.logout()` solo limpia localStorage → llamar `POST /api/auth/logout` para invalidar el token en el back. **Antes de implementar**: el endpoint **no está** en `spec/constitution/api-endpoints.md` (solo register/login/me) → verificar/coordenar con el repo backend.
+- [ ] **2.** **Estados loading** en las pantallas asíncronas (hoy solo login los tiene): catálogo, detalle de producto, carrito y listados admin — unificar criterio (patrón `role="status"` de login) y testear.
 
 ---
 
@@ -97,4 +110,4 @@ _(vacío)_
 | T1   | 2026-10-12 | `5173e73` |
 | T2   | 2026-10-12 | `1e8d321` |
 | T3   | 2026-10-12 | `977b8b7` |
-| T4   | —          | —         |
+| T4   | 2026-10-12 | `aada99e` |
