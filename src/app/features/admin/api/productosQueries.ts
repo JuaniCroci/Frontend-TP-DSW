@@ -6,7 +6,8 @@ import type {
   RespuestaFotosProducto,
   RespuestaAdminProductos,
 } from '../../../models/AdminProducto';
-import type { Proveedor, RespuestaLista } from '../../../models/AdminCatalogo';
+import type { Proveedor } from '../../../models/AdminCatalogo';
+import type { RespuestaLista } from '../../../models/RespuestaLista';
 
 export const adminProductosKeys = {
   all: ['admin', 'productos'] as const,

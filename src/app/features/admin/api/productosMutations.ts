@@ -35,10 +35,9 @@ export function useActualizarProductoAdmin() {
       );
       return producto;
     },
-    onSuccess: (_producto, variables) =>
+    onSuccess: () =>
       Promise.all([
         queryClient.invalidateQueries({ queryKey: adminProductosKeys.all }),
-        queryClient.invalidateQueries({ queryKey: adminProductosKeys.detail(variables.id) }),
         queryClient.invalidateQueries({ queryKey: productosQueryKeys.all }),
       ]),
   });
@@ -68,13 +67,10 @@ export function useSubirImagenProductoAdmin() {
       const { data } = await apiClient.post(`/api/productos/admin/${id}/imagenes`, formData);
       return data;
     },
-    onSuccess: (_image, variables) =>
+    onSuccess: () =>
       Promise.all([
-        queryClient.invalidateQueries({ queryKey: adminProductosKeys.images(variables.id) }),
         queryClient.invalidateQueries({ queryKey: adminProductosKeys.all }),
-        queryClient.invalidateQueries({ queryKey: adminProductosKeys.detail(variables.id) }),
         queryClient.invalidateQueries({ queryKey: productosQueryKeys.all }),
-        queryClient.invalidateQueries({ queryKey: productosQueryKeys.detail(variables.id) }),
       ]),
   });
 }

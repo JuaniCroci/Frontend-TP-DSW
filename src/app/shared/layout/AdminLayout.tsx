@@ -1,22 +1,15 @@
+import { Suspense } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
+import { adminSections } from '../../features/admin/adminSections';
+import { Spinner } from '../components/Spinner';
 import { cn } from '../utils/cn';
-
-const sections = [
-  { to: '/admin', label: 'Resumen', end: true },
-  { to: '/admin/clientes', label: 'Clientes' },
-  { to: '/admin/productos', label: 'Productos' },
-  { to: '/admin/descuentos', label: 'Descuentos' },
-  { to: '/admin/marcas', label: 'Marcas' },
-  { to: '/admin/tipos-producto', label: 'Tipos de producto' },
-  { to: '/admin/proveedores', label: 'Proveedores' },
-];
 
 export function AdminLayout() {
   return (
     <div className="flex flex-1 flex-col bg-slate-50">
       <nav aria-label="Secciones de administración" className="border-b border-slate-200 bg-white">
         <div className="mx-auto flex max-w-7xl flex-wrap gap-2 px-5 py-3">
-          {sections.map((section) => (
+          {adminSections.map((section) => (
             <NavLink
               key={section.to}
               to={section.to}
@@ -35,7 +28,11 @@ export function AdminLayout() {
           ))}
         </div>
       </nav>
-      <Outlet />
+      <main className="flex flex-1 flex-col">
+        <Suspense fallback={<Spinner />}>
+          <Outlet />
+        </Suspense>
+      </main>
     </div>
   );
 }

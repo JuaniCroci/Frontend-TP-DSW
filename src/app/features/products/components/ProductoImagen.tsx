@@ -16,7 +16,7 @@ export function ProductoImagen({
   const [failedImageId, setFailedImageId] = useState<string | null>(null);
   if (!imagen || imagen.id === failedImageId) {
     return (
-      <div className={className}>
+      <div className={className} role="img" aria-label="Sin imagen disponible">
         <span aria-hidden="true" className="text-5xl font-black tracking-tight text-slate-300">
           E.
         </span>
@@ -30,6 +30,8 @@ export function ProductoImagen({
         src={apiAssetUrl(imagen.url)}
         alt={imagen.altText}
         className={imageClassName}
+        loading="lazy"
+        decoding="async"
         onError={() => setFailedImageId(imagen.id)}
       />
     </div>

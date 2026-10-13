@@ -1,7 +1,8 @@
 /** @vitest-environment jsdom */
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import { response } from '../helpers/axios-adapter';
+import { saveSession } from '../helpers/session';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiClient } from '@/core/api/api.client';
@@ -42,29 +43,6 @@ const confirmedOrder = {
   ],
 };
 
-function response(config: InternalAxiosRequestConfig, data: unknown, status = 200): AxiosResponse {
-  return {
-    data,
-    status,
-    statusText: status === 204 ? 'No Content' : 'OK',
-    headers: new AxiosHeaders(),
-    config,
-  };
-}
-
-function saveClientSession() {
-  localStorage.setItem('entreno_token', 'token-de-prueba');
-  localStorage.setItem(
-    'entreno_user',
-    JSON.stringify({
-      id: 1,
-      nombre: 'Cliente',
-      email: 'cliente@example.test',
-      rol: 'CLIENTE',
-    }),
-  );
-}
-
 const clientContext: AuthContextValue = {
   user: { id: 1, nombre: 'Cliente', email: 'cliente@example.test', rol: 'CLIENTE' },
   token: 'token-de-prueba',
@@ -94,7 +72,7 @@ function renderCart() {
 describe('carrito de compras', () => {
   beforeEach(() => {
     localStorage.clear();
-    saveClientSession();
+    saveSession('CLIENTE');
     vi.spyOn(window, 'confirm').mockReturnValue(true);
   });
 

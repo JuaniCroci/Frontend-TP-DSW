@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ApiError } from '../../../core/api/apiError';
-import { cn } from '../../../shared/utils/cn';
+import { getApiErrorMessage } from '../../../core/api/friendlyError';
+import { AdminBanner } from '../../../shared/components/AdminBanner';
+import { EstadoBadge } from '../../../shared/components/EstadoBadge';
 import type {
   DatosMaestro,
   PayloadMaestro,
@@ -10,17 +12,10 @@ import type {
 } from '../../../models/AdminCatalogo';
 import { useDarDeBajaMaestro, useGuardarMaestro } from '../api/mutations';
 import { useAdminCatalogo, useAdminCatalogoDetalle } from '../api/queries';
-
-export interface CampoMaestro {
-  name: string;
-  label: string;
-  type?: 'text' | 'email' | 'tel';
-  required?: boolean;
-  minLength?: number;
-  maxLength?: number;
-  pattern?: RegExp;
-  patternMessage?: string;
-}
+import type { CampoMaestro } from '../campoMaestro';
+import { valueFor } from '../valueFor';
+import { MasterDetailModal } from './MasterDetailModal';
+import { MasterForm } from './MasterForm';
 
 export interface AdminMasterPageProps {
   resource: RecursoCatalogo;
@@ -28,15 +23,6 @@ export interface AdminMasterPageProps {
   description: string;
   fields: CampoMaestro[];
   nameField: string;
-}
-
-function valueFor(record: RegistroCatalogo, field: string): string {
-  const value = record[field as keyof RegistroCatalogo];
-  return typeof value === 'string' ? value : '';
-}
-
-function getApiMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Ocurrió un error inesperado.';
 }
 
 export function AdminMasterPage({
@@ -81,6 +67,13 @@ export function AdminMasterPage({
     reset(Object.fromEntries(fields.map((field) => [field.name, valueFor(record, field.name)])));
   }
 
+  function handleCancel() {
+    setEditing(null);
+    setCreating(false);
+    setFormError('');
+    setFieldErrors({});
+  }
+
   function buildPayload(data: DatosMaestro): PayloadMaestro {
     const payload: PayloadMaestro = {};
     for (const field of fields) {
@@ -111,7 +104,7 @@ export function AdminMasterPage({
       setCreating(false);
       reset(Object.fromEntries(fields.map((field) => [field.name, ''])));
     } catch (error) {
-      setFormError(getApiMessage(error));
+      setFormError(getApiErrorMessage(error));
       if (error instanceof ApiError && error.details) {
         setFieldErrors(
           Object.fromEntries(error.details.map((detail) => [detail.field, detail.message])),
@@ -132,7 +125,7 @@ export function AdminMasterPage({
       await darDeBaja.mutateAsync({ resource, id: record.id });
       setNotice('Registro desactivado correctamente.');
     } catch (error) {
-      setFormError(getApiMessage(error));
+      setFormError(getApiErrorMessage(error));
     }
   }
 
@@ -158,91 +151,29 @@ export function AdminMasterPage({
       </div>
 
       {notice && (
-        <p
-          role="status"
-          className="mb-5 rounded-xl border border-green-200 bg-green-50 p-4 text-green-800"
-        >
+        <AdminBanner tone="success" className="mb-5">
           {notice}
-        </p>
+        </AdminBanner>
       )}
       {formError && (
-        <p
-          role="alert"
-          className="mb-5 rounded-xl border border-red-200 bg-red-50 p-4 text-red-800"
-        >
+        <AdminBanner tone="error" className="mb-5">
           {formError}
-        </p>
+        </AdminBanner>
       )}
 
       {(editing || creating) && (
-        <form
-          onSubmit={handleSubmit(handleFormSubmit)}
-          className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
-        >
-          <h2 className="mb-5 text-xl font-bold text-slate-900">
-            {editing ? `Editar ${valueFor(editing, nameField)}` : `Nuevo registro`}
-          </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
-            {fields.map((field) => (
-              <label key={field.name} className="text-sm font-semibold text-slate-700">
-                {field.label}
-                <input
-                  type={field.type ?? 'text'}
-                  maxLength={field.maxLength}
-                  {...register(field.name, {
-                    required: field.required ? `${field.label} es obligatorio.` : false,
-                    minLength: field.minLength
-                      ? {
-                          value: field.minLength,
-                          message: `Mínimo ${field.minLength} caracteres.`,
-                        }
-                      : undefined,
-                    maxLength: field.maxLength
-                      ? {
-                          value: field.maxLength,
-                          message: `Máximo ${field.maxLength} caracteres.`,
-                        }
-                      : undefined,
-                    pattern: field.pattern
-                      ? {
-                          value: field.pattern,
-                          message: field.patternMessage ?? 'Formato inválido.',
-                        }
-                      : undefined,
-                  })}
-                  className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2.5 font-normal"
-                  aria-invalid={Boolean(errors[field.name] || fieldErrors[field.name])}
-                />
-                {(errors[field.name]?.message || fieldErrors[field.name]) && (
-                  <span className="mt-1 block text-sm font-normal text-red-700">
-                    {String(errors[field.name]?.message ?? fieldErrors[field.name])}
-                  </span>
-                )}
-              </label>
-            ))}
-          </div>
-          <div className="mt-6 flex flex-wrap gap-3">
-            <button
-              type="submit"
-              disabled={guardar.isPending}
-              className="rounded-full bg-lime-300 px-5 py-2.5 font-bold text-slate-950 enabled:hover:bg-lime-400 disabled:opacity-60"
-            >
-              {guardar.isPending ? 'Guardando...' : editing ? 'Guardar cambios' : 'Crear'}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setEditing(null);
-                setCreating(false);
-                setFormError('');
-                setFieldErrors({});
-              }}
-              className="rounded-full border border-slate-300 px-5 py-2.5 font-bold text-slate-700"
-            >
-              Cancelar
-            </button>
-          </div>
-        </form>
+        <MasterForm
+          fields={fields}
+          title={editing ? `Editar ${valueFor(editing, nameField)}` : `Nuevo registro`}
+          isEditing={Boolean(editing)}
+          isPending={guardar.isPending}
+          register={register}
+          handleSubmit={handleSubmit}
+          errors={errors}
+          serverFieldErrors={fieldErrors}
+          onSubmitValid={(data) => void handleFormSubmit(data)}
+          onCancel={handleCancel}
+        />
       )}
 
       {catalogo.isLoading ? (
@@ -251,7 +182,7 @@ export function AdminMasterPage({
         </p>
       ) : catalogo.isError ? (
         <div role="alert" className="rounded-xl border border-red-200 bg-red-50 p-5 text-red-800">
-          <p>No se pudo cargar el listado: {getApiMessage(catalogo.error)}</p>
+          <p>No se pudo cargar el listado: {getApiErrorMessage(catalogo.error)}</p>
           <button
             type="button"
             onClick={() => void catalogo.refetch()}
@@ -288,14 +219,7 @@ export function AdminMasterPage({
                     </td>
                   ))}
                   <td className="px-5 py-4">
-                    <span
-                      className={cn(
-                        'rounded-full px-3 py-1 text-xs font-bold',
-                        record.activo ? 'bg-green-50 text-green-700' : 'bg-slate-100 text-slate-500',
-                      )}
-                    >
-                      {record.activo ? 'Activo' : 'Inactivo'}
-                    </span>
+                    <EstadoBadge activo={record.activo} />
                   </td>
                   <td className="px-5 py-4">
                     <div className="flex justify-end gap-2">
@@ -337,64 +261,7 @@ export function AdminMasterPage({
       )}
 
       {detailId !== null && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setDetailId(null);
-          }}
-        >
-          <section
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="admin-detail-title"
-            className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <h2 id="admin-detail-title" className="text-xl font-bold text-slate-950">
-                Detalle
-              </h2>
-              <button
-                type="button"
-                onClick={() => setDetailId(null)}
-                aria-label="Cerrar detalle"
-                className="rounded-lg px-2 py-1 text-slate-500 hover:bg-slate-100"
-              >
-                ✕
-              </button>
-            </div>
-            {detail.isLoading ? (
-              <p role="status" className="py-8 text-slate-600">
-                Cargando detalle...
-              </p>
-            ) : detail.isError ? (
-              <p role="alert" className="py-8 text-red-700">
-                {getApiMessage(detail.error)}
-              </p>
-            ) : detail.data ? (
-              <dl className="mt-5 space-y-3">
-                {fields.map((field) => (
-                  <div key={field.name}>
-                    <dt className="text-xs font-bold uppercase tracking-wide text-slate-500">
-                      {field.label}
-                    </dt>
-                    <dd className="mt-1 text-slate-900">
-                      {valueFor(detail.data, field.name) || '—'}
-                    </dd>
-                  </div>
-                ))}
-                <div>
-                  <dt className="text-xs font-bold uppercase tracking-wide text-slate-500">
-                    Estado
-                  </dt>
-                  <dd className="mt-1 text-slate-900">
-                    {detail.data.activo ? 'Activo' : 'Inactivo'}
-                  </dd>
-                </div>
-              </dl>
-            ) : null}
-          </section>
-        </div>
+        <MasterDetailModal detail={detail} fields={fields} onClose={() => setDetailId(null)} />
       )}
     </section>
   );

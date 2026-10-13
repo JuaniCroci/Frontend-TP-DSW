@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import { response, requestBody } from '../helpers/axios-adapter';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it } from 'vitest';
 import { apiClient } from '@/core/api/api.client';
@@ -10,20 +10,6 @@ import LoginPage from '@/features/auth/pages/LoginPage';
 import RegisterPage from '@/features/auth/pages/RegisterPage';
 
 const adapterOriginal = apiClient.defaults.adapter;
-
-function response(config: InternalAxiosRequestConfig, data: unknown, status = 201): AxiosResponse {
-  return {
-    data,
-    status,
-    statusText: status === 201 ? 'Created' : 'OK',
-    headers: new AxiosHeaders(),
-    config,
-  };
-}
-
-function requestBody(data: unknown): unknown {
-  return typeof data === 'string' ? JSON.parse(data) : data;
-}
 
 function renderRegistration() {
   const queryClient = new QueryClient({

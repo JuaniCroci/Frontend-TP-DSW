@@ -3,6 +3,7 @@ import { act, cleanup, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { apiClient, TOKEN_KEY } from '@/core/api/api.client';
+import { saveSession } from '../helpers/session';
 import { AuthProvider } from '@/core/auth/AuthProvider';
 import { AdminRoute } from '@/core/guards/AdminRoute';
 import { ClientRoute } from '@/core/guards/ClientRoute';
@@ -16,19 +17,6 @@ function LoginDestination() {
     <div data-testid="login-destination">
       <span data-testid="login-from">{from}</span>
     </div>
-  );
-}
-
-function saveSession(rol: 'ADMIN' | 'CLIENTE'): void {
-  localStorage.setItem(TOKEN_KEY, 'token-de-prueba');
-  localStorage.setItem(
-    'entreno_user',
-    JSON.stringify({
-      id: 1,
-      nombre: rol === 'ADMIN' ? 'Administradora' : 'Cliente',
-      email: `${rol.toLowerCase()}@entreno.test`,
-      rol,
-    }),
   );
 }
 

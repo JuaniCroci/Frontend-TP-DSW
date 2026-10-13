@@ -1,19 +1,5 @@
-export interface Marca {
-  id: number;
-  nombre: string;
-  activo: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface TipoProducto {
-  id: number;
-  nombre: string;
-  descripcion: string | null;
-  activo: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
+import type { Marca } from './Marca';
+import type { TipoProducto } from './TipoProducto';
 
 export interface Proveedor {
   id: number;
@@ -28,11 +14,6 @@ export interface Proveedor {
 }
 
 export type RegistroCatalogo = Marca | TipoProducto | Proveedor;
-
-export interface RespuestaLista<T> {
-  data: T[];
-  total: number;
-}
 
 export type RecursoCatalogo = 'marcas' | 'tipos-producto' | 'proveedores';
 

@@ -1,3 +1,13 @@
+import type { AdminDescuento } from './AdminDescuento';
+
+export type DescuentoVigente = AdminDescuento;
+
+export interface ImagenPrincipalProducto {
+  id: string;
+  url: string;
+  altText: string;
+}
+
 export interface ProductoListado {
   id: number;
   nombre: string;
@@ -26,46 +36,6 @@ export interface ProductoDetalle extends ProductoListado {
   createdAt: string;
   updatedAt: string;
   descuentosVigentes: DescuentoVigente[];
-}
-
-export interface ImagenPrincipalProducto {
-  id: string;
-  url: string;
-  altText: string;
-}
-
-export interface DescuentoVigente {
-  id: number;
-  descripcion: string;
-  cantidadMinima: number;
-  porcentaje: number;
-  activo: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Marca {
-  id: number;
-  nombre: string;
-  activo: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface TipoProducto {
-  id: number;
-  nombre: string;
-  descripcion: string | null;
-  activo: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface ListaRespuesta<T> {
-  data: T[];
-  total: number;
-  page?: number;
-  size?: number;
 }
 
 export interface FiltrosProducto {

@@ -2,6 +2,7 @@ import { useSearchParams, Link } from 'react-router-dom';
 import { useMarcasCatalogo, useProductos, useTiposProductoCatalogo } from '../api/queries';
 import type { FiltrosProducto } from '../../../models/Producto';
 import { cn } from '../../../shared/utils/cn';
+import { formatMoney } from '../../../shared/utils/formatMoney';
 import { ProductoImagen } from '../components/ProductoImagen';
 
 const PAGE_SIZE = 12;
@@ -20,14 +21,6 @@ function parsePrice(value: string | null): number | undefined {
 
 function parseOrder(value: string | null): FiltrosProducto['orden'] {
   return value === 'nombre' || value === 'precio' ? value : undefined;
-}
-
-function formatPrice(value: string): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    minimumFractionDigits: 2,
-  }).format(Number(value));
 }
 
 function describeError(error: Error | null, fallback: string): string {
@@ -82,6 +75,12 @@ export default function CatalogoPage() {
   const total = productos.data?.total ?? 0;
   const currentPage = productos.data?.page ?? filters.page;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
+  const search = searchParams.toString();
+  const filtersKey = (
+    ['idTipoProducto', 'idMarca', 'precioMin', 'precioMax', 'orden', 'dir'] as const
+  )
+    .map((name) => `${name}=${searchParams.get(name) ?? ''}`)
+    .join('&');
 
   return (
     <main className="mx-auto w-full max-w-7xl flex-1 px-5 py-12 sm:py-16">
@@ -95,7 +94,7 @@ export default function CatalogoPage() {
       </div>
 
       <form
-        key={searchParams.toString()}
+        key={filtersKey}
         onSubmit={handleApplyFilters}
         className="mb-8 grid gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:grid-cols-2 lg:grid-cols-6"
       >
@@ -263,7 +262,7 @@ export default function CatalogoPage() {
               {productos.data?.data.map((producto) => (
                 <Link
                   key={producto.id}
-                  to={`/productos/${producto.id}?${searchParams.toString()}`}
+                  to={search ? `/productos/${producto.id}?${search}` : `/productos/${producto.id}`}
                   className="group overflow-hidden rounded-2xl border border-slate-200 bg-white transition hover:-translate-y-1 hover:shadow-lg"
                 >
                   <ProductoImagen
@@ -278,7 +277,7 @@ export default function CatalogoPage() {
                       {producto.nombre}
                     </h2>
                     <p className="mt-3 text-lg font-black text-slate-950">
-                      {formatPrice(producto.precioUnitario)}
+                      {formatMoney(producto.precioUnitario)}
                     </p>
                     <p
                       className={cn(

@@ -1,3 +1,5 @@
+import type { RespuestaLista } from './RespuestaLista';
+
 export interface AdminDescuento {
   id: number;
   descripcion: string;
@@ -21,14 +23,11 @@ export interface DetalleAdminDescuento extends AdminDescuento {
   aplicaciones: AplicacionDescuento[];
 }
 
-export interface RespuestaAdminDescuentos {
-  data: AdminDescuento[];
-  total: number;
-}
+export type RespuestaAdminDescuentos = RespuestaLista<AdminDescuento>;
 
-export interface RespuestaProductosDescuento {
-  data: Array<{ id: number; nombre: string; activo: boolean }>;
-  total: number;
+export interface RespuestaProductosDescuento
+  extends RespuestaLista<{ id: number; nombre: string; activo: boolean }>
+{
   page: number;
   size: number;
 }

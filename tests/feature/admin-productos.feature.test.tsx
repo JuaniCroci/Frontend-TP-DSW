@@ -1,7 +1,9 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
-import { AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import type { InternalAxiosRequestConfig } from 'axios';
+import { response, requestBody } from '../helpers/axios-adapter';
+import { saveSession } from '../helpers/session';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { apiClient } from '@/core/api/api.client';
@@ -49,33 +51,6 @@ const proveedores = [
   },
 ];
 
-function response(config: InternalAxiosRequestConfig, data: unknown, status = 200): AxiosResponse {
-  return {
-    data,
-    status,
-    statusText: status === 204 ? 'No Content' : 'OK',
-    headers: new AxiosHeaders(),
-    config,
-  };
-}
-
-function requestBody(data: unknown): unknown {
-  return typeof data === 'string' ? JSON.parse(data) : data;
-}
-
-function saveAdminSession() {
-  localStorage.setItem('entreno_token', 'token-de-prueba');
-  localStorage.setItem(
-    'entreno_user',
-    JSON.stringify({
-      id: 1,
-      nombre: 'Administradora',
-      email: 'admin@entreno.test',
-      rol: 'ADMIN',
-    }),
-  );
-}
-
 function renderProductosPage() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false, staleTime: 0 } },
@@ -111,7 +86,7 @@ describe('administración de productos', () => {
   });
 
   it('envía filtros administrativos y paginación soportados por el backend', async () => {
-    saveAdminSession();
+    saveSession('ADMIN');
     const requests: Array<{ params?: unknown }> = [];
     apiClient.defaults.adapter = async (config) => {
       const masterResponse = masterDataResponse(config);
@@ -148,7 +123,7 @@ describe('administración de productos', () => {
   });
 
   it('crea con relaciones activas y stockInicial sin enviar stock', async () => {
-    saveAdminSession();
+    saveSession('ADMIN');
     let createBody: unknown;
     apiClient.defaults.adapter = async (config) => {
       const masterResponse = masterDataResponse(config);
@@ -191,7 +166,7 @@ describe('administración de productos', () => {
   });
 
   it('edita datos y relaciones sin incluir campos de stock en el request', async () => {
-    saveAdminSession();
+    saveSession('ADMIN');
     let updateBody: Record<string, unknown> | undefined;
     let currentProducto = producto;
     apiClient.defaults.adapter = async (config) => {
@@ -236,7 +211,7 @@ describe('administración de productos', () => {
   });
 
   it('muestra únicamente relaciones activas y permite limpiar proveedor opcional', async () => {
-    saveAdminSession();
+    saveSession('ADMIN');
     let updateBody: Record<string, unknown> | undefined;
     apiClient.defaults.adapter = async (config) => {
       if (config.url === '/api/marcas') {
@@ -308,7 +283,7 @@ describe('administración de productos', () => {
   });
 
   it('confirma baja lógica y reporta el éxito después de la respuesta del servidor', async () => {
-    saveAdminSession();
+    saveSession('ADMIN');
     vi.spyOn(window, 'confirm').mockReturnValue(true);
     let currentProducto = producto;
     apiClient.defaults.adapter = async (config) => {
@@ -335,7 +310,7 @@ describe('administración de productos', () => {
   });
 
   it('carga y registra una imagen con metadatos desde la gestión del producto', async () => {
-    saveAdminSession();
+    saveSession('ADMIN');
     let sentFormData: FormData | undefined;
     apiClient.defaults.adapter = async (config) => {
       const masterResponse = masterDataResponse(config);
@@ -393,7 +368,7 @@ describe('administración de productos', () => {
   });
 
   it('muestra los errores de dependencia que devuelve el servidor al crear', async () => {
-    saveAdminSession();
+    saveSession('ADMIN');
     apiClient.defaults.adapter = async (config) => {
       const masterResponse = masterDataResponse(config);
       if (masterResponse) return masterResponse;

@@ -3,8 +3,8 @@ import { apiClient } from '../../../core/api/api.client';
 import type {
   RegistroCatalogo,
   RecursoCatalogo,
-  RespuestaLista,
 } from '../../../models/AdminCatalogo';
+import type { RespuestaLista } from '../../../models/RespuestaLista';
 
 export const adminCatalogoKeys = {
   all: ['admin', 'catalogo'] as const,

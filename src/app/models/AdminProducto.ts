@@ -1,3 +1,6 @@
+import type { ImagenPrincipalProducto } from './Producto';
+import type { RespuestaLista } from './RespuestaLista';
+
 export interface AdminProducto {
   id: number;
   nombre: string;
@@ -11,12 +14,6 @@ export interface AdminProducto {
   imagenPrincipal: ImagenPrincipalProducto | null;
   createdAt: string;
   updatedAt: string;
-}
-
-export interface ImagenPrincipalProducto {
-  id: string;
-  url: string;
-  altText: string;
 }
 
 export interface FotoProductoAdmin extends ImagenPrincipalProducto {
@@ -43,9 +40,7 @@ export interface AdminProductoFilters {
   size: number;
 }
 
-export interface RespuestaAdminProductos {
-  data: AdminProducto[];
-  total: number;
+export interface RespuestaAdminProductos extends RespuestaLista<AdminProducto> {
   page: number;
   size: number;
 }

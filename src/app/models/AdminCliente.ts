@@ -1,3 +1,5 @@
+import type { RespuestaLista } from './RespuestaLista';
+
 export interface AdminCliente {
   id: number;
   nombre: string;
@@ -10,10 +12,7 @@ export interface AdminCliente {
   updatedAt: string;
 }
 
-export interface RespuestaClientes {
-  data: AdminCliente[];
-  total: number;
-}
+export type RespuestaClientes = RespuestaLista<AdminCliente>;
 
 export interface DatosCliente {
   nombre: string;

@@ -1,7 +1,8 @@
 /** @vitest-environment jsdom */
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import { response, requestBody } from '../helpers/axios-adapter';
+import { saveSession } from '../helpers/session';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { apiClient } from '@/core/api/api.client';
@@ -18,33 +19,6 @@ const descuento = {
   createdAt: '2026-10-01T12:00:00.000Z',
   updatedAt: '2026-10-01T12:00:00.000Z',
 };
-
-function response(config: InternalAxiosRequestConfig, data: unknown, status = 200): AxiosResponse {
-  return {
-    data,
-    status,
-    statusText: status === 204 ? 'No Content' : 'OK',
-    headers: new AxiosHeaders(),
-    config,
-  };
-}
-
-function requestBody(data: unknown): unknown {
-  return typeof data === 'string' ? JSON.parse(data) : data;
-}
-
-function saveAdminSession() {
-  localStorage.setItem('entreno_token', 'token-de-prueba');
-  localStorage.setItem(
-    'entreno_user',
-    JSON.stringify({
-      id: 1,
-      nombre: 'Administradora',
-      email: 'admin@entreno.test',
-      rol: 'ADMIN',
-    }),
-  );
-}
 
 function renderDescuentosPage() {
   const queryClient = new QueryClient({
@@ -65,7 +39,7 @@ function renderDescuentosPage() {
 describe('administración de descuentos', () => {
   beforeEach(() => {
     localStorage.clear();
-    saveAdminSession();
+    saveSession('ADMIN');
     vi.spyOn(window, 'confirm').mockReturnValue(true);
   });
 

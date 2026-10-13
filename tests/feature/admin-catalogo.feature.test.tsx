@@ -1,7 +1,8 @@
 /** @vitest-environment jsdom */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { AxiosHeaders, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
+import { response, requestBody } from '../helpers/axios-adapter';
+import { saveSession } from '../helpers/session';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { apiClient } from '@/core/api/api.client';
@@ -41,20 +42,6 @@ const proveedor = {
   updatedAt: '2026-10-09T20:21:22.305Z',
 };
 
-function response(config: InternalAxiosRequestConfig, data: unknown, status = 200): AxiosResponse {
-  return {
-    data,
-    status,
-    statusText: status === 204 ? 'No Content' : 'OK',
-    headers: new AxiosHeaders(),
-    config,
-  };
-}
-
-function requestBody(data: unknown): unknown {
-  return typeof data === 'string' ? JSON.parse(data) : data;
-}
-
 function renderMasterPage(page: 'marcas' | 'tipos-producto' | 'proveedores') {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
@@ -70,19 +57,6 @@ function renderMasterPage(page: 'marcas' | 'tipos-producto' | 'proveedores') {
         </Routes>
       </MemoryRouter>
     </QueryClientProvider>,
-  );
-}
-
-function saveSession(rol: 'ADMIN' | 'CLIENTE') {
-  localStorage.setItem('entreno_token', 'token-de-prueba');
-  localStorage.setItem(
-    'entreno_user',
-    JSON.stringify({
-      id: 1,
-      nombre: rol === 'ADMIN' ? 'Administradora' : 'Cliente',
-      email: `${rol.toLowerCase()}@entreno.test`,
-      rol,
-    }),
   );
 }
 

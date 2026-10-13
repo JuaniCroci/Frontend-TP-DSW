@@ -1,41 +1,9 @@
 import { Link } from 'react-router-dom';
-
-const sections = [
-  {
-    to: '/admin/clientes',
-    title: 'Clientes',
-    description: 'Consultá las cuentas y administrá su estado.',
-  },
-  {
-    to: '/admin/productos',
-    title: 'Productos',
-    description: 'Administrá productos, precios, relaciones y stock inicial.',
-  },
-  {
-    to: '/admin/descuentos',
-    title: 'Descuentos',
-    description: 'Definí descuentos por cantidad y su vigencia para cada producto.',
-  },
-  {
-    to: '/admin/marcas',
-    title: 'Marcas',
-    description: 'Administrá las marcas disponibles para el catálogo.',
-  },
-  {
-    to: '/admin/tipos-producto',
-    title: 'Tipos de producto',
-    description: 'Organizá los productos por tipo.',
-  },
-  {
-    to: '/admin/proveedores',
-    title: 'Proveedores',
-    description: 'Mantené los datos de tus proveedores.',
-  },
-];
+import { adminSections } from '../adminSections';
 
 export default function AdminHomePage() {
   return (
-    <main className="mx-auto w-full max-w-6xl flex-1 px-5 py-12">
+    <section className="mx-auto w-full max-w-6xl flex-1 px-5 py-12">
       <p className="text-sm font-bold uppercase tracking-[0.18em] text-lime-700">
         Panel de gestión
       </p>
@@ -44,18 +12,20 @@ export default function AdminHomePage() {
         Desde acá podés gestionar los datos principales de la tienda.
       </p>
       <div className="mt-9 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {sections.map((section) => (
-          <Link
-            key={section.to}
-            to={section.to}
-            className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg"
-          >
-            <h2 className="text-xl font-bold text-slate-950">{section.title}</h2>
-            <p className="mt-2 leading-7 text-slate-600">{section.description}</p>
-            <span className="mt-6 inline-block font-bold text-lime-800">Abrir sección →</span>
-          </Link>
-        ))}
+        {adminSections
+          .filter((section) => !section.end)
+          .map((section) => (
+            <Link
+              key={section.to}
+              to={section.to}
+              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg"
+            >
+              <h2 className="text-xl font-bold text-slate-950">{section.label}</h2>
+              <p className="mt-2 leading-7 text-slate-600">{section.description}</p>
+              <span className="mt-6 inline-block font-bold text-lime-800">Abrir sección →</span>
+            </Link>
+          ))}
       </div>
-    </main>
+    </section>
   );
 }

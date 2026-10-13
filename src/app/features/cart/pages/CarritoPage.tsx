@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ApiError } from '../../../core/api/apiError';
+import { getApiErrorMessage } from '../../../core/api/friendlyError';
 import type { PedidoConfirmado } from '../../../models/Carrito';
 import {
   useActualizarItemCarrito,
@@ -8,18 +9,7 @@ import {
   useQuitarItemCarrito,
 } from '../api/mutations';
 import { useCarrito } from '../api/queries';
-
-function formatPrice(value: string): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    minimumFractionDigits: 2,
-  }).format(Number(value));
-}
-
-function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Ocurrió un error inesperado.';
-}
+import { formatMoney } from '../../../shared/utils/formatMoney';
 
 function isMissingCart(error: unknown): boolean {
   return error instanceof ApiError && error.statusCode === 404;
@@ -46,7 +36,7 @@ export default function CarritoPage() {
     try {
       await actualizar.mutateAsync({ id, cantidad });
     } catch (error) {
-      setActionError(getErrorMessage(error));
+      setActionError(getApiErrorMessage(error));
     }
   }
 
@@ -56,7 +46,7 @@ export default function CarritoPage() {
     try {
       await quitar.mutateAsync(id);
     } catch (error) {
-      setActionError(getErrorMessage(error));
+      setActionError(getApiErrorMessage(error));
     }
   }
 
@@ -66,7 +56,7 @@ export default function CarritoPage() {
     try {
       setPedido(await confirmar.mutateAsync());
     } catch (error) {
-      setActionError(getErrorMessage(error));
+      setActionError(getApiErrorMessage(error));
     }
   }
 
@@ -91,7 +81,7 @@ export default function CarritoPage() {
             </div>
             <div>
               <dt className="font-semibold text-green-800">Total confirmado</dt>
-              <dd className="mt-1 text-green-950">{formatPrice(pedido.importeTotal)}</dd>
+              <dd className="mt-1 text-green-950">{formatMoney(pedido.importeTotal)}</dd>
             </div>
           </dl>
           <p className="mt-4 text-sm text-green-900">
@@ -108,7 +98,7 @@ export default function CarritoPage() {
                     </span>
                   )}
                 </span>
-                <span className="font-bold">{formatPrice(item.subtotal)}</span>
+                <span className="font-bold">{formatMoney(item.subtotal)}</span>
               </li>
             ))}
           </ul>
@@ -142,7 +132,7 @@ export default function CarritoPage() {
               role="alert"
               className="mt-8 rounded-2xl border border-red-200 bg-red-50 p-6 text-red-800"
             >
-              <p>No pudimos cargar el carrito: {getErrorMessage(carrito.error)}</p>
+              <p>No pudimos cargar el carrito: {getApiErrorMessage(carrito.error)}</p>
               <button
                 type="button"
                 onClick={() => void carrito.refetch()}
@@ -184,7 +174,7 @@ export default function CarritoPage() {
                           {item.producto.nombre}
                         </td>
                         <td className="px-5 py-4 text-slate-700">
-                          {formatPrice(item.producto.precioUnitario)}
+                          {formatMoney(item.producto.precioUnitario)}
                         </td>
                         <td className="px-5 py-4">
                           <form
@@ -214,7 +204,7 @@ export default function CarritoPage() {
                           </form>
                         </td>
                         <td className="px-5 py-4 font-bold text-slate-900">
-                          {formatPrice(item.subtotal)}
+                          {formatMoney(item.subtotal)}
                         </td>
                         <td className="px-5 py-4 text-right">
                           <button
@@ -234,7 +224,7 @@ export default function CarritoPage() {
 
               <div className="mt-6 flex flex-col items-end gap-4">
                 <p className="text-xl font-black text-slate-950">
-                  Total: {formatPrice(carrito.data.total)}
+                  Total: {formatMoney(carrito.data.total)}
                 </p>
                 <p className="max-w-lg text-right text-sm text-slate-600">
                   Los descuentos aplicables y el total final del pedido se calcularán al

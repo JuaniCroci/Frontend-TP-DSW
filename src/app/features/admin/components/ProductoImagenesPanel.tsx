@@ -1,6 +1,8 @@
 import { useRef, useState } from 'react';
 import { apiAssetUrl } from '../../../core/api/api.client';
+import { getApiErrorMessage } from '../../../core/api/friendlyError';
 import type { AdminProducto } from '../../../models/AdminProducto';
+import { AdminModal } from '../../../shared/components/AdminModal';
 import { useSubirImagenProductoAdmin } from '../api/productosMutations';
 import { useImagenesProductoAdmin } from '../api/productosQueries';
 
@@ -19,11 +21,9 @@ function formatDate(value: string): string {
 }
 
 function formatSize(sizeBytes: number): string {
-  return `${(sizeBytes / 1024).toFixed(0)} KiB`;
-}
-
-function getErrorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Ocurrió un error inesperado.';
+  if (sizeBytes < 1024) return `${sizeBytes} B`;
+  if (sizeBytes < 1024 * 1024) return `${(sizeBytes / 1024).toFixed(0)} KiB`;
+  return `${(sizeBytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
 export function ProductoImagenesPanel({ producto, onClose }: ProductoImagenesPanelProps) {
@@ -77,7 +77,7 @@ export function ProductoImagenesPanel({ producto, onClose }: ProductoImagenesPan
       setNotice('Imagen cargada y establecida como principal.');
       if (fileInputRef.current) fileInputRef.current.value = '';
     } catch (error) {
-      setFormError(getErrorMessage(error));
+      setFormError(getApiErrorMessage(error));
     }
   }
 
@@ -85,19 +85,11 @@ export function ProductoImagenesPanel({ producto, onClose }: ProductoImagenesPan
     imagenes.data?.find((imagen) => imagen.esPrincipal) ?? producto.imagenPrincipal;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/50 p-4"
-      role="presentation"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
-      }}
+    <AdminModal
+      labelledBy="producto-imagenes-title"
+      onClose={onClose}
+      panelClassName="max-h-[90vh] max-w-3xl overflow-y-auto"
     >
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="producto-imagenes-title"
-        className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
-      >
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-sm font-bold uppercase tracking-wide text-lime-700">
@@ -123,6 +115,8 @@ export function ProductoImagenesPanel({ producto, onClose }: ProductoImagenesPan
               src={apiAssetUrl(currentImage.url)}
               alt={currentImage.altText}
               className="h-28 w-24 rounded-lg bg-white object-contain"
+              loading="lazy"
+              decoding="async"
             />
             <div className="self-center">
               <p className="font-semibold text-slate-900">Imagen principal actual</p>
@@ -233,7 +227,7 @@ export function ProductoImagenesPanel({ producto, onClose }: ProductoImagenesPan
             </p>
           ) : imagenes.isError ? (
             <p role="alert" className="py-5 text-sm text-red-700">
-              No se pudo cargar el historial: {getErrorMessage(imagenes.error)}
+              No se pudo cargar el historial: {getApiErrorMessage(imagenes.error)}
             </p>
           ) : imagenes.data?.length ? (
             <ul className="mt-4 space-y-3">
@@ -243,6 +237,11 @@ export function ProductoImagenesPanel({ producto, onClose }: ProductoImagenesPan
                     src={apiAssetUrl(imagen.url)}
                     alt={imagen.altText}
                     className="h-20 w-16 rounded-lg bg-slate-50 object-contain"
+                    loading="lazy"
+                    decoding="async"
+                    onError={(event) => {
+                      event.currentTarget.hidden = true;
+                    }}
                   />
                   <div className="min-w-0 text-sm text-slate-600">
                     <p className="font-semibold text-slate-900">
@@ -261,7 +260,6 @@ export function ProductoImagenesPanel({ producto, onClose }: ProductoImagenesPan
             <p className="mt-3 text-sm text-slate-600">Todavía no hay imágenes registradas.</p>
           )}
         </section>
-      </section>
-    </div>
+    </AdminModal>
   );
 }
