@@ -9,7 +9,7 @@ SPA frontend de **Entreno 2.0** (e-commerce de artículos de gimnasio). **TypeSc
 - Fuente de verdad: [`spec/`](./spec/README.md) (constitución + features 001–008).
 - Contrato HTTP: [`spec/constitution/api-contract.md`](./spec/constitution/api-contract.md) — **snapshot** del repo backend; la fuente de verdad vive allá.
 - Backend separado: [Entreno-2.0-Backend](https://github.com/JuaniCroci/Entreno-2.0-Backend) (Express 5 + MikroORM + MySQL; local: `tp-dsw-back00`).
-- ⚠️ [Backend-TP-DSW](https://github.com/JuaniCroci/Backend-TP-DSW) es un prototipo viejo sin módulo auth — **no** es el backend del TP.
+- ⚠️ [Backend-TP-DSW-viejo](https://github.com/JuaniCroci/Backend-TP-DSW-viejo) es un prototipo viejo sin módulo auth — **no** es el backend del TP.
 - Package manager: **pnpm** (Node ≥ 20, ver `.nvmrc`).
 
 ## Comandos
