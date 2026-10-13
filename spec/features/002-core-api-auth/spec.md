@@ -41,7 +41,7 @@ Se integró una rama local paralela de esta misma feature con la implementación
 - `friendlyErrorMessage` aplicado en `LoginPage` y `RegisterPage` (`429` → copy amigable de rate limit).
 - Tests adaptados a esta implementación: guards (`AdminRoute`/`ClientRoute`), login (4 casos) y registro (3 casos).
 
-La alternativa descartada (implementación propia con `status`/`GET /api/auth/me`, `ProtectedRoute` y páginas con RHF) vive en la rama `backup/local-wip`.
+La alternativa descartada (implementación propia con `status`/`GET /api/auth/me`, `ProtectedRoute` y páginas con RHF) estaba en la rama `backup/local-wip`, eliminada el 2026-10-12 tras revisión (18 commits atrasada; su único contenido único era `ProtectedRoute.tsx`, el resto ya estaba idéntico o superado en `main`).
 
 ## Fuera de alcance
 

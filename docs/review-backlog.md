@@ -17,7 +17,7 @@
 | **T2** | Reglas de la cátedra (playbook)          | P1        | ✅ cerrado (2026-10-12, `1e8d321`) |
 | **T3** | Refactors y duplicación                  | P2        | ✅ cerrado (2026-10-12)             |
 | **T4** | Cobertura y salud de tests               | P2        | ✅ cerrado (2026-10-12, `aada99e`)  |
-| **T5** | Mejoras de UI y comportamiento (ex T4-7) | P2        | ⬜ pendiente                        |
+| **T5** | Mejoras de UI y comportamiento (ex T4-7) | P2        | ⚠️ T5-2 ✅ (`8644df6`); T5-1 ⛔ bloqueado en back |
 
 ---
 
@@ -76,7 +76,7 @@
 
 - [x] **1.** **`POST /api/carrito/items` desde el detalle** — el flujo principal de 006, prometido en `spec/features/006-carrito/plan.md:27` y marcado `[x]`, **no tenía ningún test** → `tests/feature/producto-detalle.feature.test.tsx` (body `{idProducto,cantidad}`, cantidad por defecto 1, éxito + link "Ver carrito", error 409 de stock). Verificado por mutación.
 - [x] **2.** **`AdminHomePage`**: cero tests (solo se prueba como destino de guard) → `tests/feature/admin-home.feature.test.tsx` (encabezado, hrefs de las 6 secciones sin autorreferencia, contenido de tarjetas). Verificado por mutación.
-- [x] **3.** **Decisión + test de restauración de sesión** — **resuelto 2026-10-12: se mantiene SIN hidratar (correcto, no un descuido)**. Motivos: (a) el backend es la autoridad — el token se revalida en cada request y el interceptor 401 ya cierra la sesión vencida (`api-401.unit.test.ts`); (b) `GET /api/auth/me` quedó fuera a propósito en la feature 002 (la alternativa con `/me` vive en `backup/local-wip`, ver `spec/features/002-core-api-auth/spec.md:44`). Riesgo residual solo cosmético: nombre/rol viejos si cambian sin re-login (un ADMIN degradado vería la UI admin pero sus requests fallarían 403 — sin fuga de datos). Test `auth-provider.unit.test.tsx` "restaura la sesión guardada sin consultar al backend" fija el comportamiento: si alguien agrega hidratación, el test obliga a actualizar la decisión.
+- [x] **3.** **Decisión + test de restauración de sesión** — **resuelto 2026-10-12: se mantiene SIN hidratar (correcto, no un descuido)**. Motivos: (a) el backend es la autoridad — el token se revalida en cada request y el interceptor 401 ya cierra la sesión vencida (`api-401.unit.test.ts`); (b) `GET /api/auth/me` quedó fuera a propósito en la feature 002 (la alternativa con `/me` estaba en `backup/local-wip`, rama eliminada el 2026-10-12 tras revisión, ver `spec/features/002-core-api-auth/spec.md:44`). Riesgo residual solo cosmético: nombre/rol viejos si cambian sin re-login (un ADMIN degradado vería la UI admin pero sus requests fallarían 403 — sin fuga de datos). Test `auth-provider.unit.test.tsx` "restaura la sesión guardada sin consultar al backend" fija el comportamiento: si alguien agrega hidratación, el test obliga a actualizar la decisión.
 - [x] **4.** `tests/setup.ts` — `afterEach(() => cleanup())` global con guard `typeof document !== 'undefined'` (5 archivos corren en environment `node` sin DOM; las llamadas manuales a `cleanup()` quedan redundantes y se eliminan al tocar cada archivo).
 - [x] **5.** `tests/feature/catalogo.feature.test.tsx` — hardcodeo `http://localhost:3000/...` → `apiAssetUrl()` (deriva del baseURL); matcher frágil del precio → regex exacto `/\$\s*12\.500,00/` (tolera el NBSP de `Intl`).
 - [x] **6.** Consolidar archivos gemelos: `login.feature` ⊂ `login-page.feature` y `registro.feature` ≈ `register-page.feature` → 4 archivos → 2 (`git rm` de los borrados). Absorbidos: estado "Ingresando..." con promise colgada y el e2e de registro (body con `telefono`, request único); los 2 tests descartados eran duplicados exactos. 13 tests en 4 archivos → 11 en 2.
@@ -92,8 +92,8 @@
 
 > Split acordado al cerrar T4: acá vive solo lo que **falta implementar** (no es cobertura de tests).
 
-- [ ] **1.** **Logout real**: `AuthProvider.logout()` solo limpia localStorage → llamar `POST /api/auth/logout` para invalidar el token en el back. **Antes de implementar**: el endpoint **no está** en `spec/constitution/api-endpoints.md` (solo register/login/me) → verificar/coordenar con el repo backend.
-- [ ] **2.** **Estados loading** en las pantallas asíncronas (hoy solo login los tiene): catálogo, detalle de producto, carrito y listados admin — unificar criterio (patrón `role="status"` de login) y testear.
+- [ ] **1.** **Logout real** — ⛔ **bloqueado en el backend** (verificado 2026-10-12, decisión del equipo: documentar y esperar): `POST /api/auth/logout` no existe en `api-endpoints.md` ni en el repo backend (local `Desktop\Backend-TP-DSW` y remoto, todas las ramas — no hay módulo auth ni login). Logout sigue local-only, aceptable hoy: el front no usa `refreshToken` (solo declara el tipo) y la invalidez del token la da su expiración. **Cuando el back agregue el endpoint**: llamarlo invalidando la sesión local (tragando errores) + test.
+- [x] **2.** **Estados loading** — auditado 2026-10-12: **ya estaban unificados** en todas las pantallas asíncronas (`role="status"` + "Cargando X…" en catálogo, detalle, carrito, los 6 listados admin y todos los modales) y todos los botones primarios tienen pending (`disabled` + texto: "Ingresando…", "Creando cuenta…", "Guardando…", "Confirmando pedido…", "Agregando…") — el "solo login los tiene" del análisis original ya no aplicaba. Faltaba testeo → 4 tests nuevos (catálogo, detalle, carrito, admin-productos) con helper `hang()`; RED verificado por mutación (6/6: los 4 nuevos por `Unable to find role="status"` + 2 colaterales existentes). Commit `8644df6`.
 
 ---
 
@@ -111,3 +111,4 @@ _(vacío)_
 | T2   | 2026-10-12 | `1e8d321` |
 | T3   | 2026-10-12 | `977b8b7` |
 | T4   | 2026-10-12 | `aada99e` |
+| T5   | 2026-10-12 (parcial: T5-2) | `8644df6` |
