@@ -67,9 +67,9 @@ describe('app shell', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Cerrar sesión' }));
     expect(
-      within(screen.getByRole('navigation', { name: 'Navegación principal' })).getByRole('link', {
-        name: 'Iniciar sesión',
-      }),
+      await within(
+        screen.getByRole('navigation', { name: 'Navegación principal' }),
+      ).findByRole('link', { name: 'Iniciar sesión' }),
     ).toBeInTheDocument();
   });
 

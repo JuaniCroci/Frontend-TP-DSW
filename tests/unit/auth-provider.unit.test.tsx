@@ -120,4 +120,67 @@ describe('AuthProvider', () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     expect(requests).toEqual([]);
   });
+
+  it('logout invoca POST /api/auth/logout y limpia la sesión', async () => {
+    const requests: string[] = [];
+    apiClient.defaults.adapter = async (config) => {
+      requests.push(`${config.method} ${config.url}`);
+      return {
+        data: null,
+        status: 204,
+        statusText: 'No Content',
+        headers: {},
+        config,
+      };
+    };
+
+    localStorage.setItem(TOKEN_KEY, 'jwt-vigente');
+    localStorage.setItem(
+      'entreno_user',
+      JSON.stringify({ id: 3, nombre: 'Ana', email: 'ana@entreno.test', rol: 'CLIENTE' }),
+    );
+
+    render(
+      <AuthProvider>
+        <SessionProbe />
+      </AuthProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar sesión' }));
+
+    await waitFor(() => {
+      expect(requests).toEqual(['post /api/auth/logout']);
+      expect(screen.getByText('Sin sesión')).toBeInTheDocument();
+      expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
+      expect(localStorage.getItem('entreno_user')).toBeNull();
+    });
+  });
+
+  it('la sesión se limpia aunque el logout falle', async () => {
+    const requests: string[] = [];
+    apiClient.defaults.adapter = async (config) => {
+      requests.push(`${config.method} ${config.url}`);
+      throw new Error('El backend no respondió');
+    };
+
+    localStorage.setItem(TOKEN_KEY, 'jwt-vigente');
+    localStorage.setItem(
+      'entreno_user',
+      JSON.stringify({ id: 3, nombre: 'Ana', email: 'ana@entreno.test', rol: 'CLIENTE' }),
+    );
+
+    render(
+      <AuthProvider>
+        <SessionProbe />
+      </AuthProvider>,
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Cerrar sesión' }));
+
+    await waitFor(() => {
+      expect(requests).toEqual(['post /api/auth/logout']);
+      expect(screen.getByText('Sin sesión')).toBeInTheDocument();
+      expect(localStorage.getItem(TOKEN_KEY)).toBeNull();
+    });
+  });
 });

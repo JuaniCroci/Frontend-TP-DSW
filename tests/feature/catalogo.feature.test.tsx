@@ -75,7 +75,7 @@ function renderRoutes(path: string) {
           token: null,
           isAuthenticated: false,
           login: async () => {},
-          logout: () => {},
+          logout: async () => {},
         }}
       >
         <MemoryRouter initialEntries={[path]}>
@@ -294,7 +294,7 @@ describe('catálogo de productos', () => {
             token: 'token-de-prueba',
             isAuthenticated: true,
             login: async () => {},
-            logout: () => {},
+            logout: async () => {},
           }}
         >
           <MemoryRouter initialEntries={['/productos/7']}>

@@ -48,7 +48,7 @@ const clientContext: AuthContextValue = {
   token: 'token-de-prueba',
   isAuthenticated: true,
   login: async () => {},
-  logout: () => {},
+  logout: async () => {},
 };
 
 function renderCart() {
