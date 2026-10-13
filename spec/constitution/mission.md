@@ -28,7 +28,7 @@ Piezas principales:
 
 ## Qué NO es
 
-- **No es el backend** — la API vive en el repo separado [Backend-TP-DSW](https://github.com/JuaniCroci/Backend-TP-DSW); este repo solo la consume.
+- **No es el backend** — la API vive en el repo separado [Entreno-2.0-Backend](https://github.com/JuaniCroci/Entreno-2.0-Backend); este repo solo la consume.
 - **No tiene persistencia propia** — sin store local; el estado de servidor vive en la API (cache en TanStack Query).
 - **No es SSR ni Next.js** — SPA 100% cliente (build de Vite + nginx en el `Containerfile`).
 - **No decide reglas de negocio** — totales, stock, precios finales y estados vienen calculados/enforceados por la API.

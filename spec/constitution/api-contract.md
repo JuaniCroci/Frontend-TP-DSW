@@ -1,4 +1,4 @@
-> ⚠️ **SNAPSHOT** — copia de `spec/constitution/api-contract.md` del repo **backend** ([Backend-TP-DSW](https://github.com/JuaniCroci/Backend-TP-DSW)).
+> ⚠️ **SNAPSHOT** — copia de `spec/constitution/api-contract.md` del repo **backend** ([Entreno-2.0-Backend](https://github.com/JuaniCroci/Entreno-2.0-Backend)).
 > **Fuente de verdad = el backend.** Si ese archivo cambia allá, sincronizar este (gate en `engineering-loop.md`). El contenido de abajo es idéntico al original, sin ediciones locales.
 
 # Contrato de respuestas HTTP — Entreno 2.0 Backend

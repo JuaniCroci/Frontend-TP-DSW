@@ -1,7 +1,7 @@
 # spec/ — Entreno 2.0 Frontend
 
 > Desarrollo dirigido por especificación (SDD): primero la spec, luego el plan, luego las tareas, y solo entonces el código.
-> Mismo sistema de trabajo que el backend ([Backend-TP-DSW](https://github.com/JuaniCroci/Backend-TP-DSW)), adaptado al frontend.
+> Mismo sistema de trabajo que el backend ([Entreno-2.0-Backend](https://github.com/JuaniCroci/Entreno-2.0-Backend)), adaptado al frontend.
 
 ## Estructura
 

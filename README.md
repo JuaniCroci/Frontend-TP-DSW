@@ -105,7 +105,7 @@ spec/                 # constitución + features (fuente de verdad del alcance)
 Este proyecto es **solo el frontend**. El backend vive en un repositorio independiente:
 
 - **Frontend:** este repo (React + Vite, puerto 5173)
-- **Backend:** https://github.com/JuaniCroci/Backend-TP-DSW (puerto 3000/8000)
+- **Backend:** https://github.com/JuaniCroci/Entreno-2.0-Backend (puerto 3000/8000)
 
 ### Comunicación
 
