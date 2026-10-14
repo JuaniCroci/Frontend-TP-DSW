@@ -1,4 +1,4 @@
-> ⚠️ **SNAPSHOT** — catálogo de endpoints del repo **backend** (`tp-dsw-back00/spec/features/*/spec.md`), extraído el 2026-10-04.
+> ⚠️ **SNAPSHOT** — catálogo de endpoints del repo **backend** (`tp-dsw-back00/spec/features/*/spec.md`), extraído el 2026-10-14.
 > **Fuente de verdad = el backend.** Si el back agrega o cambia un endpoint, sincronizar este archivo (gate en `engineering-loop.md`).
 > Los **shapes** de request/response viven en [`api-contract.md`](./api-contract.md); este archivo solo lista rutas, métodos, filtros y permisos.
 
@@ -30,7 +30,7 @@
 
 | Método | Ruta              | Auth    | Notas                     |
 | ------ | ----------------- | ------- | ------------------------- |
-| GET    | `/api/marcas`     | público | `?q=` (nombre parcial)    |
+| GET    | `/api/marcas`     | público | `?includeInactive=true` (admin) |
 | GET    | `/api/marcas/:id` | público |                           |
 | POST   | `/api/marcas`     | ADMIN   | `409` si nombre duplicado |
 | PUT    | `/api/marcas/:id` | ADMIN   |                           |
@@ -77,13 +77,15 @@
 | PUT    | `/api/productos/admin/:id` | ADMIN   | edición                                             |
 | DELETE | `/api/productos/admin/:id` | ADMIN   | baja lógica (`204`)                                 |
 | GET    | `/api/productos/:id`       | público | solo `activo=true`; `404` si inactivo               |
+| GET    | `/api/productos/admin/:id/imagenes` | ADMIN | historial de imágenes (`{ data: [...] }`)     |
+| POST   | `/api/productos/admin/:id/imagenes` | ADMIN | multipart `imagen` (+ `altText`, `fuente`, `licencia`, `atribucion?`); PNG/JPEG/WebP ≤ 5 MiB; `201`; `413` si supera el máximo |
 
 ## 008 · Descuentos
 
-| Método | Ruta                                             | Auth  | Notas                                                 |
-| ------ | ------------------------------------------------ | ----- | ----------------------------------------------------- |
-| GET    | `/api/descuentos`                                | ADMIN |                                                       |
-| GET    | `/api/descuentos/:id`                            | ADMIN | detalle con aplicaciones (producto + rango de fechas) |
+| Método | Ruta                                             | Auth    | Notas                                                 |
+| ------ | ------------------------------------------------ | ------- | ----------------------------------------------------- |
+| GET    | `/api/descuentos`                                | público |                                                       |
+| GET    | `/api/descuentos/:id`                            | público | detalle con aplicaciones (producto + rango de fechas) |
 | POST   | `/api/descuentos`                                | ADMIN | `{ descripcion, cantidadMinima, porcentaje, activo }` |
 | PUT    | `/api/descuentos/:id`                            | ADMIN |                                                       |
 | DELETE | `/api/descuentos/:id`                            | ADMIN | baja lógica (`204`)                                   |
@@ -105,8 +107,9 @@
 | ------ | -------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | GET    | `/api/productos`     | público | `?idTipoProducto=`, `?idMarca=`, `?precioMin=`, `?precioMax=` (AND), `?orden=nombre\|precio`, `?dir=asc\|desc`, `?page=`, `?size=` |
 | GET    | `/api/productos/:id` | público | detalle completo + descuentos vigentes                                                                                             |
+| GET    | `/api/productos/imagenes/:uid` | público | bytes de la imagen registrada (UUID)                                                                    |
 
-> Item del listado: `id`, `nombre`, `marca`, `precioUnitario`, `disponible` (`stock > 0`).
+> Item del listado: `id`, `nombre`, `marca`, `precioUnitario`, `disponible` (`stock > 0`) e `imagenPrincipal: null | { id, url, altText }` (bytes vía `GET /api/productos/imagenes/:uid`).
 
 ## 011 · Carrito y pedido (CLIENTE)
 

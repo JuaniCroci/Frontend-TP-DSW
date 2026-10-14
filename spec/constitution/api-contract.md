@@ -219,6 +219,8 @@ POST /api/marcas con body inválido → 400 Bad Request
   `descuentoAplicado`). El backend vuelve a validar stock, aplica descuentos y descuenta
   existencias. El estado inicial del pedido es `REALIZADO`; esta operación no procesa pagos.
 
+---
+
 ## Campos de respuesta a excluir siempre
 
 Los siguientes campos **nunca** deben aparecer en ninguna respuesta:
