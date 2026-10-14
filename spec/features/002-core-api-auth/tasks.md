@@ -47,11 +47,11 @@
 - [x] Ejecutar `pnpm lint`
 - [x] Ejecutar `pnpm typecheck`
 - [x] Ejecutar `pnpm test`
-- [ ] Validar login real con backend levantado
+- [x] Validar login real con backend levantado (2026-10-14: login ADMIN y CLIENTE → 200 con token + usuario; registro CLIENTE → 201; `/api/mis-pedidos` con token cliente → 200; cliente a `/api/clientes` → 403)
 
 ## 8. Cierre
 
 - [x] Revisar criterios de aceptación de `spec.md`
 - [x] Mostrar el estado final en `roadmap.md` si corresponde
 
-> El smoke manual contra un backend levantado queda pendiente; la suite valida el flujo con respuestas mockeadas.
+> Smoke manual contra backend local realizado el 2026-10-14 (MySQL en Podman + `pnpm dev`): login/registro/autorización verificados contra la API real.

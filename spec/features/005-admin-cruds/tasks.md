@@ -45,5 +45,5 @@
 - [x] Ejecutar `pnpm lint`.
 - [x] Ejecutar `pnpm build`.
 - [x] Ejecutar `pnpm test`.
-- [ ] Realizar smoke manual con usuario ADMIN en el backend local.
+- [x] Realizar smoke manual con usuario ADMIN en el backend local (2026-10-14: login ADMIN → 200; `POST/GET /marcas`, `POST/PUT /descuentos`, `POST /tipos-producto`, `POST /proveedores`, `POST /productos` → 201/200; mutación sin token → 401; cliente → `/api/clientes` → 403). La UI se verificó con la suite (adaptadores mockeados).
 - [x] Actualizar roadmap al terminar los bloques A-E.

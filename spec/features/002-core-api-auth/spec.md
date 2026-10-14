@@ -1,6 +1,6 @@
 # 002 · Core API + Auth
 
-**Estado:** implementada; falta smoke manual contra el backend local
+**Estado:** implementada (smoke manual contra backend local realizado el 2026-10-14)
 
 ## Qué hace
 
