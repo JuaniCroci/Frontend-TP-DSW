@@ -49,16 +49,12 @@ export function MasterDetailModal({ detail, fields, onClose }: MasterDetailModal
               <dt className="text-xs font-bold uppercase tracking-wide text-slate-500">
                 {field.label}
               </dt>
-              <dd className="mt-1 text-slate-900">
-                {valueFor(registro, field.name) || '—'}
-              </dd>
+              <dd className="mt-1 text-slate-900">{valueFor(registro, field.name) || '—'}</dd>
             </div>
           ))}
           <div>
             <dt className="text-xs font-bold uppercase tracking-wide text-slate-500">Estado</dt>
-            <dd className="mt-1 text-slate-900">
-              {registro.activo ? 'Activo' : 'Inactivo'}
-            </dd>
+            <dd className="mt-1 text-slate-900">{registro.activo ? 'Activo' : 'Inactivo'}</dd>
           </div>
         </dl>
       ) : null}

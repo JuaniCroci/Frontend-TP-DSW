@@ -1,9 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../../../core/api/api.client';
-import type {
-  RegistroCatalogo,
-  RecursoCatalogo,
-} from '../../../models/AdminCatalogo';
+import type { RegistroCatalogo, RecursoCatalogo } from '../../../models/AdminCatalogo';
 import type { RespuestaLista } from '../../../models/RespuestaLista';
 
 export const adminCatalogoKeys = {

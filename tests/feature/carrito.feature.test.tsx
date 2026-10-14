@@ -259,9 +259,7 @@ describe('carrito de compras', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('El carrito está vacío');
     expect(screen.getByRole('button', { name: 'Confirmar pedido' })).toBeEnabled();
-    expect(
-      screen.queryByRole('heading', { name: 'Pedido confirmado' }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Pedido confirmado' })).not.toBeInTheDocument();
   });
 
   it('muestra el estado de carga mientras el carrito no responde', async () => {

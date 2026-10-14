@@ -346,9 +346,7 @@ export default function AdminProductosPage() {
         </>
       )}
 
-      {detailId !== null && (
-        <ProductoDetalleModal detalle={detalle} onClose={handleCloseDetails} />
-      )}
+      {detailId !== null && <ProductoDetalleModal detalle={detalle} onClose={handleCloseDetails} />}
 
       {imageProduct && (
         <ProductoImagenesPanel producto={imageProduct} onClose={() => setImageProduct(null)} />

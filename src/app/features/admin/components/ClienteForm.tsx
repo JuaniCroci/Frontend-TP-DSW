@@ -61,7 +61,9 @@ export function ClienteForm({
             aria-invalid={Boolean(inputError('email'))}
           />
           {inputError('email') && (
-            <span className="mt-1 block text-sm font-normal text-red-700">{inputError('email')}</span>
+            <span className="mt-1 block text-sm font-normal text-red-700">
+              {inputError('email')}
+            </span>
           )}
         </label>
         <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 sm:col-span-2">

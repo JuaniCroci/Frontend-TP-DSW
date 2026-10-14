@@ -25,9 +25,11 @@ export interface DetalleAdminDescuento extends AdminDescuento {
 
 export type RespuestaAdminDescuentos = RespuestaLista<AdminDescuento>;
 
-export interface RespuestaProductosDescuento
-  extends RespuestaLista<{ id: number; nombre: string; activo: boolean }>
-{
+export interface RespuestaProductosDescuento extends RespuestaLista<{
+  id: number;
+  nombre: string;
+  activo: boolean;
+}> {
   page: number;
   size: number;
 }

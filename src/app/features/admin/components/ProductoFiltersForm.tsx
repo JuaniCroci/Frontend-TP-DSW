@@ -141,7 +141,10 @@ export function ProductoFiltersForm({
         </select>
       </label>
       <div className="flex items-end gap-2 sm:col-span-2 lg:col-span-6">
-        <button type="submit" className="rounded-full bg-slate-950 px-5 py-2.5 font-bold text-white">
+        <button
+          type="submit"
+          className="rounded-full bg-slate-950 px-5 py-2.5 font-bold text-white"
+        >
           Aplicar filtros
         </button>
         <button

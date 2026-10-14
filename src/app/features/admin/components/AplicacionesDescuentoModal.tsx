@@ -125,7 +125,10 @@ export function AplicacionesDescuentoModal({
           )}
 
           {descuento.activo && (
-            <form onSubmit={(event) => onAddApplication(event)} className="mt-6 rounded-xl bg-slate-50 p-5">
+            <form
+              onSubmit={(event) => onAddApplication(event)}
+              className="mt-6 rounded-xl bg-slate-50 p-5"
+            >
               <h3 className="font-bold text-slate-900">Aplicar a un producto</h3>
               {applicationError && (
                 <p role="alert" className="mt-3 rounded-lg bg-red-50 p-3 text-sm text-red-800">
@@ -179,9 +182,7 @@ export function AplicacionesDescuentoModal({
                     <button
                       type="submit"
                       disabled={
-                        isCreatingApplication ||
-                        productos.isLoading ||
-                        productos.data?.length === 0
+                        isCreatingApplication || productos.isLoading || productos.data?.length === 0
                       }
                       className="w-full rounded-full bg-slate-950 px-4 py-2.5 font-bold text-white enabled:hover:bg-lime-700 disabled:opacity-50"
                     >

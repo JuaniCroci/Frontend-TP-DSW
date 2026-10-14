@@ -18,11 +18,7 @@ interface ProductoDetalleModalProps {
 export function ProductoDetalleModal({ detalle, onClose }: ProductoDetalleModalProps) {
   const producto = detalle.data;
   return (
-    <AdminModal
-      labelledBy="admin-product-detail-title"
-      onClose={onClose}
-      panelClassName="max-w-xl"
-    >
+    <AdminModal labelledBy="admin-product-detail-title" onClose={onClose} panelClassName="max-w-xl">
       <div className="flex items-start justify-between gap-4">
         <h2 id="admin-product-detail-title" className="text-xl font-bold text-slate-950">
           Detalle del producto
@@ -73,9 +69,7 @@ export function ProductoDetalleModal({ detalle, onClose }: ProductoDetalleModalP
             <dd className="mt-1 text-slate-900">{producto.stock}</dd>
           </div>
           <div className="sm:col-span-2">
-            <dt className="text-xs font-bold uppercase tracking-wide text-slate-500">
-              Proveedor
-            </dt>
+            <dt className="text-xs font-bold uppercase tracking-wide text-slate-500">Proveedor</dt>
             <dd className="mt-1 text-slate-900">
               {producto.proveedor?.razonSocial ?? 'Sin proveedor'}
             </dd>

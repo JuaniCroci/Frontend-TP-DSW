@@ -1,10 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiClient } from '../../../core/api/api.client';
-import type {
-  FiltrosProducto,
-  ProductoDetalle,
-  ProductoListado,
-} from '../../../models/Producto';
+import type { FiltrosProducto, ProductoDetalle, ProductoListado } from '../../../models/Producto';
 import type { Marca } from '../../../models/Marca';
 import type { RespuestaLista } from '../../../models/RespuestaLista';
 import type { TipoProducto } from '../../../models/TipoProducto';

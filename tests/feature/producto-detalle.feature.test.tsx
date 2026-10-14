@@ -101,7 +101,9 @@ describe('agregar al carrito desde el detalle de producto', () => {
 
     renderDetalle();
 
-    expect(await screen.findByRole('heading', { name: 'Creatina monohidratada' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Creatina monohidratada' }),
+    ).toBeInTheDocument();
 
     fireEvent.change(screen.getByLabelText('Cantidad'), { target: { value: '3' } });
     fireEvent.click(screen.getByRole('button', { name: 'Agregar al carrito' }));
@@ -126,7 +128,9 @@ describe('agregar al carrito desde el detalle de producto', () => {
 
     renderDetalle();
 
-    expect(await screen.findByRole('heading', { name: 'Creatina monohidratada' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Creatina monohidratada' }),
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Agregar al carrito' }));
 
@@ -159,7 +163,9 @@ describe('agregar al carrito desde el detalle de producto', () => {
 
     renderDetalle();
 
-    expect(await screen.findByRole('heading', { name: 'Creatina monohidratada' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Creatina monohidratada' }),
+    ).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Agregar al carrito' }));
 
@@ -188,13 +194,9 @@ describe('agregar al carrito desde el detalle de producto', () => {
 
     renderDetalle();
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'No pudimos cargar este producto.',
-    );
+    expect(await screen.findByRole('alert')).toHaveTextContent('No pudimos cargar este producto.');
     expect(screen.getByText('Producto no encontrado')).toBeInTheDocument();
-    expect(
-      screen.queryByRole('button', { name: 'Agregar al carrito' }),
-    ).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'Agregar al carrito' })).not.toBeInTheDocument();
   });
 
   it('muestra el estado de carga mientras el producto no responde', async () => {

@@ -211,8 +211,12 @@ describe('catálogo de productos', () => {
 
     renderRoutes('/productos?page=99');
 
-    expect(await screen.findByRole('heading', { name: 'Página fuera de rango' })).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Todavía no hay productos disponibles' })).toBeNull();
+    expect(
+      await screen.findByRole('heading', { name: 'Página fuera de rango' }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole('heading', { name: 'Todavía no hay productos disponibles' }),
+    ).toBeNull();
     expect(screen.getByRole('button', { name: 'Anterior' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Ir a la página 1' }));
@@ -314,7 +318,9 @@ describe('catálogo de productos', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Ir al producto 8' }));
 
-    expect(await screen.findByRole('heading', { name: 'Creatina micronizada' })).toBeInTheDocument();
+    expect(
+      await screen.findByRole('heading', { name: 'Creatina micronizada' }),
+    ).toBeInTheDocument();
     expect(screen.getByLabelText('Cantidad')).toHaveValue(1);
     expect(screen.queryByText('Producto agregado al carrito.')).not.toBeInTheDocument();
   });

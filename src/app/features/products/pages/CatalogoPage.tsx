@@ -295,7 +295,9 @@ export default function CatalogoPage() {
           <nav aria-label="Paginación del catálogo" className="mt-10 flex justify-center gap-3">
             <button
               type="button"
-              onClick={() => handleChangePage(currentPage > totalPages ? totalPages : currentPage - 1)}
+              onClick={() =>
+                handleChangePage(currentPage > totalPages ? totalPages : currentPage - 1)
+              }
               disabled={currentPage <= 1}
               className="rounded-full border border-slate-300 px-5 py-2 font-semibold text-slate-700 enabled:hover:border-slate-950 disabled:opacity-40"
             >
