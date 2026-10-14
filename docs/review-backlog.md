@@ -11,14 +11,14 @@
 
 ## Estado
 
-| Lote   | Alcance                                  | Prioridad | Estado                             |
-| ------ | ---------------------------------------- | --------- | ---------------------------------- |
-| **T1** | Bugs de correctividad + fuera de alcance | P0        | ✅ cerrado (2026-10-12, `5173e73`) |
-| **T2** | Reglas de la cátedra (playbook)          | P1        | ✅ cerrado (2026-10-12, `1e8d321`) |
-| **T3** | Refactors y duplicación                  | P2        | ✅ cerrado (2026-10-12)             |
-| **T4** | Cobertura y salud de tests               | P2        | ✅ cerrado (2026-10-12, `aada99e`)  |
+| Lote   | Alcance                                  | Prioridad | Estado                                       |
+| ------ | ---------------------------------------- | --------- | -------------------------------------------- |
+| **T1** | Bugs de correctividad + fuera de alcance | P0        | ✅ cerrado (2026-10-12, `5173e73`)           |
+| **T2** | Reglas de la cátedra (playbook)          | P1        | ✅ cerrado (2026-10-12, `1e8d321`)           |
+| **T3** | Refactors y duplicación                  | P2        | ✅ cerrado (2026-10-12)                      |
+| **T4** | Cobertura y salud de tests               | P2        | ✅ cerrado (2026-10-12, `aada99e`)           |
 | **T5** | Mejoras de UI y comportamiento (ex T4-7) | P2        | ✅ cerrado (T5-1 `f0610e7` + T5-2 `8644df6`) |
-| **T6** | Concordancia con el back (D1–D7)         | P1        | 🔄 en curso (2026-10-14)                      |
+| **T6** | Concordancia con el back (D1–D7)         | P1        | 🔄 en curso (2026-10-14)                     |
 
 ---
 
@@ -104,10 +104,10 @@
 
 ### Lote T6 · Concordancia con el back (ingresado 2026-10-14, análisis completo en [`analisis-estado-plan-regularidad-y-concordancia-con-el-back.md`](./analisis-estado-plan-regularidad-y-concordancia-con-el-back.md))
 
-- [ ] **D1 · Required (proceso)** — `spec/constitution/api-contract.md` **no es un snapshot idéntico**: front 246 líneas vs back 194. El front agregó localmente las secciones `413`, *Imágenes*, *Descuentos por cantidad* y *Carrito* (commits `140ca46`, `20cd02a`); el back nunca las agregó a su archivo. **Resolución decidida (A)**: sumar esas secciones al `api-contract.md` del repo back, commitear allá y resincronizar el snapshot del front.
+- [ ] **D1 · Required (proceso)** — `spec/constitution/api-contract.md` **no es un snapshot idéntico**: front 246 líneas vs back 194. El front agregó localmente las secciones `413`, _Imágenes_, _Descuentos por cantidad_ y _Carrito_ (commits `140ca46`, `20cd02a`); el back nunca las agregó a su archivo. **Resolución decidida (A)**: sumar esas secciones al `api-contract.md` del repo back, commitear allá y resincronizar el snapshot del front.
 - [ ] **D2 · Required (sync gate)** — `spec/constitution/api-endpoints.md` desactualizado: no lista los endpoints de imágenes agregados en el back en `958945a` (2026-10-11): `GET /api/productos/imagenes/:uid`, `GET/POST /api/productos/admin/:id/imagenes`. Snapshot extraído 2026-10-04.
 - [ ] **D3 · Nit (entorno)** — `tp-dsw-back00/main` está 1 commit atrás de `origin/main` (falta `958945a`, imágenes). Requiere `git pull` allá antes del smoke de imágenes.
-- [ ] **D4 · Required (UI)** — `src/app/features/orders/components/PedidoDetallePanel.tsx:66` muestra *"Fecha de entrega"* pero el back **no expone** `fechaEntrega` en `GET /api/pedidos/:id` ni `GET /api/mis-pedidos/:id` (omisión deliberada en su spec 013, `plan.md:48`) → el campo siempre renderiza `—`, y contrasta con la lista admin (`AdminPedidosPage.tsx:254`) que sí la trae. **Resolución decidida (A)**: quitar el bloque del panel en el front (la cátedra la exige en el listado, no en el detalle); conservar `fechaEntrega` en `PedidoResumen` para la lista.
+- [ ] **D4 · Required (UI)** — `src/app/features/orders/components/PedidoDetallePanel.tsx:66` muestra _"Fecha de entrega"_ pero el back **no expone** `fechaEntrega` en `GET /api/pedidos/:id` ni `GET /api/mis-pedidos/:id` (omisión deliberada en su spec 013, `plan.md:48`) → el campo siempre renderiza `—`, y contrasta con la lista admin (`AdminPedidosPage.tsx:254`) que sí la trae. **Resolución decidida (A)**: quitar el bloque del panel en el front (la cátedra la exige en el listado, no en el detalle); conservar `fechaEntrega` en `PedidoResumen` para la lista.
 - [ ] **D5 · Nit (doc back)** — `api-endpoints.md:33` documenta `GET /api/marcas ?q=` pero `MarcaController.list` solo lee `includeInactive` (el `?q=` está en la spec 003 del back, no en su código). El front no usa `q`. **Resolución decidida (A)**: corregir la spec del back y re-extraer el catálogo.
 - [ ] **D6 · Nit (doc back)** — `api-endpoints.md:85-86` marca `GET /api/descuentos(/:id)` como ADMIN, pero el back los monta **sin `authenticate`** (público). El front manda token igual. **Resolución decidida (A)**: corregir la spec del back y re-extraer el catálogo.
 - [ ] **D7 · Nit (docs)** — `spec/features/005-admin-cruds/spec.md:3` dice "descuentos e ingresos pendientes" pero los descuentos están implementados (bloque E `[x]`); `tasks.md` tiene bloques F (ingresos) y G (cierre) sin marcar. **Resolución decidida (A)**: cerrar 005 con los bloques A–E, extraer ingresos a su propia feature (fase de aprobación, carpetas al iniciar la fase) y corregir spec/roadmap.
@@ -123,10 +123,10 @@
 
 ## Cierre de lotes
 
-| Lote | Cerrado    | Commit    |
-| ---- | ---------- | --------- |
-| T1   | 2026-10-12 | `5173e73` |
-| T2   | 2026-10-12 | `1e8d321` |
-| T3   | 2026-10-12 | `977b8b7` |
-| T4   | 2026-10-12 | `aada99e` |
+| Lote | Cerrado    | Commit                |
+| ---- | ---------- | --------------------- |
+| T1   | 2026-10-12 | `5173e73`             |
+| T2   | 2026-10-12 | `1e8d321`             |
+| T3   | 2026-10-12 | `977b8b7`             |
+| T4   | 2026-10-12 | `aada99e`             |
 | T5   | 2026-10-12 | `8644df6` + `f0610e7` |

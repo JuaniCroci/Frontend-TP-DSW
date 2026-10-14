@@ -28,13 +28,13 @@
 
 ## 003 · Marcas
 
-| Método | Ruta              | Auth    | Notas                     |
-| ------ | ----------------- | ------- | ------------------------- |
+| Método | Ruta              | Auth    | Notas                           |
+| ------ | ----------------- | ------- | ------------------------------- |
 | GET    | `/api/marcas`     | público | `?includeInactive=true` (admin) |
-| GET    | `/api/marcas/:id` | público |                           |
-| POST   | `/api/marcas`     | ADMIN   | `409` si nombre duplicado |
-| PUT    | `/api/marcas/:id` | ADMIN   |                           |
-| DELETE | `/api/marcas/:id` | ADMIN   | baja lógica (`204`)       |
+| GET    | `/api/marcas/:id` | público |                                 |
+| POST   | `/api/marcas`     | ADMIN   | `409` si nombre duplicado       |
+| PUT    | `/api/marcas/:id` | ADMIN   |                                 |
+| DELETE | `/api/marcas/:id` | ADMIN   | baja lógica (`204`)             |
 
 ## 004 · Tipos de producto
 
@@ -69,16 +69,16 @@
 
 ## 007 · Productos (admin)
 
-| Método | Ruta                       | Auth    | Notas                                               |
-| ------ | -------------------------- | ------- | --------------------------------------------------- |
-| GET    | `/api/productos/admin`     | ADMIN   | incluye inactivos con `?inactivos=true`; `?nombre=` |
-| GET    | `/api/productos/admin/:id` | ADMIN   | detalle completo (proveedor completo)               |
-| POST   | `/api/productos`           | ADMIN   | alta                                                |
-| PUT    | `/api/productos/admin/:id` | ADMIN   | edición                                             |
-| DELETE | `/api/productos/admin/:id` | ADMIN   | baja lógica (`204`)                                 |
-| GET    | `/api/productos/:id`       | público | solo `activo=true`; `404` si inactivo               |
-| GET    | `/api/productos/admin/:id/imagenes` | ADMIN | historial de imágenes (`{ data: [...] }`)     |
-| POST   | `/api/productos/admin/:id/imagenes` | ADMIN | multipart `imagen` (+ `altText`, `fuente`, `licencia`, `atribucion?`); PNG/JPEG/WebP ≤ 5 MiB; `201`; `413` si supera el máximo |
+| Método | Ruta                                | Auth    | Notas                                                                                                                          |
+| ------ | ----------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| GET    | `/api/productos/admin`              | ADMIN   | incluye inactivos con `?inactivos=true`; `?nombre=`                                                                            |
+| GET    | `/api/productos/admin/:id`          | ADMIN   | detalle completo (proveedor completo)                                                                                          |
+| POST   | `/api/productos`                    | ADMIN   | alta                                                                                                                           |
+| PUT    | `/api/productos/admin/:id`          | ADMIN   | edición                                                                                                                        |
+| DELETE | `/api/productos/admin/:id`          | ADMIN   | baja lógica (`204`)                                                                                                            |
+| GET    | `/api/productos/:id`                | público | solo `activo=true`; `404` si inactivo                                                                                          |
+| GET    | `/api/productos/admin/:id/imagenes` | ADMIN   | historial de imágenes (`{ data: [...] }`)                                                                                      |
+| POST   | `/api/productos/admin/:id/imagenes` | ADMIN   | multipart `imagen` (+ `altText`, `fuente`, `licencia`, `atribucion?`); PNG/JPEG/WebP ≤ 5 MiB; `201`; `413` si supera el máximo |
 
 ## 008 · Descuentos
 
@@ -86,11 +86,11 @@
 | ------ | ------------------------------------------------ | ------- | ----------------------------------------------------- |
 | GET    | `/api/descuentos`                                | público |                                                       |
 | GET    | `/api/descuentos/:id`                            | público | detalle con aplicaciones (producto + rango de fechas) |
-| POST   | `/api/descuentos`                                | ADMIN | `{ descripcion, cantidadMinima, porcentaje, activo }` |
-| PUT    | `/api/descuentos/:id`                            | ADMIN |                                                       |
-| DELETE | `/api/descuentos/:id`                            | ADMIN | baja lógica (`204`)                                   |
-| POST   | `/api/descuentos/:id/aplicaciones`               | ADMIN | `{ idProducto, fechaDesde, fechaHasta }`              |
-| DELETE | `/api/descuentos/:id/aplicaciones/:aplicacionId` | ADMIN | quita una aplicación                                  |
+| POST   | `/api/descuentos`                                | ADMIN   | `{ descripcion, cantidadMinima, porcentaje, activo }` |
+| PUT    | `/api/descuentos/:id`                            | ADMIN   |                                                       |
+| DELETE | `/api/descuentos/:id`                            | ADMIN   | baja lógica (`204`)                                   |
+| POST   | `/api/descuentos/:id/aplicaciones`               | ADMIN   | `{ idProducto, fechaDesde, fechaHasta }`              |
+| DELETE | `/api/descuentos/:id/aplicaciones/:aplicacionId` | ADMIN   | quita una aplicación                                  |
 
 ## 009 · Ingresos de mercadería
 
@@ -103,11 +103,11 @@
 
 ## 010 · Catálogo público de productos
 
-| Método | Ruta                 | Auth    | Notas                                                                                                                              |
-| ------ | -------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| GET    | `/api/productos`     | público | `?idTipoProducto=`, `?idMarca=`, `?precioMin=`, `?precioMax=` (AND), `?orden=nombre\|precio`, `?dir=asc\|desc`, `?page=`, `?size=` |
-| GET    | `/api/productos/:id` | público | detalle completo + descuentos vigentes                                                                                             |
-| GET    | `/api/productos/imagenes/:uid` | público | bytes de la imagen registrada (UUID)                                                                    |
+| Método | Ruta                           | Auth    | Notas                                                                                                                              |
+| ------ | ------------------------------ | ------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| GET    | `/api/productos`               | público | `?idTipoProducto=`, `?idMarca=`, `?precioMin=`, `?precioMax=` (AND), `?orden=nombre\|precio`, `?dir=asc\|desc`, `?page=`, `?size=` |
+| GET    | `/api/productos/:id`           | público | detalle completo + descuentos vigentes                                                                                             |
+| GET    | `/api/productos/imagenes/:uid` | público | bytes de la imagen registrada (UUID)                                                                                               |
 
 > Item del listado: `id`, `nombre`, `marca`, `precioUnitario`, `disponible` (`stock > 0`) e `imagenPrincipal: null | { id, url, altText }` (bytes vía `GET /api/productos/imagenes/:uid`).
 
