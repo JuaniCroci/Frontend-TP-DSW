@@ -31,5 +31,5 @@ Los requisitos técnicos de frontend de [`enunciado-tp.md`](./enunciado-tp.md) e
 
 - **`docs.md`** y **`FAQ.md`** — el enunciado los referencia (secciones 3.4 y 6) pero no están en `datos_pre_inicio`. Pedirlos al equipo y sumarlos acá.
 - **Test end-to-end** (aprobación) — decidir herramienta (Playwright/Cypress) al iniciar la fase de aprobación.
-- **Evidencia de gestión** (README §4): GitHub Projects + minutas de reuniones — lo exige la entrega de regularidad.
+- ~~**Evidencia de gestión** (README §4)~~ — ✅ 2026-10-14: metodología + minutas en [`docs/gestion/`](../gestion/README.md) y [GitHub Projects board](https://github.com/users/JuaniCroci/projects/1) (issues #1–#11).
 - **Fecha de regularidad:** 12/10 al 16/10 (recuperatorio 26/10–30/10; última instancia 9/11–13/11).
