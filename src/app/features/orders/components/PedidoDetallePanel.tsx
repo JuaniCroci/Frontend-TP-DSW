@@ -46,7 +46,7 @@ export function PedidoDetallePanel({ pedido, onClose, admin = false }: PedidoDet
         </button>
       </div>
 
-      <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+      <dl className="mt-5 grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-3">
         <div>
           <dt className="font-semibold text-slate-500">Realizado</dt>
           <dd className="mt-1 text-slate-900">{formatDate(pedido.fecha)}</dd>
@@ -60,10 +60,6 @@ export function PedidoDetallePanel({ pedido, onClose, admin = false }: PedidoDet
               {pedido.estado}
             </span>
           </dd>
-        </div>
-        <div>
-          <dt className="font-semibold text-slate-500">Fecha de entrega</dt>
-          <dd className="mt-1 text-slate-900">{formatDate(pedido.fechaEntrega)}</dd>
         </div>
         <div>
           <dt className="font-semibold text-slate-500">Importe total</dt>

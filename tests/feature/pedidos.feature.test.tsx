@@ -1,5 +1,5 @@
 /** @vitest-environment jsdom */
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -106,6 +106,26 @@ describe('consulta y gestión de pedidos', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Ver' }));
     expect(await screen.findByText('Calle 123')).toBeInTheDocument();
     expect(screen.getByText('Proteína')).toBeInTheDocument();
+  });
+
+  it('no presenta fecha de entrega en el detalle porque la API no la expone', async () => {
+    apiClient.defaults.adapter = async (config) => {
+      if (config.url === '/api/pedidos' && config.method === 'get') {
+        return response(config, { data: [pedido], total: 1, page: 1, size: 20 });
+      }
+      if (config.url === '/api/pedidos/41' && config.method === 'get') {
+        return response(config, pedidoDetalle);
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+
+    renderPage('/admin/pedidos', <AdminPedidosPage />);
+    fireEvent.click(await screen.findByRole('button', { name: 'Ver' }));
+
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).queryByText('Fecha de entrega')).not.toBeInTheDocument();
+    expect(within(dialog).getByText('Realizado')).toBeInTheDocument();
+    expect(within(dialog).getByText('Importe total')).toBeInTheDocument();
   });
 
   it('entrega pedidos realizados y refleja la confirmación de la API', async () => {
