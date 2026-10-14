@@ -8,7 +8,7 @@ La columna **Back** indica qué feature del backend necesita esa UI:
 ## Hecho ✅
 
 1. **[001 · Setup y puente con la API](../features/001-setup/)** — constitución SDD + skills del back, tooling (ESLint, Prettier, Vitest, CI) y puente HTTP (`apiClient` + interceptores + 15 tests). Smoke: `GET /api/health` → 200. CI: run #1 verde.
-2. **[002 · Core API + Auth](../features/002-core-api-auth/)** — sesión persistida, cliente HTTP autenticado, login/logout y pruebas unitarias/de interfaz. Smoke manual con backend pendiente.
+2. **[002 · Core API + Auth](../features/002-core-api-auth/)** — sesión persistida, cliente HTTP autenticado, login/logout y pruebas unitarias/de interfaz. Smoke manual con backend local verificado (2026-10-14).
 3. **[003 · Layout shell](../features/003-layout-shell/)** — portada adaptable, navegación, estado de sesión y rutas de inicio/login.
 4. **[004 · Catálogo](../features/004-catalogo-productos/)** — listado público filtrable y paginado, detalle de producto y estados vacíos/error. El catálogo de desarrollo aún no tiene datos.
 5. **[013 · Imágenes de productos](../features/013-imagenes-productos/)** — registro UUID, carga administrativa, metadatos y visualización en catálogo y detalle (front ✅, back ✅).
@@ -56,6 +56,7 @@ _Features de **aprobación** — se crean sus carpetas al iniciar la fase. Todas
 
 ## Pendientes / riesgos del equipo (no son features)
 
+- **Orden acordado (2026-10-14)**: deploy de la página **antes** de iniciar la fase de aprobación. La estrategia de deploy (proveedor, dominio, entorno) todavía no está definida.
 - **Tailwind 4 confirmado** (2026-10-04): definitivo; solo cambia si el equipo lo decide de nuevo (entonces actualizar la sección "Estilos" de `tech-stack.md`).
 - **`api-contract.md` snapshot** — si el back modifica su contrato, sincronizar [`constitution/api-contract.md`](../constitution/api-contract.md) antes de implementar la feature que lo usa.
 - **Evidencia ágil**: GitHub Projects (issues/PRs) + minutas de reuniones (README de la cátedra la exige).
