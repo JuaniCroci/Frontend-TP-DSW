@@ -1,6 +1,6 @@
 # 005 · Administración de datos — Tareas
 
-> Feature implementada por bloques. Acceso, maestros, clientes, productos y descuentos están completos; ingresos sigue pendiente.
+> Feature implementada por bloques. Acceso, maestros, clientes, productos y descuentos están completos. **Ingresos quedó fuera de alcance** (UI en la fase de aprobación, ver spec §Fuera de alcance).
 
 ## A. Contrato y acceso
 
@@ -39,19 +39,11 @@
 - [x] Presentar errores 400/404/409 de reglas de vigencia sin calcular descuentos localmente.
 - [x] Cubrir alta/edición/baja y aplicaciones con tests.
 
-## F. Ingresos
+## F. Cierre
 
-- [ ] Implementar listado con filtros `estado`, `desde` y `hasta`, más detalle de líneas.
-- [ ] Implementar alta con proveedor, número, fecha opcional y al menos una línea.
-- [ ] Implementar anulación explícita solo de ingresos `REGISTRADO`, con confirmación y errores visibles.
-- [ ] No calcular ni ajustar stock/importes de manera autoritativa en el cliente.
-- [ ] Cubrir requests y respuestas de alta/anulación, incluido conflicto por stock insuficiente.
-
-## G. Cierre
-
-- [ ] Revisar todos los criterios de aceptación de `spec.md` al terminar los bloques C-F.
-- [ ] Ejecutar `pnpm lint`.
-- [ ] Ejecutar `pnpm build`.
-- [ ] Ejecutar `pnpm test`.
+- [x] Revisar todos los criterios de aceptación de `spec.md` al terminar los bloques A-E.
+- [x] Ejecutar `pnpm lint`.
+- [x] Ejecutar `pnpm build`.
+- [x] Ejecutar `pnpm test`.
 - [ ] Realizar smoke manual con usuario ADMIN en el backend local.
-- [ ] Actualizar roadmap al terminar los bloques C-F.
+- [x] Actualizar roadmap al terminar los bloques A-E.

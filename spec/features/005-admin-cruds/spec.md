@@ -1,6 +1,6 @@
 # 005 · Administración de datos
 
-**Estado:** acceso, maestros, clientes existentes y productos implementados; descuentos e ingresos pendientes
+**Estado:** implementada (acceso, maestros, clientes, productos y descuentos); ingresos de mercadería quedan fuera del alcance — ver "Fuera de alcance"
 
 ## Objetivo
 
@@ -21,9 +21,10 @@ La feature se implementa en bloques comprobables:
 2. **Clientes:** consulta, edición y activación/desactivación de usuarios `CLIENTE`. Las cuentas nuevas se crean desde el registro público de autenticación.
 3. **Productos:** alta, consulta, edición y baja lógica con referencias a marca, tipo y proveedor.
 4. **Descuentos:** gestión del descuento y su aplicación a productos con vigencia.
-5. **Ingresos de mercadería:** registrar líneas de ingreso y anular un ingreso registrado cuando la API lo permita.
 
-Dependencias: producto requiere los maestros activos de tipo y marca; proveedor es opcional en un producto. Descuento e ingreso requieren productos activos. Ingreso además requiere proveedor activo y puede cambiar el stock únicamente mediante las operaciones del backend.
+Dependencias: producto requiere los maestros activos de tipo y marca; proveedor es opcional en un producto. Descuento requiere productos activos.
+
+> **Ingresos de mercadería**: fuera del alcance de esta feature. La API de ingresos (`009` del back) ya existe; su UI se desarrolla como feature propia de la fase de aprobación (entrada "Ingreso de mercadería" en `spec/constitution/roadmap.md`), siguiendo la regla de que las carpetas de aprobación se crean al iniciar la fase.
 
 ## Operaciones cubiertas
 
@@ -70,18 +71,15 @@ Dependencias: producto requiere los maestros activos de tipo y marca; proveedor 
 - La pantalla administrativa lista, crea, edita, activa/desactiva descuentos y administra sus aplicaciones por producto y rango de fechas. Solo ofrece productos activos y permite quitar aplicaciones.
 - El frontend no calcula descuentos de compra ni decide cuál se aplica. Al confirmar un pedido, el backend usa el mejor descuento elegible por línea de producto; no se acumulan descuentos. Descuentos distintos pueden tener vigencias solapadas; no se repite el mismo descuento sobre el mismo producto con fechas solapadas (`409`).
 
-### Ingresos
+### Ingresos (fuera de alcance)
 
-- Endpoints: `GET /api/ingresos`, `GET /api/ingresos/:id`, `POST /api/ingresos`, `POST /api/ingresos/:id/anular`.
-- Listado admite `estado`, `desde` y `hasta`.
-- Alta: `nroIngreso`, `idProveedor`, `fecha?` y al menos una línea con `idProducto`, `cantidad` y `precioUnitario`.
-- Importe total, validación de líneas, estado y mutaciones de stock pertenecen al backend. La UI no calcula ni edita stock. Anular un ingreso es irreversible y la API puede rechazarlo si dejaría stock negativo.
+- Sin implementación en esta feature: ver "Fuera de alcance" y la entrada de aprobación en el roadmap.
 
 ## Criterios de aceptación globales
 
 - [x] Existe navegación administrativa visible únicamente para `ADMIN` y una sección de administración para marcas, tipos y proveedores.
 - [x] Rutas administrativas bloquean tanto usuarios anónimos como usuarios `CLIENTE`; las llamadas también dependen de autorización del backend.
-- [ ] Los siete módulos cubiertos ofrecen listado, alta y las operaciones de edición/detalle/activación/baja que define su API, con formularios basados en DTOs reales. (Acceso, maestros, clientes, productos y descuentos implementados; ingresos pendiente.)
+- [ ] Los **cinco** módulos cubiertos ofrecen listado, alta y las operaciones de edición/detalle/activación/baja que define su API, con formularios basados en DTOs reales. (Acceso, maestros, clientes, productos y descuentos implementados.)
 - [x] Las aplicaciones de descuento ofrecen productos activos cargados desde la API y respetan los rangos de vigencia del backend.
 - [ ] Cada pantalla presenta estados de carga, error, resultado vacío y confirmación visible de operación exitosa.
 - [ ] Errores de validación, duplicados y autorización se comunican sin descartarlos ni simular éxito.
@@ -89,10 +87,11 @@ Dependencias: producto requiere los maestros activos de tipo y marca; proveedor 
 - [x] Las mutaciones de descuentos refrescan el listado, el detalle de aplicaciones y las vistas públicas del catálogo.
 - [ ] El stock inicial se define solo al dar de alta el producto; después, el stock solo cambia como efecto de ingresos/anulaciones procesados por el backend, nunca desde la edición del producto ni por cálculos locales.
 - [ ] El frontend no incluye permisos codificados como sustituto de las comprobaciones del servidor, ni registra secretos/tokens.
-- [ ] Hay pruebas para autorización de rutas, formularios/requests, respuesta exitosa y errores de cada bloque. (Acceso, maestros, clientes, productos y descuentos cubiertos; ingresos pendiente.)
+- [ ] Hay pruebas para autorización de rutas, formularios/requests, respuesta exitosa y errores de cada bloque. (Acceso, maestros, clientes, productos y descuentos cubiertos.)
 
 ## Fuera de alcance
 
+- **UI de ingresos de mercadería** (`GET/POST /api/ingresos`, `POST /api/ingresos/:id/anular`): API del back disponible, pero la pantalla se desarrolla en la fase de aprobación (entrada "Ingreso de mercadería" del roadmap).
 - Cambios de esquema, migraciones, seeds o acceso directo a base de datos desde el frontend.
 - Alta/edición de usuarios `ADMIN`, roles interactivos o borrado físico.
 - Modificación directa de stock desde producto.

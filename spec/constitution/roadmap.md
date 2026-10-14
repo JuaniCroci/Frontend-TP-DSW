@@ -17,15 +17,15 @@ La columna **Back** indica qué feature del backend necesita esa UI:
 
 ## En orden (regularidad)
 
-| #       | Feature                                                                                                                    | Back           |
-| ------- | -------------------------------------------------------------------------------------------------------------------------- | -------------- |
-| ~~001~~ | ~~[Setup y puente con la API](../features/001-setup/)~~ — ✅                                                               | 001 ✅         |
-| ~~002~~ | ~~[Core API + Auth](../features/002-core-api-auth/)~~ — ✅                                                                 | 002 ✅         |
-| ~~003~~ | ~~[Layout shell](../features/003-layout-shell/)~~ — ✅                                                                     | —              |
-| ~~004~~ | ~~[Catálogo](../features/004-catalogo-productos/)~~ — ✅                                                                   | 007 ✅, 010 ✅ |
-| ~~005~~ | ~~[Admin CRUDs](../features/005-admin-cruds/) — acceso, maestros, clientes, productos y descuentos (alcance mínimo)~~ — ✅ | 003–008 ✅     |
-| ~~006~~ | ~~[Carrito](../features/006-carrito/) — carrito persistente + confirmar pedido (sin pagos)~~ — ✅                          | 011 ✅         |
-| ~~007~~ | ~~[Pedidos](../features/007-pedidos/) — mis pedidos, gestión admin y listado filtrado~~ — ✅                               | 012 ✅, 013 ✅ |
+| #       | Feature                                                                                                                                   | Back           |
+| ------- | ----------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| ~~001~~ | ~~[Setup y puente con la API](../features/001-setup/)~~ — ✅                                                                              | 001 ✅         |
+| ~~002~~ | ~~[Core API + Auth](../features/002-core-api-auth/)~~ — ✅                                                                                | 002 ✅         |
+| ~~003~~ | ~~[Layout shell](../features/003-layout-shell/)~~ — ✅                                                                                    | —              |
+| ~~004~~ | ~~[Catálogo](../features/004-catalogo-productos/)~~ — ✅                                                                                  | 007 ✅, 010 ✅ |
+| ~~005~~ | ~~[Admin CRUDs](../features/005-admin-cruds/) — acceso, maestros, clientes, productos y descuentos~~ — ✅ (ingresos → fase de aprobación) | 003–008 ✅     |
+| ~~006~~ | ~~[Carrito](../features/006-carrito/) — carrito persistente + confirmar pedido (sin pagos)~~ — ✅                                         | 011 ✅         |
+| ~~007~~ | ~~[Pedidos](../features/007-pedidos/) — mis pedidos, gestión admin y listado filtrado~~ — ✅                                              | 012 ✅, 013 ✅ |
 
 ### Dependencias entre features front
 
