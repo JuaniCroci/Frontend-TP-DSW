@@ -19,7 +19,7 @@
 | **T4** | Cobertura y salud de tests               | P2        | ✅ cerrado (2026-10-12, `aada99e`)           |
 | **T5** | Mejoras de UI y comportamiento (ex T4-7) | P2        | ✅ cerrado (T5-1 `f0610e7` + T5-2 `8644df6`) |
 | **T6** | Concordancia con el back (D1–D7)         | P1        | ✅ cerrado (2026-10-14)                      |
-| **T7** | Deuda de formato Prettier (repo-wide)    | P2        | 🔄 en curso (2026-10-14)                     |
+| **T7** | Deuda de formato Prettier (repo-wide)    | P2        | ✅ cerrado (2026-10-14)                      |
 
 ---
 
@@ -124,13 +124,13 @@
 
 ### Lote T7 · Deuda de formato Prettier (ingresado 2026-10-14)
 
-- [ ] **F1 · Nit (salud de repo)** — `pnpm format:check` falla en ~97 archivos (detectado al correr los gates del T6): deuda **preexistente** de Prettier, no introducida por los lotes previos (los archivos tocados en T6 se formatearon aparte). **Resolución**: correr `pnpm format` (`prettier --write .`) de una vez, gates completos y un solo commit mecánico. `format:check` queda como check opcional — **no** se agrega a los gates de `AGENTS.md` sin decisión del equipo.
+- [x] **F1 · Nit (salud de repo)** — `pnpm format:check` falla en ~97 archivos (detectado al correr los gates del T6): deuda **preexistente** de Prettier, no introducida por los lotes previos (los archivos tocados en T6 se formatearon aparte). **Resolución**: correr `pnpm format` (`prettier --write .`) de una vez, gates completos y un solo commit mecánico. `format:check` queda como check opcional — **no** se agrega a los gates de `AGENTS.md` sin decisión del equipo. ✅ 2026-10-14 (`adfc414`: 15 archivos con cambios reales; el resto era solo fin de línea).
 
 **Criterios de cierre del lote T7:**
 
-- [ ] `pnpm format` ejecutado y `pnpm format:check` en verde.
-- [ ] Gates verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test` → `pnpm build`) tras el formateo.
-- [ ] Commit mecánico único y lote marcado cerrado con fecha y hash.
+- [x] `pnpm format` ejecutado y `pnpm format:check` en verde.
+- [x] Gates verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test` → `pnpm build`) tras el formateo.
+- [x] Commit mecánico único y lote marcado cerrado con fecha y hash.
 
 ## Cierre de lotes
 
@@ -141,4 +141,5 @@
 | T3   | 2026-10-12 | `977b8b7`                                               |
 | T4   | 2026-10-12 | `aada99e`                                               |
 | T5   | 2026-10-12 | `8644df6` + `f0610e7`                                   |
-| T6   | 2026-10-14 | `770f20b`…(ver rama `fix/regularidad-back-concordance`) |
+| T6   | 2026-10-14 | `770f20b`…`2aa99a1` (merge a main) |
+| T7   | 2026-10-14 | `adfc414` + `8386df5` |
