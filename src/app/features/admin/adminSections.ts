@@ -28,6 +28,11 @@ export const adminSections: AdminSection[] = [
     description: 'Definí descuentos por cantidad y su vigencia para cada producto.',
   },
   {
+    to: '/admin/pedidos',
+    label: 'Pedidos',
+    description: 'Consultá pedidos y gestioná entregas o cancelaciones.',
+  },
+  {
     to: '/admin/marcas',
     label: 'Marcas',
     description: 'Administrá las marcas disponibles para el catálogo.',

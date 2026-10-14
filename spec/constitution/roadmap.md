@@ -13,19 +13,19 @@ La columna **Back** indica qué feature del backend necesita esa UI:
 4. **[004 · Catálogo](../features/004-catalogo-productos/)** — listado público filtrable y paginado, detalle de producto y estados vacíos/error. El catálogo de desarrollo aún no tiene datos.
 5. **[013 · Imágenes de productos](../features/013-imagenes-productos/)** — registro UUID, carga administrativa, metadatos y visualización en catálogo y detalle (front ✅, back ✅).
 6. **[006 · Carrito](../features/006-carrito/)** — carrito persistente, edición de cantidades y confirmación de pedido (front ✅, back ✅; sin pagos).
+7. **[007 · Pedidos](../features/007-pedidos/)** — historial del cliente, listado filtrado y detalle administrativo, entregar/cancelar (back ✅).
 
 ## En orden (regularidad)
 
-| #       | Feature                                                                                                                 | Back               |
-| ------- | ----------------------------------------------------------------------------------------------------------------------- | ------------------ |
-| ~~001~~ | ~~[Setup y puente con la API](../features/001-setup/)~~ — ✅                                                            | 001 ✅             |
-| ~~002~~ | ~~[Core API + Auth](../features/002-core-api-auth/)~~ — ✅                                                              | 002 ✅             |
-| ~~003~~ | ~~[Layout shell](../features/003-layout-shell/)~~ — ✅                                                                  | —                  |
-| ~~004~~ | ~~[Catálogo](../features/004-catalogo-productos/)~~ — ✅                                                                | 007 ✅, 010 ✅     |
-| 005     | [Admin CRUDs](../features/005-admin-cruds/) — acceso, maestros, clientes, productos y descuentos listos; falta ingresos | 003–009 ✅         |
-| ~~006~~ | ~~[Carrito](../features/006-carrito/) — carrito persistente + confirmar pedido (sin pagos)~~ — ✅                       | 011 ✅             |
-| 007     | [Pedidos](../features/007-pedidos/) — mis pedidos, gestión admin, listado filtrado                                      | 012 ✅, **013 ⏳** |
-| 008     | [Perfil](../features/008-perfil/) — datos del cliente                                                                   | 002 ✅             |
+| #       | Feature                                                                                                                    | Back           |
+| ------- | -------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| ~~001~~ | ~~[Setup y puente con la API](../features/001-setup/)~~ — ✅                                                               | 001 ✅         |
+| ~~002~~ | ~~[Core API + Auth](../features/002-core-api-auth/)~~ — ✅                                                                 | 002 ✅         |
+| ~~003~~ | ~~[Layout shell](../features/003-layout-shell/)~~ — ✅                                                                     | —              |
+| ~~004~~ | ~~[Catálogo](../features/004-catalogo-productos/)~~ — ✅                                                                   | 007 ✅, 010 ✅ |
+| ~~005~~ | ~~[Admin CRUDs](../features/005-admin-cruds/) — acceso, maestros, clientes, productos y descuentos (alcance mínimo)~~ — ✅ | 003–008 ✅     |
+| ~~006~~ | ~~[Carrito](../features/006-carrito/) — carrito persistente + confirmar pedido (sin pagos)~~ — ✅                          | 011 ✅         |
+| ~~007~~ | ~~[Pedidos](../features/007-pedidos/) — mis pedidos, gestión admin y listado filtrado~~ — ✅                               | 012 ✅, 013 ✅ |
 
 ### Dependencias entre features front
 
@@ -33,10 +33,9 @@ La columna **Back** indica qué feature del backend necesita esa UI:
 Serie obligatoria: 001 → 002 → 003
 Paralelo posible:  004 ∥ 005  (ambas dependen de 001–003)
 Serie obligatoria: 004 → 006 → 007
-008 puede ir en paralelo con 006/007
 ```
 
-> **007 · Pedidos**: `mis pedidos` y `gestión admin` se habilitan con back 012 ✅; el `listado filtrado` de admin depende de back **013 ⏳**. Si 013 sigue pendiente al llegar a 007, implementar lo que 012 habilita y dejar el listado de 013 en su propia tarea dentro de `tasks.md` (marcada como bloqueada), sin cerrar la feature.
+> **007 · Pedidos**: las rutas de consulta y gestión están disponibles en back 012 y 013.
 
 ## Backlog / aprobación 💡
 
@@ -46,12 +45,14 @@ _Features de **aprobación** — se crean sus carpetas al iniciar la fase. Todas
 - **010 · Favoritos** — el cliente marca productos favoritos (back ⏳)
 - **011 · Reseñas** — puntuación 1–5 + comentario (back ⏳)
 - **012 · Abonar pedido** — checkout con pasarela (**Stripe o MercadoPago, decidir al iniciarla**; back ⏳)
+- **Ingreso de mercadería** — CRUD/movimiento de stock propuesto como adicional para aprobación; la API ya está implementada en el back, falta su UI.
 
 ## Backlog / voluntario 🆓
 
 - Seguimiento de pedido para el cliente (timeline desde `HistorialEstado`; back lo tiene en su backlog).
 - Cupón de descuento a nivel pedido.
 - Notificación de stock bajo (email/alerta).
+- Perfil del cliente para editar sus datos personales; no forma parte del alcance mínimo acordado.
 
 ## Pendientes / riesgos del equipo (no son features)
 

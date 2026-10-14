@@ -27,6 +27,8 @@ const TiposProductoAdminPage = lazy(
 const ProveedoresAdminPage = lazy(
   () => import('./app/features/admin/pages/ProveedoresAdminPage.tsx'),
 );
+const MisPedidosPage = lazy(() => import('./app/features/orders/pages/MisPedidosPage.tsx'));
+const AdminPedidosPage = lazy(() => import('./app/features/orders/pages/AdminPedidosPage.tsx'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -49,6 +51,14 @@ function App() {
               <Route path="/productos/:id" element={<ProductoDetallePage />} />
               <Route element={<ClientRoute />}>
                 <Route path="/carrito" element={<CarritoPage />} />
+                <Route
+                  path="/mis-pedidos"
+                  element={
+                    <Suspense fallback={<Spinner />}>
+                      <MisPedidosPage />
+                    </Suspense>
+                  }
+                />
               </Route>
               <Route element={<AdminRoute />}>
                 <Route path="/admin" element={<AdminLayout />}>
@@ -56,6 +66,14 @@ function App() {
                   <Route path="clientes" element={<AdminClientesPage />} />
                   <Route path="productos" element={<AdminProductosPage />} />
                   <Route path="descuentos" element={<AdminDescuentosPage />} />
+                  <Route
+                    path="pedidos"
+                    element={
+                      <Suspense fallback={<Spinner />}>
+                        <AdminPedidosPage />
+                      </Suspense>
+                    }
+                  />
                   <Route path="marcas" element={<MarcasAdminPage />} />
                   <Route path="tipos-producto" element={<TiposProductoAdminPage />} />
                   <Route path="proveedores" element={<ProveedoresAdminPage />} />

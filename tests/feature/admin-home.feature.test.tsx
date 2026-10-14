@@ -20,9 +20,7 @@ describe('home de administración', () => {
   it('presenta el panel con su encabezado', () => {
     renderHome();
 
-    expect(
-      screen.getByRole('heading', { level: 1, name: 'Administración' }),
-    ).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 1, name: 'Administración' })).toBeInTheDocument();
     expect(
       screen.getByText('Desde acá podés gestionar los datos principales de la tienda.'),
     ).toBeInTheDocument();
@@ -40,6 +38,7 @@ describe('home de administración', () => {
       '/admin/clientes',
       '/admin/productos',
       '/admin/descuentos',
+      '/admin/pedidos',
       '/admin/marcas',
       '/admin/tipos-producto',
       '/admin/proveedores',
