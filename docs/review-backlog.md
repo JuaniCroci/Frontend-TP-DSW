@@ -19,6 +19,7 @@
 | **T4** | Cobertura y salud de tests               | P2        | ✅ cerrado (2026-10-12, `aada99e`)           |
 | **T5** | Mejoras de UI y comportamiento (ex T4-7) | P2        | ✅ cerrado (T5-1 `f0610e7` + T5-2 `8644df6`) |
 | **T6** | Concordancia con el back (D1–D7)         | P1        | ✅ cerrado (2026-10-14)                      |
+| **T7** | Deuda de formato Prettier (repo-wide)    | P2        | 🔄 en curso (2026-10-14)                     |
 
 ---
 
@@ -120,6 +121,16 @@
 - [x] D7: 005 cerrado (spec, tasks, roadmap).
 - [x] Gates verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test` → `pnpm build`) y commits en la rama.
 - [x] Smokes manuales (002 login, 005 admin) registrados en cada `tasks.md` (2026-10-14; smoke de imágenes también: upload → 201, bytes idénticos, `imagenPrincipal` en listado público).
+
+### Lote T7 · Deuda de formato Prettier (ingresado 2026-10-14)
+
+- [ ] **F1 · Nit (salud de repo)** — `pnpm format:check` falla en ~97 archivos (detectado al correr los gates del T6): deuda **preexistente** de Prettier, no introducida por los lotes previos (los archivos tocados en T6 se formatearon aparte). **Resolución**: correr `pnpm format` (`prettier --write .`) de una vez, gates completos y un solo commit mecánico. `format:check` queda como check opcional — **no** se agrega a los gates de `AGENTS.md` sin decisión del equipo.
+
+**Criterios de cierre del lote T7:**
+
+- [ ] `pnpm format` ejecutado y `pnpm format:check` en verde.
+- [ ] Gates verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test` → `pnpm build`) tras el formateo.
+- [ ] Commit mecánico único y lote marcado cerrado con fecha y hash.
 
 ## Cierre de lotes
 
