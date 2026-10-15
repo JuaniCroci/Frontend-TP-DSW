@@ -32,7 +32,7 @@ Verificación mínima tras cambios: `pnpm lint`, `pnpm typecheck` y `pnpm test`.
 Antes de arrancar **cualquier** tarea, leer [`docs/review-backlog.md`](./docs/review-backlog.md).
 
 - Los ítems pendientes `[ ]` del backlog (lotes T1–T4, derivados del análisis de las features 002–013 del 2026-10-12) tienen **prioridad sobre trabajo nuevo** (features o mejoras propias), salvo indicación en contrario del usuario.
-- Al cerrar un lote: gates verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test` → `pnpm build`), commitear y marcar `[x]` con fecha y hash en el backlog.
+- Al cerrar un lote: gates verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test` → `pnpm build`), commitear, marcar `[x]` con fecha y hash en el backlog y agregar una entrada al [`CHANGELOG.md`](./CHANGELOG.md) (fecha, autoría, hashes).
 - **Hallazgos nuevos** detectados en cualquier momento se agregan a la sección "Ingresos" del backlog con su severidad **antes** de arreglarlos por cuenta propia.
 
 ## Entorno: conexión con el backend

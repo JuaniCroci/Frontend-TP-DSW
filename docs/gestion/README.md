@@ -27,6 +27,10 @@ Elegimos una variante **ligera de Scrum** con tablero **Kanban**, adaptada a un 
 
 Registro de avances y reuniones de coordinación: [`minutas.md`](./minutas.md) — se agrega una entrada por reunión/avance relevante.
 
+## Changelog
+
+Historial de cambios con fecha, autoría y commits: [`CHANGELOG.md`](../../CHANGELOG.md) — se agrega una entrada (formato del back: Feature / Comportamiento / Tests / Gates) al cerrar cada feature o lote, junto con su entrada en las minutas cuando el avance lo amerite.
+
 ## Convenciones de los issues
 
 - El título lleva el número de feature cuando corresponde (`009 CRUD Tag (fase aprobacion)`).
