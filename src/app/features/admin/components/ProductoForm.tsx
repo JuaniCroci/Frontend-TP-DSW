@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ApiError } from '../../../core/api/apiError';
 import { getApiErrorMessage } from '../../../core/api/friendlyError';
@@ -42,6 +42,12 @@ export function ProductoForm({
 }: ProductoFormProps) {
   const [formError, setFormError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    formRef.current?.focus();
+  }, []);
   const {
     register,
     handleSubmit,
@@ -124,8 +130,10 @@ export function ProductoForm({
 
   return (
     <form
+      ref={formRef}
       onSubmit={handleSubmit(handleFormSubmit)}
       aria-label="Formulario de producto"
+      tabIndex={-1}
       className="mb-8 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
     >
       <h2 className="mb-5 text-xl font-bold text-slate-900">

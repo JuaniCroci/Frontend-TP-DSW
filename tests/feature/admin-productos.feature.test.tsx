@@ -10,6 +10,7 @@ import { apiClient } from '@/core/api/api.client';
 import AdminProductosPage from '@/features/admin/pages/AdminProductosPage';
 
 const adapterOriginal = apiClient.defaults.adapter;
+const scrollIntoViewOriginal = Element.prototype.scrollIntoView;
 
 function formProducto() {
   return within(screen.getByRole('form', { name: 'Formulario de producto' }));
@@ -85,6 +86,7 @@ describe('administración de productos', () => {
     cleanup();
     localStorage.clear();
     apiClient.defaults.adapter = adapterOriginal;
+    Element.prototype.scrollIntoView = scrollIntoViewOriginal;
     vi.restoreAllMocks();
     vi.unstubAllGlobals();
   });
@@ -167,6 +169,32 @@ describe('administración de productos', () => {
       idProveedor: 4,
     });
     expect(createBody).not.toHaveProperty('stock');
+  });
+
+  it('lleva el formulario a la vista y lo enfoca al pulsar Editar', async () => {
+    saveSession('ADMIN');
+    apiClient.defaults.adapter = async (config) => {
+      const masterResponse = masterDataResponse(config);
+      if (masterResponse) return masterResponse;
+      if (config.url === '/api/productos/admin' && config.method === 'get') {
+        return response(config, { data: [producto], total: 1, page: 1, size: 20 });
+      }
+      if (config.url === '/api/productos/admin/21' && config.method === 'get') {
+        return response(config, producto);
+      }
+      throw new Error(`Request inesperado: ${config.method} ${config.url}`);
+    };
+    const scrollSpy = vi.fn();
+    Element.prototype.scrollIntoView = scrollSpy;
+
+    renderProductosPage();
+    expect(await screen.findByText('Proteína de suero')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Editar' }));
+
+    const form = screen.getByRole('form', { name: 'Formulario de producto' });
+    await waitFor(() => expect(scrollSpy).toHaveBeenCalled());
+    expect(scrollSpy.mock.contexts[0]).toBe(form);
+    await waitFor(() => expect(form).toHaveFocus());
   });
 
   it('edita datos y relaciones sin incluir campos de stock en el request', async () => {

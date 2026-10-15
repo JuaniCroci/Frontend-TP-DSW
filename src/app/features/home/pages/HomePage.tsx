@@ -1,28 +1,24 @@
-import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { useAuth } from '../../../core/auth/AuthContext';
+import { getApiErrorMessage } from '../../../core/api/friendlyError';
+import { useTiposProductoCatalogo } from '../../products/api/queries';
 import { cn } from '../../../shared/utils/cn';
 
-const categories = [
-  {
-    number: '01',
-    name: 'Suplementos',
-    description: 'Nutrición para acompañar tu objetivo, antes y después de entrenar.',
-    accent: 'bg-lime-300',
-  },
-  {
-    number: '02',
-    name: 'Accesorios',
-    description: 'Esos detalles que hacen que cada sesión se sienta mejor.',
-    accent: 'bg-orange-300',
-  },
-  {
-    number: '03',
-    name: 'Entrenamiento',
-    description: 'Equipamiento para moverte, progresar y disfrutar el camino.',
-    accent: 'bg-sky-300',
-  },
-];
+const ACCENTOS = ['bg-lime-300', 'bg-orange-300', 'bg-sky-300'];
 
 export default function HomePage() {
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  const tiposQuery = useTiposProductoCatalogo();
+  const tipos = (tiposQuery.data ?? []).filter((tipo) => tipo.activo);
+
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = decodeURIComponent(location.hash.slice(1));
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  }, [location]);
+
   return (
     <main className="flex-1">
       <section id="inicio" className="relative isolate overflow-hidden bg-slate-950 text-white">
@@ -49,12 +45,14 @@ export default function HomePage() {
               >
                 Ver catálogo
               </Link>
-              <Link
-                to="/login"
-                className="rounded-full border border-white/30 px-6 py-3 font-bold text-white transition hover:border-white"
-              >
-                Iniciar sesión
-              </Link>
+              {!isAuthenticated && (
+                <Link
+                  to="/login"
+                  className="rounded-full border border-white/30 px-6 py-3 font-bold text-white transition hover:border-white"
+                >
+                  Iniciar sesión
+                </Link>
+              )}
             </div>
           </div>
 
@@ -77,42 +75,61 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="categorias" className="mx-auto w-full max-w-7xl px-5 py-20 sm:py-24">
-        <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-          <div>
-            <p className="text-sm font-bold uppercase tracking-[0.2em] text-lime-700">
-              Encontrá lo que te mueve
+      {!(tiposQuery.isSuccess && tipos.length === 0) && (
+        <section id="categorias" className="mx-auto w-full max-w-7xl px-5 py-20 sm:py-24">
+          <div className="mb-10 flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <p className="text-sm font-bold uppercase tracking-[0.2em] text-lime-700">
+                Encontrá lo que te mueve
+              </p>
+              <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
+                Un espacio para cada meta.
+              </h2>
+            </div>
+            <p className="max-w-md text-slate-600">
+              Encontrá productos para acompañar tu entrenamiento y descubrí todo lo que necesitás
+              para seguir avanzando.
             </p>
-            <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">
-              Un espacio para cada meta.
-            </h2>
           </div>
-          <p className="max-w-md text-slate-600">
-            Encontrá productos para acompañar tu entrenamiento y descubrí todo lo que necesitás para
-            seguir avanzando.
-          </p>
-        </div>
 
-        <div className="grid gap-4 md:grid-cols-3">
-          {categories.map((category) => (
-            <article
-              key={category.number}
-              className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg"
+          {tiposQuery.isLoading ? (
+            <p role="status" className="py-10 text-center text-slate-600">
+              Cargando categorías...
+            </p>
+          ) : tiposQuery.isError ? (
+            <p
+              role="alert"
+              className="rounded-xl border border-red-200 bg-red-50 p-4 text-red-800"
             >
-              <div
-                className={cn(
-                  'mb-10 flex h-12 w-12 items-center justify-center rounded-xl font-black text-slate-950',
-                  category.accent,
-                )}
-              >
-                {category.number}
-              </div>
-              <h3 className="text-xl font-extrabold text-slate-950">{category.name}</h3>
-              <p className="mt-2 leading-7 text-slate-600">{category.description}</p>
-            </article>
-          ))}
-        </div>
-      </section>
+              No se pudieron cargar las categorías: {getApiErrorMessage(tiposQuery.error)}
+            </p>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-3">
+              {tipos.map((tipo, index) => (
+                <Link
+                  key={tipo.id}
+                  to={`/productos?idTipoProducto=${tipo.id}`}
+                  className="rounded-2xl border border-slate-200 bg-white p-6 transition hover:-translate-y-1 hover:shadow-lg"
+                >
+                  <div
+                    className={cn(
+                      'mb-10 flex h-12 w-12 items-center justify-center rounded-xl font-black text-slate-950',
+                      ACCENTOS[index % ACCENTOS.length],
+                    )}
+                  >
+                    {String(index + 1).padStart(2, '0')}
+                  </div>
+                  <h3 className="text-xl font-extrabold text-slate-950">{tipo.nombre}</h3>
+                  <p className="mt-2 leading-7 text-slate-600">
+                    {tipo.descripcion ??
+                      `Productos de ${tipo.nombre.toLowerCase()} para acompañar tu objetivo.`}
+                  </p>
+                </Link>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
     </main>
   );
 }
