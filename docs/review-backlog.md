@@ -20,7 +20,7 @@
 | **T5** | Mejoras de UI y comportamiento (ex T4-7) | P2        | ✅ cerrado (T5-1 `f0610e7` + T5-2 `8644df6`) |
 | **T6** | Concordancia con el back (D1–D7)         | P1        | ✅ cerrado (2026-10-14)                      |
 | **T7** | Deuda de formato Prettier (repo-wide)    | P2        | ✅ cerrado (2026-10-14)                      |
-| **T8** | Fallos de prueba manual (admin + home)   | P1        | 🔄 en curso (2026-10-15)                    |
+| **T8** | Fallos de prueba manual (admin + home)   | P1        | ✅ cerrado (2026-10-15) `94e80ca`           |
 
 ---
 
@@ -137,18 +137,18 @@
 
 > Origen: primera prueba manual del usuario en `localhost:5173` logueado como ADMIN (seed admin). Reporte de 5 fallos.
 
-- [ ] **M1 · Required (UI)** — `src/app/features/home/pages/HomePage.tsx:52-57` — El botón "Iniciar sesión" del hero de la home aparece **también con sesión iniciada** (el `Header` sí alterna con `useAuth()`, el hero no). *Resolución*: ocultar el botón cuando `isAuthenticated`.
-- [ ] **M2 · Required (UI)** — `src/app/shared/layout/Header.tsx:21` — El link "Categorías" apunta a `/#categorias` pero la app **no implementa scroll-to-hash**: el navegador no se desplaza a la sección y el usuario ve "muestra el inicio". *Resolución*: efecto de scroll al hash en `HomePage` (`useLocation` + `scrollIntoView`).
-- [ ] **M3 · Required (UX)** — `src/app/features/admin/pages/AdminProductosPage.tsx:194` — El botón "Editar" (y "Crear producto") **parece no funcionar**: el `ProductoForm` se renderiza arriba de todo de la página (antes de filtros y tabla), fuera de pantalla si el usuario está scrolleado en el listado; no hay scroll ni foco hacia él. *Resolución*: al montar el form, `scrollIntoView` + foco.
+- [x] **M1 · Required (UI)** — `src/app/features/home/pages/HomePage.tsx:52-57` — El botón "Iniciar sesión" del hero de la home aparece **también con sesión iniciada** (el `Header` sí alterna con `useAuth()`, el hero no). *Resolución*: ocultar el botón cuando `isAuthenticated`.
+- [x] **M2 · Required (UI)** — `src/app/shared/layout/Header.tsx:21` — El link "Categorías" apunta a `/#categorias` pero la app **no implementa scroll-to-hash**: el navegador no se desplaza a la sección y el usuario ve "muestra el inicio". *Resolución*: efecto de scroll al hash en `HomePage` (`useLocation` + `scrollIntoView`).
+- [x] **M3 · Required (UX)** — `src/app/features/admin/pages/AdminProductosPage.tsx:194` — El botón "Editar" (y "Crear producto") **parece no funcionar**: el `ProductoForm` se renderiza arriba de todo de la página (antes de filtros y tabla), fuera de pantalla si el usuario está scrolleado en el listado; no hay scroll ni foco hacia él. *Resolución*: al montar el form, `scrollIntoView` + foco.
 - [x] **M4 · Required (a investigar)** — Producto creado con `stockInicial: 10` vía formulario admin quedó **sin stock**. **Investigado 2026-10-15: NO reproducible.** Evidencia: (a) POST aislado `stockInicial:10` → BD cruda `stock=10`; (b) **reproducción E2E** del flujo real (form admin completo → API real → back → MySQL) creó producto con `stock=10`; (c) cero pedidos/ingresos en BD que pudieran consumir stock (`producto.stock -=` solo existe en esos flujos); (d) `update()` del back nunca toca `stock`; (e) el producto afectado (`id=2 "Creatina Prueba"`, 2026-10-15 21:35Z) tiene `stock=0` desde su creación en BD cruda. *Conclusión*: la cadena front→back actual es correcta; queda como caso no reproducible (posible error de carga del usuario o evento transitorio). *Pendiente*: confirmar con el usuario si se reproduce con el back arriba.
-- [ ] **M5 · Required (UI)** — `src/app/features/home/pages/HomePage.tsx:96-114` — Las tres tarjetas de la sección `#categorias` tienen animación hover (simulan ser clickeables) pero son `<article>` estáticos que no navegan a ningún lado. *Resolución*: tarjetas dinámicas desde `GET /api/tipos-producto`, cada una linkeando a `/productos?idTipoProducto=<id>` (el catálogo ya soporta el filtro por URL), con estados loading/error/vacío.
+- [x] **M5 · Required (UI)** — `src/app/features/home/pages/HomePage.tsx:96-114` — Las tres tarjetas de la sección `#categorias` tienen animación hover (simulan ser clickeables) pero son `<article>` estáticos que no navegan a ningún lado. *Resolución*: tarjetas dinámicas desde `GET /api/tipos-producto`, cada una linkeando a `/productos?idTipoProducto=<id>` (el catálogo ya soporta el filtro por URL), con estados loading/error/vacío.
 
 **Criterios de cierre del lote T8:**
 
-- [ ] Tests nuevos con RED verificado por mutación para M1, M2, M3 y M5.
-- [ ] M4 investigado y resuelto (fix o hallazgo documentado).
-- [ ] Gates verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test` → `pnpm build`).
-- [ ] Commits en la rama y lote marcado cerrado con fecha y hash.
+- [x] Tests nuevos con RED verificado por mutación para M1, M2, M3 y M5. (`tests/feature/home-page.feature.test.tsx` 8 tests; `admin-productos.feature.test.tsx` +1)
+- [x] M4 investigado y resuelto (fix o hallazgo documentado — resolución: no reproducible, evidencia E2E).
+- [x] Gates verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test` 147/147 → `pnpm build`) — 2026-10-15.
+- [x] Commits en la rama y lote marcado cerrado con fecha y hash (`94e80ca`).
 
 ## Cierre de lotes
 

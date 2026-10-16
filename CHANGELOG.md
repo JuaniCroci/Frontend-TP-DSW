@@ -9,6 +9,29 @@
 
 ---
 
+## 2026-10-15 — Lote T8: fallos de prueba manual (admin + home)
+
+**Autor:** JuaniCroci (con OpenCode) · **Commits:** `94e80ca`
+
+### Feature
+
+- **Home / hero**: el botón "Iniciar sesión" del hero queda oculto con sesión iniciada (`HomePage` ahora usa `useAuth()`).
+- **Home / hash**: scroll automático a la sección del hash (`useLocation` + `scrollIntoView`) — el link "Categorías" del header ya desplaza la vista a `#categorias`.
+- **Home / categorías**: la sección `#categorias` se genera desde `GET /api/tipos-producto` (estados loading/error/vacío); cada tarjeta es un link a `/productos?idTipoProducto=<id>` en lugar de un `<article>` estático.
+- **Admin productos**: `ProductoForm` hace `scrollIntoView` + foco al montar (los botones "Editar" y "Crear producto" ahora llevan al formulario, que se renderiza arriba de todo de la página).
+
+### Decisiones clave
+
+- **M4 (producto creado con `stockInicial: 10` quedó sin stock): NO reproducible.** Evidencia: (a) POST aislado con `stockInicial:10` → BD `stock=10`; (b) reproducción E2E del flujo real (form admin → API real → MySQL) → `stock=10`; (c) cero pedidos/ingresos en BD; (d) `update()` del back nunca toca `stock`. Caso documentado en `docs/review-backlog.md` (M4) y pendiente de confirmación con el usuario.
+
+### Tests
+
+- Nuevo `tests/feature/home-page.feature.test.tsx` (8 tests: hero con sesión, scroll-to-hash por carga directa y por clic, tarjetas dinámicas con loading/error/vacío) y +1 test en `admin-productos.feature.test.tsx` (scroll + foco del form al pulsar Editar), todos con RED verificado por mutación.
+- Stub global de `scrollIntoView` en `tests/setup.ts` (jsdom no lo implementa).
+- Suite **147/147 (26 archivos)**; gates `lint` + `typecheck` + `build` verdes (2026-10-15).
+
+---
+
 ## 2026-10-15 — Historial: CHANGELOG y minutas reconstruidos
 
 **Autor:** JuaniCroci (con OpenCode) · **Commits:** por confirmar
