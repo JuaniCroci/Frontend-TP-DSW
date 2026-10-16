@@ -21,6 +21,7 @@
 | **T6** | Concordancia con el back (D1–D7)         | P1        | ✅ cerrado (2026-10-14)                      |
 | **T7** | Deuda de formato Prettier (repo-wide)    | P2        | ✅ cerrado (2026-10-14)                      |
 | **T8** | Fallos de prueba manual (admin + home)   | P1        | ✅ cerrado (2026-10-15) `94e80ca`           |
+| **T9** | Drift de schema `descuento` (back)       | P1        | 📝 ingresado (2026-10-15) — solo registro   |
 
 ---
 
@@ -149,6 +150,25 @@
 - [x] M4 investigado y resuelto (fix o hallazgo documentado — resolución: no reproducible, evidencia E2E).
 - [x] Gates verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test` 147/147 → `pnpm build`) — 2026-10-15.
 - [x] Commits en la rama y lote marcado cerrado con fecha y hash (`94e80ca`).
+
+### Lote T9 · Drift de schema en `descuento` — back (ingresado 2026-10-15, solo registro)
+
+> Origen: análisis del commit `69f698d` del back (regeneración de `src/migrations/.snapshot-entreno.json`) al pushear ambos repos. Forensia completa: `SHOW CREATE TABLE` sobre la BD `entreno`, historial de migraciones, entidad `Descuento` y tabla `mikro_orm_migrations`. **Registro únicamente — sin acción, fix ni commit de código.**
+
+Contexto verificado (solo lectura):
+
+- El snapshot (introspección de la BD que usa `migration:create` como línea base) cambió en 3 puntos reales: `descuento.porcentaje` `decimal(10,2)` → `int`; `descuento.cantidad_minima` `DEFAULT 1` → sin default; FK `refresh_token.usuario_id` `NO ACTION` → `ON UPDATE CASCADE` (+ reformato del JSON).
+- La BD local **ya tenía** ese estado antes de mi commit; `69f698d` solo subió el JSON (1 archivo), no tocó datos ni esquemas.
+
+- [ ] **N1 · Required (back — drift entre entornos)** — El cambio `porcentaje decimal(10,2) → int` y `cantidad_minima DEFAULT 1 → sin default` **no existe en ninguna migración**: `Migration20260926_CreateDescuentos` es la única que menciona esas columnas y las crea como `decimal(10,2) not null` + `int not null default 1`; `mikro_orm_migrations` conserva fechas originales (la BD no se recreó). El cambio se aplicó por una **sincronización directa del schema de entidades contra la BD** (`schema:update`/`updateSchema`) entre 2026-10-11 y 2026-10-15. *Riesgo*: una BD fresca (deploy: Render/Aiven) quedará con `decimal(10,2)` + default → **esquemas distintos dev vs prod** para la misma tabla. *Resolución pendiente*: decidir el destino (int o decimal) y crear la migración de alineación en el back.
+- [ ] **N2 · Required (back — bug potencial)** — Los DTOs de descuento aceptan decimales (`@IsNumber @Min(0.01) @Max(100)` → un `12.5` es válido a nivel API; `PedidoService` lo maneja con `Decimal`), pero la columna ahora es `int NOT NULL` → MySQL strict mode rechazaría el valor (**500 al crear/editar un descuento con porcentaje decimal**; con `decimal(10,2)` funcionaba). *Resolución pendiente*: reproducir con el back arriba y decidir producto — ¿porcentaje solo entero (ajustar DTOs + front)? o ¿decimal (migración que revierta a `decimal(10,2)`)?
+- [ ] **N3 · Info (back — higiene del snapshot)** — El snapshot viejo también registraba la FK de `refresh_token` como `NO ACTION` mientras la migración `Migration20261001203952` la crea con `ON UPDATE CASCADE` (estado actual de la BD, verificado). La regeneración del 2026-10-15 lo alineó: hoy el snapshot coincide 1:1 con la BD. Sin acción.
+
+**Criterios de cierre del lote T9:**
+
+- [ ] N1 y N2 reproducidos/decididos con el usuario (migración de alineación en el back + decisión: porcentaje entero vs decimal).
+- [ ] Fixes en el back con tests, gates del back verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test`).
+- [ ] Lote marcado cerrado con fecha y hash.
 
 ## Cierre de lotes
 
