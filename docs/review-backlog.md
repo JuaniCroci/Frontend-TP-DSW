@@ -21,7 +21,7 @@
 | **T6** | Concordancia con el back (D1–D7)         | P1        | ✅ cerrado (2026-10-14)                      |
 | **T7** | Deuda de formato Prettier (repo-wide)    | P2        | ✅ cerrado (2026-10-14)                      |
 | **T8** | Fallos de prueba manual (admin + home)   | P1        | ✅ cerrado (2026-10-15) `94e80ca`            |
-| **T9** | Drift de schema `descuento` (back)       | P1        | 📝 ingresado (2026-10-15) — solo registro    |
+| **T9** | Drift de schema `descuento` (back)       | P1        | ✅ cerrado (2026-10-19, back `56003d6`)      |
 
 ---
 
@@ -107,7 +107,7 @@
 
 ### Lote T6 · Concordancia con el back (ingresado 2026-10-14, análisis completo en [`analisis-estado-plan-regularidad-y-concordancia-con-el-back.md`](./analisis-estado-plan-regularidad-y-concordancia-con-el-back.md))
 
-- [x] **D1 · Required (proceso)** — `spec/constitution/api-contract.md` **no es un snapshot idéntico**: front 246 líneas vs back 194. El front agregó localmente las secciones `413`, _Imágenes_, _Descuentos por cantidad_ y _Carrito_ (commits `140ca46`, `20cd02a`); el back nunca las agregó a su archivo. **Resolución decidida (A)**: sumar esas secciones al `api-contract.md` del repo back, commitear allá y resincronizar el snapshot del front. ✅ 2026-10-14 (back `d636d58`, front `769d254`).
+- [x] **D1 · Required (proceso)** — `spec/constitution/api-contract.md` **no es un snapshot idéntico**: front 246 líneas vs back 194. El front agregó localmente las secciones `413`, _Imágenes_, _Descuentos por cantidad_ y _Carrito_ (commits `140ca46`, `20cd02a`); el back nunca las agregó a su archivo. **Resolución decidida (A)**: sumar esas secciones al `api-contract.md` del repo back, commitear allá y resincronizar el snapshot del front. ✅ 2026-10-14 (back `d636d58`, front `769d254`). **Resincronización posterior**: el 2026-10-19 se detectó nuevo drift (`Ingresos` solo en front; `fechaEntrega` solo en back); se incorporó `Ingresos` al contrato backend y se actualizó el snapshot frontend. Verificado idéntico salvo el encabezado del snapshot.
 - [x] **D2 · Required (sync gate)** — `spec/constitution/api-endpoints.md` desactualizado: no lista los endpoints de imágenes agregados en el back en `958945a` (2026-10-11): `GET /api/productos/imagenes/:uid`, `GET/POST /api/productos/admin/:id/imagenes`. Snapshot extraído 2026-10-04. ✅ 2026-10-14 (`769d254`).
 - [x] **D3 · Nit (entorno)** — `tp-dsw-back00/main` está 1 commit atrás de `origin/main` (falta `958945a`, imágenes). Requiere `git pull` allá antes del smoke de imágenes. ✅ 2026-10-14 (`git pull --ff-only`).
 - [x] **D4 · Required (UI)** — `src/app/features/orders/components/PedidoDetallePanel.tsx:66` muestra _"Fecha de entrega"_ pero el back **no expone** `fechaEntrega` en `GET /api/pedidos/:id` ni `GET /api/mis-pedidos/:id` (omisión deliberada en su spec 013, `plan.md:48`) → el campo siempre renderiza `—`, y contrasta con la lista admin (`AdminPedidosPage.tsx:254`) que sí la trae. **Resolución decidida (A)**: quitar el bloque del panel en el front (la cátedra la exige en el listado, no en el detalle); conservar `fechaEntrega` en `PedidoResumen` para la lista. ✅ 2026-10-14 (`27825bf`, TDD: test RED → fix → 138/138 GREEN).
@@ -160,15 +160,15 @@ Contexto verificado (solo lectura):
 - El snapshot (introspección de la BD que usa `migration:create` como línea base) cambió en 3 puntos reales: `descuento.porcentaje` `decimal(10,2)` → `int`; `descuento.cantidad_minima` `DEFAULT 1` → sin default; FK `refresh_token.usuario_id` `NO ACTION` → `ON UPDATE CASCADE` (+ reformato del JSON).
 - La BD local **ya tenía** ese estado antes de mi commit; `69f698d` solo subió el JSON (1 archivo), no tocó datos ni esquemas.
 
-- [ ] **N1 · Required (back — drift entre entornos)** — El cambio `porcentaje decimal(10,2) → int` y `cantidad_minima DEFAULT 1 → sin default` **no existe en ninguna migración**: `Migration20260926_CreateDescuentos` es la única que menciona esas columnas y las crea como `decimal(10,2) not null` + `int not null default 1`; `mikro_orm_migrations` conserva fechas originales (la BD no se recreó). El cambio se aplicó por una **sincronización directa del schema de entidades contra la BD** (`schema:update`/`updateSchema`) entre 2026-10-11 y 2026-10-15. _Riesgo_: una BD fresca (deploy: Render/Aiven) quedará con `decimal(10,2)` + default → **esquemas distintos dev vs prod** para la misma tabla. _Resolución pendiente_: decidir el destino (int o decimal) y crear la migración de alineación en el back.
-- [ ] **N2 · Required (back — bug potencial)** — Los DTOs de descuento aceptan decimales (`@IsNumber @Min(0.01) @Max(100)` → un `12.5` es válido a nivel API; `PedidoService` lo maneja con `Decimal`), pero la columna ahora es `int NOT NULL` → MySQL strict mode rechazaría el valor (**500 al crear/editar un descuento con porcentaje decimal**; con `decimal(10,2)` funcionaba). _Resolución pendiente_: reproducir con el back arriba y decidir producto — ¿porcentaje solo entero (ajustar DTOs + front)? o ¿decimal (migración que revierta a `decimal(10,2)`)?
-- [ ] **N3 · Info (back — higiene del snapshot)** — El snapshot viejo también registraba la FK de `refresh_token` como `NO ACTION` mientras la migración `Migration20261001203952` la crea con `ON UPDATE CASCADE` (estado actual de la BD, verificado). La regeneración del 2026-10-15 lo alineó: hoy el snapshot coincide 1:1 con la BD. Sin acción.
+- [x] **N1 · Required (back — drift entre entornos)** — El cambio `porcentaje decimal(10,2) → int` y `cantidad_minima DEFAULT 1 → sin default` **no existía en ninguna migración**: `Migration20260926_CreateDescuentos` las creaba como `decimal(10,2) not null` + `int not null default 1`; `mikro_orm_migrations` conserva las fechas originales. La BD de desarrollo se había cambiado directamente con `schema:update`/`updateSchema`. **Decisión del equipo (2026-10-19): porcentaje decimal con hasta 2 decimales.** Resolución: migración `Migration20261019173200_AlignDescuentoSchema` lleva ambas formas de schema al destino decidido y el snapshot registra `decimal(10,2)`.
+- [x] **N2 · Required (back — bug potencial)** — Los DTOs aceptaban decimales y `PedidoService` los manejaba con `Decimal`, pero la columna podía ser `int` en entornos actualizados manualmente. Resolución: persistencia `DECIMAL(10,2)`, validación de máximo 2 decimales en create/update, serialización numérica estable y tests de POST/PUT; el frontend ya ofrece `step="0.01"`. Rechazo explícito de precisión superior a dos decimales.
+- [x] **N3 · Info (back — higiene del snapshot)** — El snapshot viejo registraba la FK de `refresh_token` como `NO ACTION` mientras la migración `Migration20261001203952` la crea con `ON UPDATE CASCADE`. La regeneración del 2026-10-15 la alineó; sin acción adicional.
 
 **Criterios de cierre del lote T9:**
 
-- [ ] N1 y N2 reproducidos/decididos con el usuario (migración de alineación en el back + decisión: porcentaje entero vs decimal).
-- [ ] Fixes en el back con tests, gates del back verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test`).
-- [ ] Lote marcado cerrado con fecha y hash.
+- [x] N1 y N2 reproducidos/decididos con el usuario (decisión: porcentaje decimal con hasta dos decimales).
+- [x] Fixes en el back con tests, gates del back verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test`).
+- [x] Lote marcado cerrado con fecha y hash (backend `56003d6`).
 
 ## Cierre de lotes
 
@@ -181,3 +181,4 @@ Contexto verificado (solo lectura):
 | T5   | 2026-10-12 | `8644df6` + `f0610e7`              |
 | T6   | 2026-10-14 | `770f20b`…`2aa99a1` (merge a main) |
 | T7   | 2026-10-14 | `adfc414` + `8386df5`              |
+| T9   | 2026-10-19 | Backend `56003d6`                  |

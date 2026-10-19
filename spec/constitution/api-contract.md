@@ -110,6 +110,7 @@ POST /api/carrito/confirmar → 200 OK
   "fecha": "2026-09-21T22:10:00.000Z",
   "estado": "REALIZADO",
   "importeTotal": "3450.00",
+  "fechaEntrega": null,
   "usuario": { "id": 5, "nombre": "Juan Croci", "email": "juan@example.com" },
   "items": [
     {
@@ -192,7 +193,8 @@ POST /api/marcas con body inválido → 400 Bad Request
   aplicación contiene `id`, `idDescuento`, `idProducto`, `fechaDesde`, `fechaHasta` y el resumen
   del producto.
 - `POST /api/descuentos` y `PUT /api/descuentos/:id` reciben `descripcion`, `cantidadMinima`
-  (entero >= 1), `porcentaje` (> 0 y <= 100) y, opcionalmente, `activo`. `DELETE /api/descuentos/:id`
+  (entero >= 1), `porcentaje` (> 0 y <= 100, con hasta dos decimales) y, opcionalmente, `activo`.
+  `DELETE /api/descuentos/:id`
   desactiva el descuento; `PUT` puede reactivarlo.
 - `POST /api/descuentos/:id/aplicaciones` recibe `idProducto`, `fechaDesde` y `fechaHasta`.
   Ambas fechas son inclusivas; el backend requiere producto y descuento activos, y rechaza con
@@ -243,6 +245,18 @@ precioUnitario` (el cliente no lo envía) y responde `201` con el ingreso y sus 
   creado, incluyendo `importeTotal` y sus items (`cantidad`, `precioUnitario`, `subtotal`,
   `descuentoAplicado`). El backend vuelve a validar stock, aplica descuentos y descuenta
   existencias. El estado inicial del pedido es `REALIZADO`; esta operación no procesa pagos.
+
+## Pedidos: detalle y fechaEntrega
+
+- `GET /api/pedidos/:id` (ADMIN) y `GET /api/mis-pedidos/:id` (dueño; `404` si es ajeno) devuelven
+  el detalle del pedido con items, datos del cliente y **`fechaEntrega`**: fecha del cambio a
+  `ENTREGADO` tomada del `HistorialEstado`, o `null` si aún no se entregó.
+- `POST /api/pedidos/:id/entregar` (ADMIN) responde el detalle con `fechaEntrega` igual a la fecha
+  del registro de entrega recién creado; `POST /api/pedidos/:id/cancelar` responde con
+  `fechaEntrega: null`.
+- El item del listado (`GET /api/pedidos`, ver sección de paginación) incluye el mismo campo con
+  la misma semántica; `POST /api/carrito/confirmar` devuelve el detalle recién creado con
+  `fechaEntrega: null`.
 
 ---
 
