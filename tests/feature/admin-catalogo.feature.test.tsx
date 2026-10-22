@@ -117,6 +117,10 @@ describe('administración de marcas, tipos y proveedores', () => {
 
     expect(await screen.findByText('Star Nutrition')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Administración' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Administración' })).toHaveAttribute(
+      'aria-current',
+      'page',
+    );
     expect(requests[0].params).toEqual({ includeInactive: true });
 
     fireEvent.click(screen.getByRole('button', { name: 'Crear marcas' }));

@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen, within } from '@testing-library/rea
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { apiClient } from '@/core/api/api.client';
 import App from '../../src/App';
+import { saveSession } from '../helpers/session';
 
 const adapterOriginal = apiClient.defaults.adapter;
 
@@ -167,6 +168,20 @@ describe('app shell', () => {
 
     expect(await screen.findByRole('heading', { name: 'Creatina' })).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Carrito' })).toHaveAttribute('href', '/carrito');
+  });
+
+  it('acceso a Administración actual solo dentro del panel', async () => {
+    saveSession('ADMIN');
+    window.history.replaceState({}, '', '/');
+
+    render(<App />);
+
+    expect(
+      await screen.findByRole('heading', { name: 'Tu próximo objetivo empieza acá.' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Administración' })).not.toHaveAttribute(
+      'aria-current',
+    );
   });
 
   it('no ofrece acceso al carrito a una sesión de ADMIN', async () => {
