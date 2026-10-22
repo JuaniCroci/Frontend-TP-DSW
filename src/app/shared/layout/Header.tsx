@@ -1,5 +1,6 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useAuth } from '../../core/auth/AuthContext';
+import { cn } from '../utils/cn';
 
 export function Header() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -38,9 +39,18 @@ export function Header() {
                 </>
               )}
               {user?.rol === 'ADMIN' && (
-                <Link to="/admin" className="transition hover:text-lime-700">
+                <NavLink
+                  to="/admin"
+                  className={({ isActive }) =>
+                    cn(
+                      'rounded-full px-4 py-2 text-sm font-semibold border transition',
+                      'border-lime-700/30 bg-lime-100 text-lime-800 hover:bg-lime-700 hover:text-white',
+                      isActive && 'border-lime-800 bg-lime-700 text-white hover:bg-lime-800',
+                    )
+                  }
+                >
                   Administración
-                </Link>
+                </NavLink>
               )}
               <button
                 type="button"
