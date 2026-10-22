@@ -11,17 +11,18 @@
 
 ## Estado
 
-| Lote   | Alcance                                  | Prioridad | Estado                                       |
-| ------ | ---------------------------------------- | --------- | -------------------------------------------- |
-| **T1** | Bugs de correctividad + fuera de alcance | P0        | ✅ cerrado (2026-10-12, `5173e73`)           |
-| **T2** | Reglas de la cátedra (playbook)          | P1        | ✅ cerrado (2026-10-12, `1e8d321`)           |
-| **T3** | Refactors y duplicación                  | P2        | ✅ cerrado (2026-10-12)                      |
-| **T4** | Cobertura y salud de tests               | P2        | ✅ cerrado (2026-10-12, `aada99e`)           |
-| **T5** | Mejoras de UI y comportamiento (ex T4-7) | P2        | ✅ cerrado (T5-1 `f0610e7` + T5-2 `8644df6`) |
-| **T6** | Concordancia con el back (D1–D7)         | P1        | ✅ cerrado (2026-10-14)                      |
-| **T7** | Deuda de formato Prettier (repo-wide)    | P2        | ✅ cerrado (2026-10-14)                      |
-| **T8** | Fallos de prueba manual (admin + home)   | P1        | ✅ cerrado (2026-10-15) `94e80ca`            |
-| **T9** | Drift de schema `descuento` (back)       | P1        | 📝 ingresado (2026-10-15) — solo registro    |
+| Lote    | Alcance                                  | Prioridad | Estado                                       |
+| ------- | ---------------------------------------- | --------- | -------------------------------------------- |
+| **T1**  | Bugs de correctividad + fuera de alcance | P0        | ✅ cerrado (2026-10-12, `5173e73`)           |
+| **T2**  | Reglas de la cátedra (playbook)          | P1        | ✅ cerrado (2026-10-12, `1e8d321`)           |
+| **T3**  | Refactors y duplicación                  | P2        | ✅ cerrado (2026-10-12)                      |
+| **T4**  | Cobertura y salud de tests               | P2        | ✅ cerrado (2026-10-12, `aada99e`)           |
+| **T5**  | Mejoras de UI y comportamiento (ex T4-7) | P2        | ✅ cerrado (T5-1 `f0610e7` + T5-2 `8644df6`) |
+| **T6**  | Concordancia con el back (D1–D7)         | P1        | ✅ cerrado (2026-10-14)                      |
+| **T7**  | Deuda de formato Prettier (repo-wide)    | P2        | ✅ cerrado (2026-10-14)                      |
+| **T8**  | Fallos de prueba manual (admin + home)   | P1        | ✅ cerrado (2026-10-15) `94e80ca`            |
+| **T9**  | Drift de schema `descuento` (back)       | P1        | 📝 ingresado (2026-10-15) — solo registro    |
+| **T10** | Tap targets del header                   | P2        | 📝 ingresado (2026-10-22) — solo registro    |
 
 ---
 
@@ -169,6 +170,18 @@ Contexto verificado (solo lectura):
 - [ ] N1 y N2 reproducidos/decididos con el usuario (migración de alineación en el back + decisión: porcentaje entero vs decimal).
 - [ ] Fixes en el back con tests, gates del back verdes (`pnpm lint` → `pnpm typecheck` → `pnpm test`).
 - [ ] Lote marcado cerrado con fecha y hash.
+
+### Lote T10 · Tap targets del header (ingresado 2026-10-22, solo registro)
+
+> Origen: revisión del `Header` con motivo del cambio visual del acceso "Administración" (chip lime + estado activo, rama `style/header-admin-chip`). Desvío **preexistente**, no introducido por ese cambio.
+
+- [ ] **H1 · Nit (UI/a11y)** — `src/app/shared/layout/Header.tsx:14-66` — Los links del nav sin padding (`Inicio`, `Categorías`, `Tienda`, `Carrito`, `Mis pedidos`, `Crear cuenta`) miden ~20px de alto táctil (`text-sm`, sin `py`), y los pills existentes (`Cerrar sesión`, `Iniciar sesión`) quedan en ~36px (`py-2`). La checklist de mobile del playbook §5 exige **≥44px en mobile**. _Resolución pendiente_: subir el área táctil de todos los links/botones del header en mobile (p. ej. `py-3` → 44px, o extender el target con `before:`) sin romper el `flex-wrap` del nav.
+
+**Criterios de cierre del lote T10:**
+
+- [ ] Técnica de tap target decidida y aplicada a todo el header (links y pills).
+- [ ] Check visual en 360px: targets ≥44px y sin regressión del wrap del nav.
+- [ ] Gates verdes y lote marcado cerrado con fecha y hash.
 
 ## Cierre de lotes
 
