@@ -1,5 +1,6 @@
 /** @vitest-environment jsdom */
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { useState } from 'react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { AdminModal } from '@/shared/components/AdminModal';
 
@@ -26,6 +27,16 @@ function ToggleHarness({ open, onClose }: { open: boolean; onClose: () => void }
         </AdminModal>
       )}
     </div>
+  );
+}
+
+function InputHarness() {
+  const [texto, setTexto] = useState('');
+  return (
+    <AdminModal labelledBy="input-title" onClose={() => setTexto('')}>
+      <h2 id="input-title">Formulario</h2>
+      <input aria-label="Campo" value={texto} onChange={(e) => setTexto(e.target.value)} />
+    </AdminModal>
   );
 }
 
@@ -105,5 +116,29 @@ describe('AdminModal', () => {
 
     rerender(<ToggleHarness open={false} onClose={onClose} />);
     expect(abrir).toHaveFocus();
+  });
+
+  it('no le roba el foco a un input cuando el padre se re-renderiza con un onClose nuevo', () => {
+    render(<InputHarness />);
+    const campo = screen.getByLabelText('Campo');
+
+    campo.focus();
+    fireEvent.change(campo, { target: { value: 'a' } });
+    fireEvent.change(campo, { target: { value: 'ab' } });
+
+    expect(campo).toHaveValue('ab');
+    expect(campo).toHaveFocus();
+  });
+
+  it('cierra con Escape usando el onClose más reciente', () => {
+    const primero = vi.fn();
+    const segundo = vi.fn();
+    const { rerender } = render(<ToggleHarness open onClose={primero} />);
+
+    rerender(<ToggleHarness open onClose={segundo} />);
+    fireEvent.keyDown(document, { key: 'Escape' });
+
+    expect(primero).not.toHaveBeenCalled();
+    expect(segundo).toHaveBeenCalledTimes(1);
   });
 });

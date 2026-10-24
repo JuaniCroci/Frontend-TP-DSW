@@ -42,6 +42,7 @@ describe('home de administración', () => {
       '/admin/marcas',
       '/admin/tipos-producto',
       '/admin/proveedores',
+      '/admin/ingresos',
     ]);
   });
 
