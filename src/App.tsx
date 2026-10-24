@@ -12,6 +12,7 @@ import { ClientRoute } from './app/core/guards/ClientRoute.tsx';
 import { AdminLayout } from './app/shared/layout/AdminLayout.tsx';
 import { MainLayout } from './app/shared/layout/MainLayout.tsx';
 import { Spinner } from './app/shared/components/Spinner.tsx';
+import IngresosAdminPage from '@/features/admin/pages/IngresoAdminPage.tsx';
 
 const RegisterPage = lazy(() => import('./app/features/auth/pages/RegisterPage.tsx'));
 const AdminHomePage = lazy(() => import('./app/features/admin/pages/AdminHomePage.tsx'));
@@ -66,6 +67,7 @@ function App() {
                   <Route path="clientes" element={<AdminClientesPage />} />
                   <Route path="productos" element={<AdminProductosPage />} />
                   <Route path="descuentos" element={<AdminDescuentosPage />} />
+                  <Route path="ingresos" element={<IngresosAdminPage />} />
                   <Route
                     path="pedidos"
                     element={

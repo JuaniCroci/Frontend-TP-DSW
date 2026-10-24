@@ -47,4 +47,9 @@ export const adminSections: AdminSection[] = [
     label: 'Proveedores',
     description: 'Mantené los datos de tus proveedores.',
   },
+  {
+    to: '/admin/ingresos',
+    label: 'Ingresos',
+    description: 'Registrá la entrada de mercadería de proveedores y administrá el stock.',
+  },
 ];

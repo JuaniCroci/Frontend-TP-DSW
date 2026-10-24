@@ -14,7 +14,12 @@ const FOCUSABLE_SELECTOR =
 
 export function AdminModal({ labelledBy, onClose, children, panelClassName }: AdminModalProps) {
   const panelRef = useRef<HTMLDivElement>(null);
+  const onCloseRef = useRef(onClose);
 
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+ 
   useEffect(() => {
     const previouslyFocused =
       document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -22,7 +27,7 @@ export function AdminModal({ labelledBy, onClose, children, panelClassName }: Ad
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
-        onClose();
+        onCloseRef.current();
         return;
       }
       if (event.key !== 'Tab') return;
@@ -52,7 +57,7 @@ export function AdminModal({ labelledBy, onClose, children, panelClassName }: Ad
       document.removeEventListener('keydown', handleKeyDown);
       previouslyFocused?.focus();
     };
-  }, [onClose]);
+  }, []);
 
   return (
     <div
